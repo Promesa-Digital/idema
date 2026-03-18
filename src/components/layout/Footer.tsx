@@ -164,20 +164,18 @@ export default function Footer() {
                 <div>
                   <p className="text-sm font-semibold text-[#0dcaf0]">{addr.label}</p>
                   <p className="text-white/80 text-sm">{addr.value}</p>
+                  {addr.phone && (
+                    <p className="text-white/80 text-sm flex items-center gap-1.5 mt-1">
+                      <FaPhone className="w-3 h-3 text-[#0dcaf0]" />
+                      {addr.phone}
+                    </p>
+                  )}
                 </div>
               </div>
             ))}
           </div>
 
           <div className="mt-6 flex flex-col md:flex-row gap-6">
-            <div className="flex gap-3">
-              <FaPhone className="w-5 h-5 text-[#0dcaf0] flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-[#0dcaf0]">Teléfono</p>
-                <p className="text-white/80 text-sm">{footerLinks.contact.phone}</p>
-              </div>
-            </div>
-
             <div className="flex gap-3">
               <FaEnvelope className="w-5 h-5 text-[#0dcaf0] flex-shrink-0 mt-0.5" />
               <div>
