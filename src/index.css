@@ -4,32 +4,23 @@
 @import "tailwindcss";
 
 @theme {
-  /* Colores Primarios */
-  --color-primary: #00AFF0;
-  --color-primary-dark: #0099cc;
-  --color-deep: #10323F;
-  --color-purple: #572364;
+  /* ── Colores primarios (para FONDOS) ── */
+  --color-primary:  #00AFF0;
+  --color-dark:     #10323F;
+  --color-accent:   #572364;
 
-  /* Colores Secundarios */
-  --color-morado: #2E136E;
-  --color-light: #F5F5F5;
-  --color-accent: #FD3DB5;
-  --color-accent-dark: #e91e63;
+  /* ── Colores secundarios (para TEXTOS, BOTONES, ACENTOS) ── */
+  --color-deep:     #2E136E;
+  --color-surface:  #F5F5F5;
+  --color-cta:      #FD3DB5;
 
-  /* Colores de utilidad */
-  --color-dark: #10323F;
-  --color-secondary: #6c757d;
-  --color-cyan: #00AFF0;
-  --color-success: #28a745;
-  --color-danger: #dc3545;
-  --color-warning: #ffc107;
+  /* ── Utilidad (marcas externas) ── */
   --color-whatsapp: #25d366;
 
-  /* Tipografías - Manual IDEMA */
-  --font-family-logo: 'Poppins', sans-serif;
-  --font-family-heading: 'Poppins', sans-serif;
-  --font-family-subheading: 'Montserrat', sans-serif;
-  --font-family-body: 'Lato', sans-serif;
+  /* ── Tipografías ── */
+  --font-heading:    'Poppins', sans-serif;
+  --font-subheading: 'Montserrat', sans-serif;
+  --font-body:       'Lato', sans-serif;
 }
 
 /* Base styles */
@@ -37,7 +28,7 @@
 body {
   font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
-  color: #10323F;
+  color: var(--color-dark);
   background: #fff;
   overflow-x: hidden;
   margin: 0;
@@ -54,13 +45,13 @@ h4, h5, h6 {
 
 /* Scrollbar styling */
 ::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: rgba(0, 175, 240, 0.1); }
-::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #00AFF0, #10323F); border-radius: 4px; }
+::-webkit-scrollbar-track { background: color-mix(in srgb, var(--color-primary) 10%, transparent); }
+::-webkit-scrollbar-thumb { background: linear-gradient(135deg, var(--color-primary), var(--color-dark)); border-radius: 4px; }
 
 /* Custom animations */
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 4px 15px rgba(0, 175, 240, 0.3); }
-  50% { box-shadow: 0 4px 25px rgba(0, 175, 240, 0.6); }
+  0%, 100% { box-shadow: 0 4px 15px color-mix(in srgb, var(--color-primary) 30%, transparent); }
+  50% { box-shadow: 0 4px 25px color-mix(in srgb, var(--color-primary) 60%, transparent); }
 }
 
 @keyframes float {
@@ -105,7 +96,7 @@ h4, h5, h6 {
 
 /* Utility classes */
 .gradient-text {
-  background: linear-gradient(135deg, #00AFF0, #572364);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -117,9 +108,9 @@ h4, h5, h6 {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.gradient-primary { background: linear-gradient(135deg, #00AFF0, #10323F); }
-.gradient-secondary { background: linear-gradient(135deg, #FD3DB5, #572364); }
-.gradient-dark { background: linear-gradient(135deg, #10323F, #2E136E); }
-.gradient-footer { background: linear-gradient(135deg, #10323F, #2E136E); }
-.gradient-contact { background: linear-gradient(135deg, #572364, #2E136E); }
-.gradient-pink { background: linear-gradient(135deg, #FD3DB5, #572364); }
+.gradient-primary { background: linear-gradient(135deg, var(--color-primary), var(--color-dark)); }
+.gradient-secondary { background: linear-gradient(135deg, var(--color-cta), var(--color-accent)); }
+.gradient-dark { background: linear-gradient(135deg, var(--color-dark), var(--color-deep)); }
+.gradient-footer { background: linear-gradient(135deg, var(--color-dark), var(--color-deep)); }
+.gradient-contact { background: linear-gradient(135deg, var(--color-accent), var(--color-deep)); }
+.gradient-pink { background: linear-gradient(135deg, var(--color-cta), var(--color-accent)); }
