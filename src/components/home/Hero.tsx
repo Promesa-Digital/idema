@@ -125,7 +125,7 @@ export default function Hero() {
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
           {/* Left panel - slide content */}
-          <div className="w-full md:w-1/2 flex flex-col justify-center">
+          <div className="w-full md:w-1/2 flex flex-col bg-primary/25 p-6 rounded-2xl justify-center">
             <AnimatePresence mode="wait">
               <motion.div
                 key={current}
@@ -145,7 +145,7 @@ export default function Hero() {
                 </p>
                 <a
                   href={slide.ctaLink}
-                  className="inline-block bg-cta hover:bg-cta/90 text-white font-subheading font-bold px-8 py-4 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cta/30 text-lg"
+                  className="inline-block bg-primary hover:bg-primary/90 text-white font-subheading font-bold px-8 py-4 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/30 text-lg"
                 >
                   {slide.cta}
                 </a>
