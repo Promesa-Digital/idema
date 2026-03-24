@@ -213,7 +213,7 @@ export default function Navbar() {
                   setShowContactForm(!showContactForm)
                   setOpenDropdown(null)
                 }}
-                className="bg-gradient-to-r from-primary to-dark text-white px-5 py-2 rounded-full text-sm font-semibold hover:shadow-[0_4px_25px_rgba(13,202,240,0.5)] transition-all duration-300 flex items-center gap-2"
+                className="bg-primary text-white px-5 py-2 rounded-full text-sm font-semibold hover:shadow-[0_4px_25px_rgba(13,202,240,0.5)] transition-all duration-300 flex items-center gap-2"
                 style={{ animation: 'pulse-glow 2s infinite' }}
               >
                 <FaPhone className="w-3 h-3" />
