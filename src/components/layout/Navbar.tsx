@@ -316,7 +316,7 @@ export default function Navbar() {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.25 }}
-              className="lg:hidden mt-3 pt-3 border-t border-white/10"
+              className="lg:hidden mt-3 pt-3 border-t border-white/10 bg-dark/95 backdrop-blur-md rounded-xl px-2 pb-2"
             >
               {mainNavLinks.map(link => (
                 <Link
@@ -363,7 +363,7 @@ export default function Navbar() {
 
               <button
                 onClick={() => { setShowContactForm(!showContactForm); setIsMobileOpen(false) }}
-                className="w-full mt-3 mb-2 bg-gradient-to-r from-primary to-dark text-white px-4 py-2.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2"
+                className="w-full mt-3 mb-2 bg-primary text-white px-4 py-2.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2"
               >
                 <FaPhone className="w-3 h-3" />
                 ¡Contáctanos!
