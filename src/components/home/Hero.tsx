@@ -23,7 +23,7 @@ const slides = [
   {
     desktop: '/assets/img/hero/desktop/AGROPECUARIA_1.jpeg',
     mobile:  '/assets/img/hero/mobile/AGROPECUARIA_2.jpeg',
-    titulo:    'Producción Agropecuaria',
+    titulo:    'Agropecuaria',
     subtitulo: 'Impulsa el desarrollo agrícola con tecnología moderna',
     cta:       'Ver carrera',
     ctaLink:   '/carreras/agropecuaria',
