@@ -2,14 +2,17 @@ import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
 const companies = [
-  { name: 'Hospital Regional', logo: '/assets/img/logos/hospital.png' },
-  { name: 'Clínica San Isidro', logo: '/assets/img/logos/clinica.png' },
-  { name: 'Banco del Perú', logo: '/assets/img/logos/banco.png' },
-  { name: 'Agroquímica', logo: '/assets/img/logos/agrochemical.png' },
-  { name: 'Tech Solutions', logo: '/assets/img/logos/tech.png' },
-  { name: 'Transportes Andino', logo: '/assets/img/logos/transport.png' },
-  { name: 'Farmacia Central', logo: '/assets/img/logos/pharmacy.png' },
-  { name: 'Estancia Agrícola', logo: '/assets/img/logos/farm.png' },
+  { name: 'MINEDU', logo: '/assets/img/logos/minedu.jpg' },
+  { name: 'Universidad Continental', logo: '/assets/img/logos/Universidad-Continental.png' },
+  { name: 'ProInnovate', logo: '/assets/img/logos/proinnovate.png' },
+  { name: 'CEAGRO', logo: '/assets/img/logos/ceagro.png' },
+  { name: 'Greenland', logo: '/assets/img/logos/greenland.jpeg' },
+  { name: 'Michigan', logo: '/assets/img/logos/michigan.png' },
+  { name: 'Chamilo LMS', logo: '/assets/img/logos/Chamilo_LMS.svg' },
+  { name: 'Microsoft 365', logo: '/assets/img/logos/Office_Microsoft_365.webp' },
+  { name: 'Aviacon', logo: '/assets/img/logos/aviacon.jpg' },
+  { name: 'Andrew Pietowsky', logo: '/assets/img/logos/pietowsky.jpg' },
+  { name: 'Brasilero', logo: '/assets/img/logos/brasilero.png' },
 ]
 
 export default function CompaniesSection() {
