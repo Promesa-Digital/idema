@@ -132,13 +132,20 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex-shrink-0">
+          <Link to="/" className="flex-shrink-0 flex items-center gap-3">
             <img
               src="/assets/img/idema-white.png"
               alt="IDEMA"
               className="transition-all duration-300"
               style={{ height: isScrolled ? '36px' : '44px' }}
             />
+            <span
+              className={`hidden sm:block text-white text-[10px] leading-tight font-medium tracking-wide border-l border-white/15 pl-3 transition-opacity duration-300 ${
+                isScrolled ? 'opacity-100' : 'opacity-90'
+              }`}
+            >
+              Instituto Santiago<br />Ramón y Cajal
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
