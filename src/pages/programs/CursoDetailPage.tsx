@@ -2,11 +2,11 @@ import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { FaCheck, FaClock, FaBook, FaCertificate, FaCalendar, FaWhatsapp, FaEnvelope, FaCreditCard, FaShieldAlt, FaShoppingCart } from 'react-icons/fa'
-import { cursos } from '../data/carreras/cursos'
-import { useCulqi } from '../hooks/useCulqi'
-import { useCart } from '../context/CartContext'
+import { cursos } from '../../data/programs/cursos'
+import { useCulqi } from '../../hooks/useCulqi'
+import { useCart } from '../../context/CartContext'
 
-export default function CursoPage() {
+export default function CursoDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const curso = cursos.find(c => c.slug === slug)
   const { openCheckout } = useCulqi()
@@ -15,16 +15,12 @@ export default function CursoPage() {
   if (!curso) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-dark to-deep">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
           <h1 className="text-5xl font-bold text-white mb-4">404</h1>
           <p className="text-xl text-white/50 mb-8">Curso no encontrado</p>
-          <Link to="/">
+          <Link to="/programas?categoria=curso">
             <button className="px-8 py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-full hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 hover:scale-105">
-              Volver al Inicio
+              Ver Cursos
             </button>
           </Link>
         </motion.div>
@@ -32,7 +28,6 @@ export default function CursoPage() {
     )
   }
 
-  // Parse price to cents for Culqi (e.g., "S/.150" -> 15000)
   const priceNumber = curso.price ? parseInt(curso.price.replace(/[^0-9]/g, ''), 10) : 0
   const priceCents = priceNumber * 100
 
@@ -43,7 +38,6 @@ export default function CursoPage() {
       amount: priceCents,
       description: `Curso: ${curso.title} - ${curso.duration}`,
       onSuccess: (token) => {
-        // In production, send token.id to your backend to create the charge
         console.log('Payment token received:', token.id)
       },
     })
@@ -58,14 +52,8 @@ export default function CursoPage() {
 
       {/* Hero Section */}
       <div className="relative h-96 md:h-[500px] overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url('${curso.image}')`,
-          }}
-        />
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('${curso.image}')` }} />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40" />
-
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -82,50 +70,33 @@ export default function CursoPage() {
         <div className="max-w-6xl mx-auto flex items-center gap-2 text-sm text-deep/80">
           <Link to="/" className="hover:text-primary">Inicio</Link>
           <span>/</span>
-          <Link to="/#cursos" className="hover:text-primary">Cursos</Link>
+          <Link to="/programas?categoria=curso" className="hover:text-primary">Cursos</Link>
           <span>/</span>
           <span className="text-deep font-semibold">{curso.title}</span>
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Content — 2 column layout */}
       <div className="bg-white py-16 md:py-24">
         <div className="max-w-6xl mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Left: Course content */}
             <div className="lg:col-span-2">
               {/* Description */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-                className="mb-16"
-              >
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-16">
                 <h2 className="text-3xl font-bold mb-6 gradient-text">Descripción del Curso</h2>
                 <p className="text-lg text-deep leading-relaxed">{curso.description}</p>
               </motion.div>
 
-              {/* Features Grid */}
+              {/* Features / Contenidos */}
               {curso.features && curso.features.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="mb-16"
-                >
+                <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-16">
                   <h2 className="text-3xl font-bold mb-8 gradient-text">Contenidos del Curso</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {curso.features.map((feature, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
+                      <motion.div key={index} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
                         transition={{ duration: 0.5, delay: index * 0.1 }}
-                        className="flex items-start gap-4 p-4 rounded-lg bg-surface hover:bg-surface transition-colors"
-                      >
+                        className="flex items-start gap-4 p-4 rounded-lg bg-surface hover:bg-surface transition-colors">
                         <FaCheck className="text-primary text-xl mt-1 flex-shrink-0" />
                         <p className="text-deep">{feature}</p>
                       </motion.div>
@@ -135,37 +106,20 @@ export default function CursoPage() {
               )}
 
               {/* Info Cards */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-                className="mb-16"
-              >
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-16">
                 <h2 className="text-3xl font-bold mb-8 gradient-text">Información del Curso</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <motion.div
-                    whileHover={{ translateY: -10 }}
-                    className="bg-gradient-to-br from-primary/10 to-accent/10 p-6 rounded-xl border border-primary/30"
-                  >
+                  <motion.div whileHover={{ translateY: -10 }} className="bg-gradient-to-br from-primary/10 to-accent/10 p-6 rounded-xl border border-primary/30">
                     <FaClock className="text-primary text-3xl mb-4" />
                     <h3 className="font-bold text-deep mb-2">Duración</h3>
                     <p className="text-deep">{curso.duration}</p>
                   </motion.div>
-
-                  <motion.div
-                    whileHover={{ translateY: -10 }}
-                    className="bg-gradient-to-br from-primary/10 to-accent/10 p-6 rounded-xl border border-primary/20"
-                  >
+                  <motion.div whileHover={{ translateY: -10 }} className="bg-gradient-to-br from-primary/10 to-accent/10 p-6 rounded-xl border border-primary/20">
                     <FaBook className="text-accent text-3xl mb-4" />
                     <h3 className="font-bold text-deep mb-2">Modalidad</h3>
                     <p className="text-deep">{curso.modality}</p>
                   </motion.div>
-
-                  <motion.div
-                    whileHover={{ translateY: -10 }}
-                    className="bg-gradient-to-br from-accent/10 to-cta/10 p-6 rounded-xl border border-accent/20"
-                  >
+                  <motion.div whileHover={{ translateY: -10 }} className="bg-gradient-to-br from-accent/10 to-cta/10 p-6 rounded-xl border border-accent/20">
                     <FaCertificate className="text-accent text-3xl mb-4" />
                     <h3 className="font-bold text-deep mb-2">Certificación</h3>
                     {curso.certification ? (
@@ -181,11 +135,7 @@ export default function CursoPage() {
                       <p className="text-deep">Certificado oficial</p>
                     )}
                   </motion.div>
-
-                  <motion.div
-                    whileHover={{ translateY: -10 }}
-                    className="bg-gradient-to-br from-cta/10 to-cta/10 p-6 rounded-xl border border-cta/20"
-                  >
+                  <motion.div whileHover={{ translateY: -10 }} className="bg-gradient-to-br from-cta/10 to-cta/10 p-6 rounded-xl border border-cta/20">
                     <FaCalendar className="text-cta text-3xl mb-4" />
                     <h3 className="font-bold text-deep mb-2">Requisitos</h3>
                     {curso.requirements ? (
@@ -207,13 +157,7 @@ export default function CursoPage() {
 
             {/* Right: Payment sidebar */}
             <div className="lg:col-span-1">
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="sticky top-28"
-              >
-                {/* Price Card */}
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.3 }} className="sticky top-28">
                 <div className="bg-white rounded-2xl shadow-xl border border-deep/10 overflow-hidden">
                   {/* Price header */}
                   <div className="bg-gradient-to-r from-dark to-deep p-6 text-center">
@@ -224,89 +168,48 @@ export default function CursoPage() {
 
                   {/* Payment actions */}
                   <div className="p-6 space-y-4">
-                    {/* Culqi Pay Button */}
                     {priceCents > 0 && (
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={handlePayment}
-                        className="w-full py-4 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl flex items-center justify-center gap-3 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300"
-                      >
-                        <FaCreditCard className="text-lg" />
-                        Comprar Ahora
+                      <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={handlePayment}
+                        className="w-full py-4 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl flex items-center justify-center gap-3 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300">
+                        <FaCreditCard className="text-lg" /> Comprar Ahora
                       </motion.button>
                     )}
 
-                    {/* Add to Cart */}
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                       onClick={() => addItem(curso, priceNumber)}
-                      className="w-full py-3 border-2 border-primary/50 text-primary font-bold rounded-xl flex items-center justify-center gap-3 hover:bg-primary/10 transition-all duration-300"
-                    >
-                      <FaShoppingCart className="text-lg" />
-                      Agregar al Carrito
+                      className="w-full py-3 border-2 border-primary/50 text-primary font-bold rounded-xl flex items-center justify-center gap-3 hover:bg-primary/10 transition-all duration-300">
+                      <FaShoppingCart className="text-lg" /> Agregar al Carrito
                     </motion.button>
 
-                    {/* WhatsApp */}
-                    <a
-                      href={`https://wa.me/?text=${encodeURIComponent(curso.whatsappMessage || 'Hola, me interesa este curso')}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block"
-                    >
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full py-4 bg-whatsapp text-white font-bold rounded-xl flex items-center justify-center gap-3 hover:shadow-lg hover:shadow-whatsapp/30 transition-all duration-300"
-                      >
-                        <FaWhatsapp className="text-lg" />
-                        Consultar por WhatsApp
+                    <a href={`https://wa.me/?text=${encodeURIComponent(curso.whatsappMessage || 'Hola, me interesa este curso')}`}
+                      target="_blank" rel="noopener noreferrer" className="block">
+                      <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                        className="w-full py-4 bg-whatsapp text-white font-bold rounded-xl flex items-center justify-center gap-3 hover:shadow-lg hover:shadow-whatsapp/30 transition-all duration-300">
+                        <FaWhatsapp className="text-lg" /> Consultar por WhatsApp
                       </motion.button>
                     </a>
 
-                    {/* Email */}
                     <a href="mailto:info@idema.edu.pe?subject=Consulta sobre curso" className="block">
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full py-3 border-2 border-deep/10 text-deep font-semibold rounded-xl flex items-center justify-center gap-3 hover:border-primary/40 hover:text-primary transition-all duration-300"
-                      >
-                        <FaEnvelope className="text-lg" />
-                        Solicitar Información
+                      <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                        className="w-full py-3 border-2 border-deep/10 text-deep font-semibold rounded-xl flex items-center justify-center gap-3 hover:border-primary/40 hover:text-primary transition-all duration-300">
+                        <FaEnvelope className="text-lg" /> Solicitar Información
                       </motion.button>
                     </a>
 
-                    {/* Security note */}
                     <div className="flex items-center gap-2 text-xs text-deep/50 justify-center pt-2">
                       <FaShieldAlt />
                       <span>Pago seguro con Culqi</span>
                     </div>
 
-                    {/* Includes */}
                     <div className="border-t border-deep/10 pt-4 mt-4">
                       <p className="text-sm font-bold text-deep mb-3">Este curso incluye:</p>
                       <ul className="space-y-2">
-                        <li className="flex items-center gap-2 text-sm text-deep/80">
-                          <FaCheck className="text-primary flex-shrink-0" />
-                          Acceso a plataforma virtual
-                        </li>
-                        <li className="flex items-center gap-2 text-sm text-deep/80">
-                          <FaCheck className="text-primary flex-shrink-0" />
-                          Material didáctico digital
-                        </li>
-                        <li className="flex items-center gap-2 text-sm text-deep/80">
-                          <FaCheck className="text-primary flex-shrink-0" />
-                          Certificado virtual incluido
-                        </li>
-                        <li className="flex items-center gap-2 text-sm text-deep/80">
-                          <FaCheck className="text-primary flex-shrink-0" />
-                          Certificación ISO 21001
-                        </li>
-                        <li className="flex items-center gap-2 text-sm text-deep/80">
-                          <FaCheck className="text-primary flex-shrink-0" />
-                          Soporte por WhatsApp
-                        </li>
+                        {['Acceso a plataforma virtual', 'Material didáctico digital', 'Certificado virtual incluido', 'Certificación ISO 21001', 'Soporte por WhatsApp'].map((item, i) => (
+                          <li key={i} className="flex items-center gap-2 text-sm text-deep/80">
+                            <FaCheck className="text-primary flex-shrink-0" />
+                            {item}
+                          </li>
+                        ))}
                       </ul>
                     </div>
                   </div>

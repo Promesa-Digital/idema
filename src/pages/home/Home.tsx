@@ -1,12 +1,12 @@
 import { Helmet } from 'react-helmet-async'
-import Hero from '../components/home/Hero'
-import Features from '../components/home/Features'
-import ProgramasSection from '../components/home/ProgramasSection'
-import NewsSection from '../components/home/NewsSection'
-import ValuesSection from '../components/home/ValuesSection'
-import TestimonialsSection from '../components/home/TestimonialsSection'
-import CompaniesSection from '../components/home/CompaniesSection'
-import ContactSection from '../components/home/ContactSection'
+import Hero from '../../components/home/Hero'
+import Features from '../../components/home/Features'
+import ProgramasSection from '../../components/home/ProgramasSection'
+import NewsSection from '../../components/home/NewsSection'
+import ValuesSection from '../../components/home/ValuesSection'
+import TestimonialsSection from '../../components/home/TestimonialsSection'
+import CompaniesSection from '../../components/home/CompaniesSection'
+import ContactSection from '../../components/home/ContactSection'
 
 export default function Home() {
   return (

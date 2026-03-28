@@ -1,13 +1,14 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useSearchParams, useNavigate, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
-import { carreras } from '../data/carreras'
-import { auxiliares } from '../data/auxiliares'
-import { especializaciones } from '../data/especializaciones'
-import { cursos } from '../data/cursos'
-import ProgramCard from '../components/ui/ProgramCard'
-import type { Carrera } from '../types'
+import { FaGraduationCap, FaBook, FaCertificate, FaLaptop } from 'react-icons/fa'
+import { carreras } from '../../data/programs/carreras'
+import { auxiliares } from '../../data/programs/auxiliares'
+import { especializaciones } from '../../data/programs/especializaciones'
+import { cursos } from '../../data/programs/cursos'
+import ProgramCard from '../../components/ui/ProgramCard'
+import type { Carrera } from '../../types'
 
 const categories = [
   { key: 'todos', label: 'Todos' },
@@ -29,6 +30,33 @@ const allPrograms: Carrera[] = [
   ...auxiliares,
   ...especializaciones,
   ...cursos,
+]
+
+const learningPath = [
+  {
+    icon: FaGraduationCap,
+    color: 'bg-accent',
+    title: 'Formación Técnica Base',
+    description: 'Carreras técnicas de 3 años con título a nombre de la nación',
+  },
+  {
+    icon: FaCertificate,
+    color: 'bg-accent',
+    title: 'Programas Auxiliares',
+    description: 'Formación rápida de 10 meses con certificado MINEDU',
+  },
+  {
+    icon: FaBook,
+    color: 'bg-cta',
+    title: 'Especializaciones',
+    description: 'Diplomados de 10 meses para profesionales con experiencia',
+  },
+  {
+    icon: FaLaptop,
+    color: 'bg-primary',
+    title: 'Cursos Cortos',
+    description: 'Capacitaciones de 4 semanas 100% virtuales',
+  },
 ]
 
 export default function ProgramasPage() {
@@ -79,7 +107,7 @@ export default function ProgramasPage() {
           >
             Encuentra el programa ideal para tu desarrollo profesional
           </motion.p>
-          <div className="h-1 w-16 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mt-4"></div>
+          <div className="h-1 w-16 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mt-4" />
         </div>
       </section>
 
@@ -143,6 +171,71 @@ export default function ProgramasPage() {
               </button>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Ruta de Aprendizaje */}
+      <section className="py-16 sm:py-20 bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="bg-gradient-to-br from-primary/10 to-accent/10 p-8 sm:p-12 rounded-2xl border border-primary/20"
+          >
+            <h2 className="text-2xl sm:text-3xl font-bold text-deep mb-2 text-center">Ruta de Aprendizaje IDEMA</h2>
+            <p className="text-deep/60 text-center mb-10 text-sm">
+              Desde formación técnica base hasta especialización avanzada
+            </p>
+
+            <div className="space-y-6">
+              {learningPath.map((step, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  className="flex items-center gap-4"
+                >
+                  <div className={`w-12 h-12 ${step.color} rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 shadow-lg`}>
+                    <step.icon className="text-lg" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-deep">{step.title}</h3>
+                    <p className="text-deep/70 text-sm">{step.description}</p>
+                  </div>
+                  <span className="text-xs font-bold text-primary bg-primary/10 px-3 py-1 rounded-full hidden sm:block">
+                    Nivel {i + 1}
+                  </span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* CTA Orientación Vocacional */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mt-12 bg-gradient-to-r from-primary to-dark rounded-xl p-8 sm:p-12 text-white text-center"
+          >
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3">¿No sabes cuál elegir?</h2>
+            <p className="text-white/80 mb-6 max-w-xl mx-auto">
+              Realiza nuestra prueba de orientación vocacional y descubre el programa que mejor se ajusta a tus intereses.
+            </p>
+            <Link to="/orientacion-vocacional">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-3 bg-white text-primary font-bold rounded-full hover:shadow-lg transition-all duration-300"
+              >
+                Realizar Prueba de Orientación
+              </motion.button>
+            </Link>
+          </motion.div>
         </div>
       </section>
     </>

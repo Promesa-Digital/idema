@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { Link } from 'react-router-dom'
-import { cursos } from '../../data/cursos'
+import { cursos } from '../../data/programs/cursos'
 
 export default function CursosSection() {
   const { ref, inView } = useInView({ triggerOnce: true })

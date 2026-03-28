@@ -1,7 +1,7 @@
 import { motion, type Variants } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { Link } from 'react-router-dom'
-import { programCategories, type ProgramCategory } from '../../data/programs'
+import { programCategories, type ProgramCategory } from '../../data/programs/categories'
 
 function CategoriaBlock({ badge, titulo, descripcion, imagen, ruta, cantidad, imagenIzquierda, duracion, modalidad, certificaciones, titulacion }: ProgramCategory) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.15 })

@@ -1,28 +1,25 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import Layout from './components/Layout'
 import LoadingSpinner from './components/ui/LoadingSpinner'
 
 // Lazy load pages for code splitting
-const Home = lazy(() => import('./pages/Home'))
-const CarreraPage = lazy(() => import('./pages/CarreraPage'))
-const CursoPage = lazy(() => import('./pages/CursoPage'))
-const EspecializacionPage = lazy(() => import('./pages/EspecializacionPage'))
-const AuxiliarPage = lazy(() => import('./pages/AuxiliarPage'))
+const Home = lazy(() => import('./pages/home/Home'))
+const ProgramDetailPage = lazy(() => import('./pages/programs/ProgramDetailPage'))
+const CursoDetailPage = lazy(() => import('./pages/programs/CursoDetailPage'))
 const NosotrosPage = lazy(() => import('./pages/NosotrosPage'))
 const FAQPage = lazy(() => import('./pages/FAQPage'))
 const TestimoniosPage = lazy(() => import('./pages/TestimoniosPage'))
 const FranquiciatePage = lazy(() => import('./pages/FranquiciatePage'))
 const InvestigacionPage = lazy(() => import('./pages/InvestigacionPage'))
 const ServicioPage = lazy(() => import('./pages/ServicioPage'))
-const LegalPage = lazy(() => import('./pages/LegalPage'))
-const LibroReclamacionesPage = lazy(() => import('./pages/LibroReclamacionesPage'))
-const EliminarCuentaPage = lazy(() => import('./pages/EliminarCuentaPage'))
+const LegalPage = lazy(() => import('./pages/legal/LegalPage'))
+const LibroReclamacionesPage = lazy(() => import('./pages/legal/LibroReclamacionesPage'))
+const EliminarCuentaPage = lazy(() => import('./pages/legal/EliminarCuentaPage'))
 const CursosGratisPage = lazy(() => import('./pages/CursosGratisPage'))
-const IdemaEducaPage = lazy(() => import('./pages/IdemaEducaPage'))
 const OrientacionVocacionalPage = lazy(() => import('./pages/OrientacionVocacionalPage'))
 const NoticiasPage = lazy(() => import('./pages/NoticiasPage'))
-const ProgramasPage = lazy(() => import('./pages/ProgramasPage'))
+const ProgramasPage = lazy(() => import('./pages/programs/ProgramasPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function App() {
@@ -33,20 +30,17 @@ function App() {
           <Route index element={<Home />} />
           {/* Programas */}
           <Route path="programas" element={<ProgramasPage />} />
-          {/* Carreras */}
-          <Route path="carreras/:slug" element={<CarreraPage />} />
-          {/* Auxiliares */}
-          <Route path="auxiliares/:slug" element={<AuxiliarPage />} />
-          {/* Especializaciones */}
-          <Route path="especializaciones/:slug" element={<EspecializacionPage />} />
-          {/* Cursos */}
-          <Route path="cursos/:slug" element={<CursoPage />} />
+          {/* Detalle de programas */}
+          <Route path="carreras/:slug" element={<ProgramDetailPage />} />
+          <Route path="auxiliares/:slug" element={<ProgramDetailPage />} />
+          <Route path="especializaciones/:slug" element={<ProgramDetailPage />} />
+          <Route path="cursos/:slug" element={<CursoDetailPage />} />
           {/* Servicios */}
           <Route path="servicios/:slug" element={<ServicioPage />} />
           {/* Institucional */}
           <Route path="nosotros" element={<NosotrosPage />} />
           <Route path="cursos-gratis" element={<CursosGratisPage />} />
-          <Route path="idema-educa" element={<IdemaEducaPage />} />
+          <Route path="idema-educa" element={<Navigate to="/programas" replace />} />
           <Route path="orientacion-vocacional" element={<OrientacionVocacionalPage />} />
           {/* Info pages */}
           <Route path="faq" element={<FAQPage />} />

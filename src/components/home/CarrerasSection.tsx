@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination, Autoplay } from 'swiper/modules'
-import { carreras } from '../../data/carreras'
+import { carreras } from '../../data/programs/carreras'
 import ProgramCard from '../ui/ProgramCard'
 
 import 'swiper/swiper-bundle.css'

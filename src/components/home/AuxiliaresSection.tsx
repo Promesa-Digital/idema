@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-import { auxiliares } from '../../data/auxiliares'
+import { auxiliares } from '../../data/programs/auxiliares'
 import ProgramCard from '../ui/ProgramCard'
 
 export default function AuxiliaresSection() {

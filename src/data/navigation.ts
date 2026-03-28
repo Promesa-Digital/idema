@@ -15,7 +15,7 @@ export const mainNavLinks: NavLink[] = [
 ]
 
 export const accederDropdown: DropdownItem[] = [
-  { label: 'Árbol de Habilidades', href: '/idema-educa', icon: 'FaSitemap' },
+  { label: 'Oferta Educativa', href: '/programas', icon: 'FaSitemap' },
   { label: 'Noticias IDEMA', href: 'https://website.instituto-idema.org/', icon: 'FaNewspaper', external: true },
   { label: 'Campus Virtual', href: 'https://aprende.instituto-idema.org/', icon: 'FaGraduationCap', external: true },
   { label: 'Biblioteca Virtual', href: 'https://books.instituto-idema.org/', icon: 'FaBook', external: true },

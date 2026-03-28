@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-import { especializaciones } from '../../data/especializaciones'
+import { especializaciones } from '../../data/programs/especializaciones'
 import ProgramCard from '../ui/ProgramCard'
 
 export default function EspecializacionesSection() {

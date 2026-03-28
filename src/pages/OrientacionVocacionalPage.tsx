@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaArrowRight, FaCheckCircle, FaLink } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
-import { carreras } from '../data/carreras'
+import { carreras } from '../data/programs/carreras'
 
 interface Question {
   id: number
