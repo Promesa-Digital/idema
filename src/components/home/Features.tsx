@@ -43,7 +43,7 @@ export default function Features() {
           className="mb-12 text-center"
         >
           <div className="inline-block bg-gradient-to-r from-primary/15 to-accent/15 text-dark px-6 py-3 rounded-full font-bold text-lg">
-            +300 Cursos en Línea
+            +250 Cursos en Línea
           </div>
         </motion.div>
 
