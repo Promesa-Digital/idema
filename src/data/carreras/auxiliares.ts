@@ -1,4 +1,4 @@
-import type { Carrera } from '../types'
+import type { Carrera } from '../../types'
 
 export const auxiliares: Carrera[] = [
   {
