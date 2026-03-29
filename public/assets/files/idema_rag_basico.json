@@ -1,0 +1,41 @@
+{
+    "instituto": {
+        "nombre": "Instituto IDEMA",
+        "ubicaciones": [
+            "Av. Ejército 101 Of. 313, Arequipa, Perú",
+            "Calle Municipal Mz I lote 9, El Pedregal, Majes, Arequipa, Perú"
+        ],
+        "descripcion": [
+            "Más de 300 cursos en línea",
+            "Accesible para todos",
+            "Solo necesita conexión a internet",
+            "Más de 30 años de experiencia desde 1994 impartiendo educación inclusiva",
+            "Instructores con experiencia real de campo",
+            "Plataforma de aprendizaje robusta y versátil",
+            "100% Virtual, compatible con horarios laborales"
+        ],
+        "contacto": [
+            {
+                "direccion": "Urb Las Malvinas U - 1, Majes",
+                "email": "info@idema.edu.pe",
+                "horario": "Lunes a Viernes 9:00 a.m. a 7:00 p.m.",
+                "telefono": "951361224"
+            },
+            {
+                "direccion": "Av. Ejército 101 Of. 313, Arequipa",
+                "horario": "Lunes a Viernes 9:00 a.m. a 1:00 p.m. y 3:00 p.m. a 7:00 p.m. / Sábados 9:00 a.m. a 1:00 p.m.",
+                "telefono": "054-643108"
+            }
+        ],
+        "modalidades": [
+            "Virtual",
+            "Presencial",
+            "Semipresencial"
+        ],
+        "certificaciones": [
+            "Certificación Internacional ISO 21001:2018"
+        ],
+        "mision": "Formar y capacitar Profesionales Técnicos altamente competitivos y asesorar en el campo tecnológico y de gestión apoyando al desarrollo de personas y empresas.",
+        "vision": "Ser una organización educativa que forma y capacita profesionales de éxito, líderes en tecnología y ejemplos para su comunidad..."
+    }
+}

@@ -1,0 +1,9 @@
+# Denegar acceso a todos los archivos en esta carpeta
+Order Deny,Allow
+Deny from all
+
+# Bloquear todo tipo de acceso
+<FilesMatch ".*">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
