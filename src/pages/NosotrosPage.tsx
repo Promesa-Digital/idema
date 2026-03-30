@@ -187,12 +187,12 @@ export default function NosotrosPage() {
             </div>
 
             {/* Connector line */}
-            <div className="hidden md:flex justify-center mb-0">
+            <div className="hidden lg:flex justify-center mb-0">
               <div className="w-0.5 h-10 bg-primary/30"></div>
             </div>
-            <div className="hidden md:block relative mb-4">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-0.5 bg-primary/30"></div>
-              <div className="flex justify-around w-2/3 mx-auto">
+            <div className="hidden lg:block relative mb-4">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-0.5 bg-primary/30"></div>
+              <div className="flex justify-around w-3/4 mx-auto">
                 {teamMembers.map((_, i) => (
                   <div key={i} className="w-0.5 h-10 bg-primary/30"></div>
                 ))}
@@ -200,7 +200,7 @@ export default function NosotrosPage() {
             </div>
 
             {/* Team members */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto">
               {teamMembers.map((member, index) => (
                 <motion.div key={index} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: index * 0.1 }} whileHover={{ translateY: -10 }} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all">
                   <div className="h-52 overflow-hidden">
