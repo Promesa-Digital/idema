@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
-import { FaUsers, FaBullseye, FaLightbulb, FaAward, FaGraduationCap, FaBuilding, FaMapMarkerAlt, FaPhone, FaEnvelope, FaCertificate, FaBookOpen } from 'react-icons/fa'
+import { FaBullseye, FaLightbulb, FaAward, FaGraduationCap, FaBuilding, FaMapMarkerAlt, FaPhone, FaEnvelope, FaCertificate, FaBookOpen } from 'react-icons/fa'
 
 export default function NosotrosPage() {
   const stats = [
@@ -10,11 +10,13 @@ export default function NosotrosPage() {
     { icon: FaBookOpen, label: 'Cursos Online', value: '+300' },
   ]
 
+  const leader = { name: 'Mg. Raúl Herrera Flores', role: 'Gerente General', image: '/assets/img/team/GerenteGeneral.webp' }
+
   const teamMembers = [
-    { name: 'Mg. Raúl Herrera Flores', role: 'Gerente General' },
-    { name: 'Equipo Marketing y Publicidad', role: 'Estrategia y comunicación' },
-    { name: 'Equipo Ventas y Asesoría', role: 'Atención al estudiante' },
-    { name: 'Equipo Proyectos y Procesos', role: 'Gestión y calidad' },
+    { name: 'Equipo Marketing y Publicidad', role: 'Estrategia y comunicación', image: '/assets/img/team/1marketing.webp' },
+    { name: 'Equipo Ventas y Asesoría', role: 'Atención al estudiante', image: '/assets/img/team/1ventas.webp' },
+    { name: 'Equipo Proyectos y Procesos', role: 'Gestión y calidad', image: '/assets/img/team/1procesos.webp' },
+    { name: 'Equipo Tecnología e Innovación', role: 'Desarrollo y sistemas', image: '/assets/img/team/1developer.webp' },
   ]
 
   const locations = [
@@ -170,13 +172,39 @@ export default function NosotrosPage() {
           {/* Team */}
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-20">
             <h2 className="text-4xl font-bold mb-12 text-center gradient-text">Nuestro Equipo</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+            {/* Leader */}
+            <div className="flex justify-center mb-4">
+              <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5 }} whileHover={{ translateY: -10 }} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all w-72">
+                <div className="h-64 overflow-hidden">
+                  <img src={leader.image} alt={leader.name} className="w-full h-full object-cover object-top" />
+                </div>
+                <div className="p-6 text-center">
+                  <h3 className="text-lg font-bold text-deep mb-2">{leader.name}</h3>
+                  <p className="text-primary font-semibold text-sm">{leader.role}</p>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Connector line */}
+            <div className="hidden md:flex justify-center mb-0">
+              <div className="w-0.5 h-10 bg-primary/30"></div>
+            </div>
+            <div className="hidden md:block relative mb-4">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-0.5 bg-primary/30"></div>
+              <div className="flex justify-around w-2/3 mx-auto">
+                {teamMembers.map((_, i) => (
+                  <div key={i} className="w-0.5 h-10 bg-primary/30"></div>
+                ))}
+              </div>
+            </div>
+
+            {/* Team members */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
               {teamMembers.map((member, index) => (
                 <motion.div key={index} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: index * 0.1 }} whileHover={{ translateY: -10 }} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all">
-                  <div className="h-48 bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                    <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center">
-                      <FaUsers className="text-4xl text-primary" />
-                    </div>
+                  <div className="h-52 overflow-hidden">
+                    <img src={member.image} alt={member.name} className="w-full h-full object-cover object-top" />
                   </div>
                   <div className="p-6 text-center">
                     <h3 className="text-lg font-bold text-deep mb-2">{member.name}</h3>
