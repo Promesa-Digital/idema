@@ -11,9 +11,9 @@ import 'swiper/swiper-bundle.css'
 
 function StarRating() {
   return (
-    <div className="flex gap-0.5">
+    <div className="flex gap-1">
       {Array.from({ length: 5 }).map((_, i) => (
-        <FaStar key={i} className="text-yellow-400 text-sm" />
+        <FaStar key={i} className="text-cta text-lg" />
       ))}
     </div>
   )
@@ -39,12 +39,12 @@ export default function TestimonialsSection() {
             className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4"
             style={{ fontFamily: 'var(--font-heading)' }}
           >
-            Lo que dicen nuestros estudiantes
+            Lo Que Dicen Nuestros Egresados
           </h2>
-          <p className="text-white/60 text-base max-w-xl mx-auto" style={{ fontFamily: 'var(--font-body)' }}>
-            Conoce las experiencias de quienes transformaron su futuro profesional con IDEMA
+          <p className="text-white/60 text-lg max-w-2xl mx-auto" style={{ fontFamily: 'var(--font-body)' }}>
+            Miles de profesionales han transformado sus vidas a través de nuestros programas educativos. Aquí puedes conocer sus historias de éxito.
           </p>
-          <div className="h-1 w-16 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mt-4" />
+          <div className="h-1 w-16 bg-gradient-to-r from-primary to-cta rounded-full mx-auto mt-4" />
         </motion.div>
 
         {/* Swiper carousel */}
@@ -69,7 +69,7 @@ export default function TestimonialsSection() {
             {testimonios.map((t, index) => (
               <SwiperSlide key={index}>
                 <motion.div
-                  whileHover={{ y: -5 }}
+                  whileHover={{ translateY: -10 }}
                   className="h-full"
                 >
                   <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-6 sm:p-8 h-full hover:bg-white/15 hover:border-white/30 transition-all duration-300 shadow-xl flex flex-col">
@@ -87,19 +87,22 @@ export default function TestimonialsSection() {
                       "{t.text}"
                     </p>
 
+                    {/* Divider */}
+                    <div className="h-1 bg-gradient-to-r from-primary/60 to-cta/40 rounded-full mb-6" />
+
                     {/* Author */}
-                    <div className="flex items-center gap-4 pt-4 border-t border-white/20">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent overflow-hidden flex-shrink-0">
+                    <div className="flex items-center gap-4">
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-deep overflow-hidden flex-shrink-0 shadow-lg"
+                      >
                         <img
                           src={t.image}
                           alt={t.name}
                           className="w-full h-full object-cover"
                           loading="lazy"
-                          onError={(e) => {
-                            ;(e.target as HTMLImageElement).src = '/assets/img/avatarIDEMA.png'
-                          }}
                         />
-                      </div>
+                      </motion.div>
                       <div>
                         <p className="font-bold text-white text-sm" style={{ fontFamily: 'var(--font-subheading)' }}>
                           {t.name}

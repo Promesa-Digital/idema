@@ -9,7 +9,6 @@ const ProgramDetailPage = lazy(() => import('./pages/programs/ProgramDetailPage'
 const CursoDetailPage = lazy(() => import('./pages/programs/CursoDetailPage'))
 const NosotrosPage = lazy(() => import('./pages/NosotrosPage'))
 const FAQPage = lazy(() => import('./pages/FAQPage'))
-const TestimoniosPage = lazy(() => import('./pages/TestimoniosPage'))
 const FranquiciatePage = lazy(() => import('./pages/FranquiciatePage'))
 const InvestigacionPage = lazy(() => import('./pages/InvestigacionPage'))
 const ServicioPage = lazy(() => import('./pages/ServicioPage'))
@@ -44,7 +43,6 @@ function App() {
           <Route path="orientacion-vocacional" element={<OrientacionVocacionalPage />} />
           {/* Info pages */}
           <Route path="faq" element={<FAQPage />} />
-          <Route path="testimonios" element={<TestimoniosPage />} />
           <Route path="franquiciate" element={<FranquiciatePage />} />
           <Route path="investigacion" element={<InvestigacionPage />} />
           <Route path="noticias" element={<NoticiasPage />} />
