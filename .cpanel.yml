@@ -2,6 +2,10 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/idemaedu/public_html/
-    - /usr/local/bin/npm install
-    - /usr/local/bin/npm run build
-    - /bin/cp -r dist/* $DEPLOYPATH
+    - export HOME=/home/idemaedu
+    - source /home/idemaedu/.nvm/nvm.sh
+    - nvm use 20
+    - cd /home/idemaedu/repositories/idema
+    - /home/idemaedu/.nvm/versions/node/v20.20.2/bin/npm install
+    - /home/idemaedu/.nvm/versions/node/v20.20.2/bin/npm run build
+    - cp -r dist/* $DEPLOYPATH
