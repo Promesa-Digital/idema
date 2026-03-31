@@ -21,7 +21,6 @@ export const accederDropdown: DropdownItem[] = [
   { label: 'Biblioteca Virtual', href: 'https://books.instituto-idema.org/', icon: 'FaBook', external: true },
   { label: 'Bolsa de Trabajo', href: 'https://jobs.instituto-idema.org/', icon: 'FaBriefcase', external: true },
   { label: 'Intranet', href: 'https://apps.instituto-idema.org/', icon: 'FaUsers', external: true },
-  { label: 'Idema Bot', href: 'https://bot.instituto-idema.org/', icon: 'FaRobot', external: true },
   { label: 'Inscríbete', href: 'https://www.aprende.instituto-idema.org/main/auth/inscription.php', icon: 'FaUserPlus', external: true },
 ]
 
