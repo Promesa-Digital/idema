@@ -352,10 +352,10 @@ export default function ContactSection() {
                 <div>
                   <p className="font-semibold text-white">Teléfono</p>
                   <a
-                    href="tel:+5156161234"
+                    href="tel: 054209978"
                     className="text-white/80 text-sm hover:text-white transition"
                   >
-                    +51 (6) 1612345
+                     (054) 209978
                   </a>
                 </div>
               </motion.div>
