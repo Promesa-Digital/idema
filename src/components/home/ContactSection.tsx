@@ -338,7 +338,7 @@ export default function ContactSection() {
                 <div>
                   <p className="font-semibold text-white">Dirección</p>
                   <p className="text-white/80 text-sm">
-                    Arequipa, Perú
+                    Calle Manuel Ugarteche 207, Selva Alegre
                   </p>
                 </div>
               </motion.div>
