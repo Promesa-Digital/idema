@@ -107,13 +107,38 @@ export default function Navbar() {
     return Object.keys(errors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validateForm()) return
-    addToast('success', '¡Enviado!', 'Gracias, te llamaremos pronto.')
-    setFormData({ firstName: '', lastName: '', countryCode: '51', phone: '', email: '', comment: '', acceptPolicies: false })
-    setShowContactForm(false)
-    setOpenDropdown(null)
+
+    try {
+      const formBody = new FormData()
+      formBody.append('access_key', 'c58368ae-ca4c-419b-91a7-d19435dafcfc')
+      formBody.append('subject', `Nuevo contacto: ${formData.firstName} ${formData.lastName}`)
+      formBody.append('from_name', 'IDEMA Contacto Web')
+      formBody.append('Nombre', `${formData.firstName} ${formData.lastName}`)
+      formBody.append('Teléfono', `+${formData.countryCode} ${formData.phone}`)
+      formBody.append('Email', formData.email)
+      formBody.append('Mensaje', formData.comment)
+
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formBody,
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        addToast('success', '¡Enviado!', 'Gracias, te llamaremos pronto.')
+        setFormData({ firstName: '', lastName: '', countryCode: '51', phone: '', email: '', comment: '', acceptPolicies: false })
+        setShowContactForm(false)
+        setOpenDropdown(null)
+      } else {
+        addToast('error', 'Error', 'No se pudo enviar. Intenta nuevamente.')
+      }
+    } catch {
+      addToast('error', 'Error', 'Error de conexión. Intenta nuevamente.')
+    }
   }
 
   // Navbar background: on home transparent until scrolled, on other pages always dark
