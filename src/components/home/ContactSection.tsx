@@ -94,23 +94,43 @@ export default function ContactSection() {
 
     setIsSubmitting(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      const formBody = new FormData()
+      formBody.append('access_key', 'c58368ae-ca4c-419b-91a7-d19435dafcfc')
+      formBody.append('subject', `Nuevo contacto: ${formData.firstName} ${formData.lastName}`)
+      formBody.append('from_name', 'IDEMA Contacto Web')
+      formBody.append('Nombre', `${formData.firstName} ${formData.lastName}`)
+      formBody.append('Teléfono', `+${formData.countryCode} ${formData.phone}`)
+      formBody.append('Email', formData.email)
+      formBody.append('Mensaje', formData.comment)
 
-    setSubmitSuccess(true)
-    setFormData({
-      firstName: '',
-      lastName: '',
-      countryCode: '51',
-      phone: '',
-      email: '',
-      comment: '',
-      acceptPolicies: false,
-    })
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formBody,
+      })
 
-    // Reset success message after 3 seconds
-    setTimeout(() => setSubmitSuccess(false), 3000)
-    setIsSubmitting(false)
+      const data = await response.json()
+
+      if (data.success) {
+        setSubmitSuccess(true)
+        setFormData({
+          firstName: '',
+          lastName: '',
+          countryCode: '51',
+          phone: '',
+          email: '',
+          comment: '',
+          acceptPolicies: false,
+        })
+        setTimeout(() => setSubmitSuccess(false), 3000)
+      } else {
+        setErrors({ submit: 'Error al enviar el mensaje. Intenta nuevamente.' })
+      }
+    } catch {
+      setErrors({ submit: 'Error de conexión. Intenta nuevamente.' })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -151,6 +171,16 @@ export default function ContactSection() {
                   className="bg-primary/10 border border-primary/30 text-deep px-4 py-3 rounded-lg"
                 >
                   ¡Gracias por tu mensaje! Nos contactaremos pronto.
+                </motion.div>
+              )}
+
+              {errors.submit && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-cta/10 border border-cta/30 text-white px-4 py-3 rounded-lg"
+                >
+                  {errors.submit}
                 </motion.div>
               )}
 
@@ -338,7 +368,7 @@ export default function ContactSection() {
                 <div>
                   <p className="font-semibold text-white">Dirección</p>
                   <p className="text-white/80 text-sm">
-                    Arequipa, Perú
+                    Calle Manuel Ugarteche 207, Selva Alegre
                   </p>
                 </div>
               </motion.div>

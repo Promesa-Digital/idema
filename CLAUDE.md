@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-IDEMA React is the marketing/institutional website for IDEMA (Instituto de Educación), a Peruvian technical education institute. It's a React 19 SPA built with TypeScript, Vite 8, and Tailwind CSS v4.
+IDEMA React is the marketing/institutional website for IDEMA (Instituto de Educación), a Peruvian technical education institute. It's a React 19 SPA built with TypeScript, Vite 7, and Tailwind CSS v4.
 
 ## Commands
 
@@ -17,28 +17,19 @@ No test framework is configured.
 
 ## Architecture
 
-**Routing**: React Router v6 with lazy-loaded pages via `React.lazy()` in `src/App.tsx`. All pages render inside a shared `Layout` component (Navbar, Footer, WhatsApp button, CartDrawer, ToastContainer).
+**Routing**: React Router v6 with lazy-loaded pages via `React.lazy()` in `src/App.tsx`. All pages render inside a shared `Layout` component (`src/components/Layout.tsx`) which provides Navbar, Footer, WhatsApp button, CartDrawer, ToastContainer, and ScrollToTop.
 
-**Data-driven pages**: Programs (carreras, auxiliares, especializaciones, cursos) are defined as static arrays of `Carrera` objects in `src/data/`. Detail pages (`CarreraPage`, `AuxiliarPage`, etc.) look up entries by `:slug` route param.
+**Data-driven pages**: Programs are organized by category in `src/data/programs/` (carreras, auxiliares, especializaciones, cursos) as static arrays of `Carrera` objects. A shared `categories.ts` defines the category metadata. Detail pages (`ProgramDetailPage`, `CursoDetailPage`) look up entries by `:slug` route param. Routes like `/carreras/:slug`, `/auxiliares/:slug`, and `/especializaciones/:slug` all use `ProgramDetailPage`, while `/cursos/:slug` uses `CursoDetailPage`.
 
 **State management**: Cart state lives in `src/context/CartContext.tsx` using React Context. Access via `useCart()` hook.
 
-**Styling**: Tailwind CSS v4 via `@tailwindcss/vite` plugin. Custom theme tokens (colors, fonts) defined in `src/index.css` under `@theme`. Fonts: Montserrat (headings), Roboto Slab (body).
+**Styling**: Tailwind CSS v4 via `@tailwindcss/vite` plugin. Custom theme tokens (colors, fonts) defined in `src/index.css` under `@theme`. Three font families: Poppins (h1-h3 headings), Montserrat (h4-h6 subheadings), Lato (body text).
 
 **Path alias**: `@` maps to `src/` (configured in `vite.config.ts`).
 
-**Key types**: All shared interfaces in `src/types/index.ts` - `Carrera` is the central type used for all program categories.
+**Key types**: All shared interfaces in `src/types/index.ts` — `Carrera` is the central type used for all program categories.
 
-## Directory Structure
-
-- `src/components/home/` - Homepage sections (Hero, CarrerasSection, etc.)
-- `src/components/layout/` - Navbar, Footer
-- `src/components/ui/` - Reusable UI (LoadingSpinner, SectionTitle, ProgramCard, etc.)
-- `src/components/cart/` - CartDrawer
-- `src/hooks/` - Custom hooks (useAnalytics, useCulqi, useScrollspy, useToast)
-- `src/data/` - Static data files for programs and navigation
-- `src/pages/` - Route-level page components
-- `public/assets/` - Static images and files
+**Dev proxy**: Vite proxies `/api/noticias` to `https://idema.edu.pe/php/noticias_proxy.php` for news data.
 
 ## Conventions
 
@@ -49,3 +40,6 @@ No test framework is configured.
 - SEO handled with `react-helmet-async`
 - Animations use `framer-motion`
 - Particle effects via `@tsparticles/react`
+- Carousel/slider components use `swiper`
+- Icons from `react-icons`
+- Intersection observer via `react-intersection-observer`
