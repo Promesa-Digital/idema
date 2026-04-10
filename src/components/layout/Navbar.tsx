@@ -252,70 +252,6 @@ export default function Navbar() {
                 ¡Contáctanos!
               </button>
 
-              {/* Contact Form Dropdown */}
-              <AnimatePresence>
-                {showContactForm && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute right-0 mt-3 w-[380px] rounded-2xl shadow-2xl overflow-hidden z-50"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div className="bg-gradient-to-br from-accent to-deep p-5">
-                      <div className="flex items-center justify-between mb-3">
-                        <h5 className="text-white font-bold text-base">¡Nos Comunicamos Contigo!</h5>
-                        <button onClick={() => setShowContactForm(false)} className="text-white/60 hover:text-white transition-colors">
-                          <FaTimes className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      <form onSubmit={handleSubmit} className="space-y-2.5">
-                        <input type="text" name="firstName" placeholder="Nombres *" value={formData.firstName} onChange={handleFormChange} maxLength={50}
-                          className={`w-full px-3 py-2.5 rounded-xl text-sm bg-white/95 border-none outline-none focus:ring-2 focus:ring-white/40 placeholder-deep/50 ${formErrors.firstName ? 'ring-2 ring-cta' : ''}`} />
-                        <input type="text" name="lastName" placeholder="Apellidos *" value={formData.lastName} onChange={handleFormChange} maxLength={50}
-                          className={`w-full px-3 py-2.5 rounded-xl text-sm bg-white/95 border-none outline-none focus:ring-2 focus:ring-white/40 placeholder-deep/50 ${formErrors.lastName ? 'ring-2 ring-cta' : ''}`} />
-
-                        <div className="flex gap-2">
-                          <select name="countryCode" value={formData.countryCode} onChange={handleFormChange}
-                            className="w-[100px] px-2 py-2.5 rounded-xl text-sm bg-white/95 border-none outline-none focus:ring-2 focus:ring-white/40">
-                            {countryCodes.map(c => (
-                              <option key={c.code} value={c.code}>{c.flag} +{c.code}</option>
-                            ))}
-                          </select>
-                          <input type="tel" name="phone" placeholder="987 654 321" value={formData.phone} onChange={handleFormChange} maxLength={9}
-                            className={`flex-1 px-3 py-2.5 rounded-xl text-sm bg-white/95 border-none outline-none focus:ring-2 focus:ring-white/40 placeholder-deep/50 ${formErrors.phone ? 'ring-2 ring-cta' : ''}`} />
-                        </div>
-
-                        <input type="email" name="email" placeholder="Correo Electrónico *" value={formData.email} onChange={handleFormChange} maxLength={100}
-                          className={`w-full px-3 py-2.5 rounded-xl text-sm bg-white/95 border-none outline-none focus:ring-2 focus:ring-white/40 placeholder-deep/50 ${formErrors.email ? 'ring-2 ring-cta' : ''}`} />
-
-                        <input type="text" name="comment" placeholder="¿Qué carrera o curso te interesa? *" value={formData.comment} onChange={handleFormChange} maxLength={200}
-                          className={`w-full px-3 py-2.5 rounded-xl text-sm bg-white/95 border-none outline-none focus:ring-2 focus:ring-white/40 placeholder-deep/50 ${formErrors.comment ? 'ring-2 ring-cta' : ''}`} />
-
-                        <label className="flex items-start gap-2 text-white/90 text-xs cursor-pointer">
-                          <input type="checkbox" name="acceptPolicies" checked={formData.acceptPolicies} onChange={handleFormChange}
-                            className="w-4 h-4 mt-0.5 rounded" />
-                          <span>
-                            Acepto las <Link to="/politica-privacidad" className="text-white underline" target="_blank">Políticas de Privacidad</Link> y los <Link to="/terminos-y-condiciones" className="text-white underline" target="_blank">Términos y condiciones</Link>.
-                          </span>
-                        </label>
-
-                        <div className="flex items-center justify-center gap-2 text-white/80 text-xs">
-                          <FaPhone className="w-3 h-3" />
-                          <a href="tel:+5161612345" className="hover:text-white transition-colors">+51 (6) 1612345</a>
-                        </div>
-
-                        <button type="submit"
-                          className="w-full py-2.5 rounded-full font-semibold text-sm text-white bg-gradient-to-r from-cta to-accent hover:translate-y-[-2px] hover:shadow-[0_6px_20px_rgba(245,87,108,0.4)] transition-all duration-300">
-                          Enviar
-                        </button>
-                      </form>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
           </div>
 
@@ -397,7 +333,7 @@ export default function Navbar() {
               </div>
 
               <button
-                onClick={() => { setShowContactForm(!showContactForm); setIsMobileOpen(false) }}
+                onClick={() => { setShowContactForm(true); setIsMobileOpen(false) }}
                 className="w-full mt-3 mb-2 bg-primary text-white px-4 py-2.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2"
               >
                 <FaPhone className="w-3 h-3" />
@@ -407,6 +343,80 @@ export default function Navbar() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Contact Form Overlay */}
+      <AnimatePresence>
+        {showContactForm && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 z-[60]"
+              onClick={() => setShowContactForm(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className="fixed top-20 right-4 left-4 sm:left-auto sm:right-6 sm:w-[380px] rounded-2xl shadow-2xl overflow-hidden z-[70]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bg-gradient-to-br from-accent to-deep p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <h5 className="text-white font-bold text-base">¡Nos Comunicamos Contigo!</h5>
+                  <button onClick={() => setShowContactForm(false)} className="text-white/60 hover:text-white transition-colors">
+                    <FaTimes className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-2.5">
+                  <input type="text" name="firstName" placeholder="Nombres *" value={formData.firstName} onChange={handleFormChange} maxLength={50}
+                    className={`w-full px-3 py-2.5 rounded-xl text-sm bg-white/95 border-none outline-none focus:ring-2 focus:ring-white/40 placeholder-deep/50 ${formErrors.firstName ? 'ring-2 ring-cta' : ''}`} />
+                  <input type="text" name="lastName" placeholder="Apellidos *" value={formData.lastName} onChange={handleFormChange} maxLength={50}
+                    className={`w-full px-3 py-2.5 rounded-xl text-sm bg-white/95 border-none outline-none focus:ring-2 focus:ring-white/40 placeholder-deep/50 ${formErrors.lastName ? 'ring-2 ring-cta' : ''}`} />
+
+                  <div className="flex gap-2">
+                    <select name="countryCode" value={formData.countryCode} onChange={handleFormChange}
+                      className="w-[100px] px-2 py-2.5 rounded-xl text-sm bg-white/95 border-none outline-none focus:ring-2 focus:ring-white/40">
+                      {countryCodes.map(c => (
+                        <option key={c.code} value={c.code}>{c.flag} +{c.code}</option>
+                      ))}
+                    </select>
+                    <input type="tel" name="phone" placeholder="987 654 321" value={formData.phone} onChange={handleFormChange} maxLength={9}
+                      className={`flex-1 px-3 py-2.5 rounded-xl text-sm bg-white/95 border-none outline-none focus:ring-2 focus:ring-white/40 placeholder-deep/50 ${formErrors.phone ? 'ring-2 ring-cta' : ''}`} />
+                  </div>
+
+                  <input type="email" name="email" placeholder="Correo Electrónico *" value={formData.email} onChange={handleFormChange} maxLength={100}
+                    className={`w-full px-3 py-2.5 rounded-xl text-sm bg-white/95 border-none outline-none focus:ring-2 focus:ring-white/40 placeholder-deep/50 ${formErrors.email ? 'ring-2 ring-cta' : ''}`} />
+
+                  <input type="text" name="comment" placeholder="¿Qué carrera o curso te interesa? *" value={formData.comment} onChange={handleFormChange} maxLength={200}
+                    className={`w-full px-3 py-2.5 rounded-xl text-sm bg-white/95 border-none outline-none focus:ring-2 focus:ring-white/40 placeholder-deep/50 ${formErrors.comment ? 'ring-2 ring-cta' : ''}`} />
+
+                  <label className="flex items-start gap-2 text-white/90 text-xs cursor-pointer">
+                    <input type="checkbox" name="acceptPolicies" checked={formData.acceptPolicies} onChange={handleFormChange}
+                      className="w-4 h-4 mt-0.5 rounded" />
+                    <span>
+                      Acepto las <Link to="/politica-privacidad" className="text-white underline" target="_blank">Políticas de Privacidad</Link> y los <Link to="/terminos-y-condiciones" className="text-white underline" target="_blank">Términos y condiciones</Link>.
+                    </span>
+                  </label>
+
+                  <div className="flex items-center justify-center gap-2 text-white/80 text-xs">
+                    <FaPhone className="w-3 h-3" />
+                    <a href="tel:+5161612345" className="hover:text-white transition-colors">+51 (6) 1612345</a>
+                  </div>
+
+                  <button type="submit"
+                    className="w-full py-2.5 rounded-full font-semibold text-sm text-white bg-gradient-to-r from-cta to-accent hover:translate-y-[-2px] hover:shadow-[0_6px_20px_rgba(245,87,108,0.4)] transition-all duration-300">
+                    Enviar
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </nav>
   )
 }
