@@ -22,7 +22,7 @@ export default function NosotrosPage() {
     { name: 'Instituto Santiago Ramón y Cajal', address: 'Urb. Las Malvinas U-1 Pedregal - Majes, Arequipa', hours: 'Lunes a Viernes 9:00 a.m. a 7:00 p.m.', phone: '951 361 224' },
     { name: 'Instituto Andrew Pietowsky (Chivay)', address: 'Chivay, Arequipa - Código modular: 1639152', hours: 'Carreras: Administración de Empresas, Contabilidad', phone: '' },
     { name: 'Oficina Majes', address: 'Calle Municipal Mz. I Lote 9 El Pedregal - Arequipa', hours: '', phone: '' },
-    { name: 'Oficina Arequipa', address: 'Calle Manuel Ugarteche 207, Selva Alegre, Arequipa', hours: 'Lunes a Viernes 9:00 a.m. a 1:00 p.m. y 3:00 p.m. a 7:00 p.m. / Sábados 9:00 a.m. a 1:00 p.m.', phone: '054-520472' },
+    { name: 'Oficina Arequipa', address: 'Calle Manuel Ugarteche 207, Selva Alegre, Arequipa', hours: 'Lunes a Viernes 9:00 a.m. a 1:00 p.m. y 3:00 p.m. a 7:00 p.m. / Sábados 9:00 a.m. a 1:00 p.m.', phone: '(054) 209978' },
   ]
 
   return (
