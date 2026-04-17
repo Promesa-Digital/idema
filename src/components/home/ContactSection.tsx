@@ -345,8 +345,7 @@ export default function ContactSection() {
           >
             {/* Map placeholder */}
             <div className="rounded-2xl overflow-hidden shadow-xl h-64 sm:h-72 lg:h-96 bg-surface">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3824.4651159437463!2d-71.5366!3d-16.3894!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sIDEMA!5e0!3m2!1ses!2spe!4v"
+              <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d956.9149699538272!2d-71.5312063!3d-16.3912795!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91424a4de1c2d297%3A0x3ea4ad2e98c96fd7!2sManuel%20Ugarteche%20207%2C%20Arequipa%2004001!5e0!3m2!1ses!2spe!4v1776438054499!5m2!1ses!2spe" 
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
