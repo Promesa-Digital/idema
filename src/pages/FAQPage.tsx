@@ -109,9 +109,11 @@ export default function FAQPage() {
       </Helmet>
 
       {/* Hero Section */}
-      <div className="relative h-96 md:h-[500px] overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.jpeg')" }} />
-        <div className="absolute inset-0 bg-gradient-to-r from-dark/85 via-dark/60 to-transparent" />
+      <div className="relative h-96 md:h-[500px] overflow-hidden bg-gradient-to-br from-dark to-deep">
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-primary rounded-full blur-3xl opacity-20 animate-pulse"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent rounded-full blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -119,14 +121,14 @@ export default function FAQPage() {
           transition={{ duration: 0.6 }}
           className="relative h-full flex flex-col justify-center items-center text-white text-center p-6"
         >
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4">Preguntas Frecuentes</h1>
-          <p className="text-lg sm:text-xl text-white/80 max-w-2xl">Encuentra respuestas a todas tus dudas</p>
+          <h1 className="text-5xl md:text-6xl font-bold mb-4">Preguntas Frecuentes</h1>
+          <p className="text-lg md:text-xl text-primary max-w-2xl">Encuentra respuestas a todas tus dudas</p>
         </motion.div>
       </div>
 
       {/* Main Content */}
-      <div className="bg-white py-16 sm:py-20 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-white py-16 md:py-24">
+        <div className="max-w-4xl mx-auto px-6 md:px-12">
           {/* Search Bar */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -186,7 +188,7 @@ export default function FAQPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
-                    className="bg-white/80 backdrop-blur-sm rounded-2xl border border-deep/10 hover:border-primary/30 hover:shadow-xl transition-all duration-300 overflow-hidden"
+                    className="border-2 border-deep/10 rounded-lg overflow-hidden hover:border-primary/40 transition-colors"
                   >
                     <motion.button
                       onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}
@@ -243,9 +245,9 @@ export default function FAQPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="mt-16 sm:mt-20 bg-gradient-to-r from-primary to-dark rounded-2xl p-12 text-white text-center"
+            className="mt-16 bg-gradient-to-r from-primary to-dark rounded-xl p-12 text-white text-center"
           >
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">¿No encontraste tu respuesta?</h2>
+            <h2 className="text-3xl font-bold mb-4">¿No encontraste tu respuesta?</h2>
             <p className="text-lg mb-8 text-white/90 max-w-2xl mx-auto">
               Contáctanos directamente. Nuestro equipo está listo para ayudarte con cualquier pregunta.
             </p>
@@ -254,7 +256,7 @@ export default function FAQPage() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-2 px-8 py-3 bg-white text-primary font-bold rounded-full hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-1"
+                className="px-8 py-4 bg-white text-primary font-bold rounded-full hover:shadow-lg transition-all duration-300"
               >
                 Contactar Ahora
               </motion.button>

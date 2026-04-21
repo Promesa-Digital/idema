@@ -36,9 +36,11 @@ export default function FranquiciatePage() {
       </Helmet>
 
       {/* Hero Section */}
-      <div className="relative h-96 md:h-[500px] overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.jpeg')" }} />
-        <div className="absolute inset-0 bg-gradient-to-r from-dark/85 via-dark/60 to-transparent" />
+      <div className="relative h-96 md:h-[500px] overflow-hidden bg-gradient-to-br from-dark to-deep">
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-primary rounded-full blur-3xl opacity-20 animate-pulse"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent rounded-full blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -46,28 +48,25 @@ export default function FranquiciatePage() {
           transition={{ duration: 0.6 }}
           className="relative h-full flex flex-col justify-center items-center text-white text-center p-6"
         >
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4">Franquíciate con IDEMA</h1>
-          <p className="text-lg sm:text-xl text-white/80 max-w-2xl">Oportunidad de crecimiento empresarial con modelo educativo probado</p>
+          <h1 className="text-5xl md:text-6xl font-bold mb-4">Franquíciate con IDEMA</h1>
+          <p className="text-lg md:text-xl text-primary max-w-2xl">Oportunidad de crecimiento empresarial con modelo educativo probado</p>
         </motion.div>
       </div>
 
       {/* Main Content */}
-      <div className="bg-white py-16 sm:py-20 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-white py-16 md:py-24">
+        <div className="max-w-6xl mx-auto px-6 md:px-12">
           {/* Introduction */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="mb-16 sm:mb-20"
+            className="mb-20 text-center"
           >
-            <div className="text-center mb-12 sm:mb-16">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 gradient-text">¿Por Qué Invertir en una Franquicia IDEMA?</h2>
-              <p className="text-lg text-deep/70 max-w-2xl mx-auto">
-                IDEMA te ofrece la oportunidad de ser parte de una institución educativa reconocida, con un modelo de negocio comprobado y el respaldo de tres décadas de experiencia en educación técnica de calidad.
-              </p>
-              <div className="h-1 w-16 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mt-4" />
-            </div>
+            <h2 className="text-4xl font-bold mb-6 gradient-text">¿Por Qué Invertir en una Franquicia IDEMA?</h2>
+            <p className="text-lg text-deep max-w-3xl mx-auto">
+              IDEMA te ofrece la oportunidad de ser parte de una institución educativa reconocida, con un modelo de negocio comprobado y el respaldo de tres décadas de experiencia en educación técnica de calidad.
+            </p>
           </motion.div>
 
           {/* Benefits */}
@@ -76,13 +75,10 @@ export default function FranquiciatePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="mb-16 sm:mb-20"
+            className="mb-20"
           >
-            <div className="text-center mb-12 sm:mb-16">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 gradient-text">Beneficios de una Franquicia IDEMA</h2>
-              <div className="h-1 w-16 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mt-4" />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            <h2 className="text-3xl font-bold mb-12 text-center gradient-text">Beneficios de una Franquicia IDEMA</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {benefits.map((benefit, index) => (
                 <motion.div
                   key={index}
@@ -91,7 +87,7 @@ export default function FranquiciatePage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ translateY: -10 }}
-                  className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl border border-deep/10 hover:border-primary/30 hover:shadow-xl transition-all duration-300"
+                  className="bg-gradient-to-br from-surface to-white p-8 rounded-xl border-2 border-deep/10 hover:border-primary/40 transition-all"
                 >
                   <benefit.icon className="text-4xl text-primary mb-4" />
                   <h3 className="text-xl font-bold text-deep mb-3">{benefit.title}</h3>
@@ -107,11 +103,10 @@ export default function FranquiciatePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="mb-16 sm:mb-20 bg-gradient-to-br from-primary/10 to-accent/10 p-12 rounded-2xl border-2 border-primary/30"
+            className="mb-20 bg-gradient-to-br from-primary/10 to-accent/10 p-12 rounded-xl border-2 border-primary/30"
           >
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 gradient-text">Requisitos para Ser Franquiciante</h2>
-            <div className="h-1 w-16 bg-gradient-to-r from-primary to-accent rounded-full mt-4 mb-8 sm:mb-12" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            <h2 className="text-3xl font-bold mb-8 gradient-text">Requisitos para Ser Franquiciante</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {requirements.map((requirement, index) => (
                 <motion.div
                   key={index}
@@ -134,13 +129,10 @@ export default function FranquiciatePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="mb-16 sm:mb-20"
+            className="mb-20"
           >
-            <div className="text-center mb-12 sm:mb-16">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 gradient-text">Proceso de Franquicia</h2>
-              <div className="h-1 w-16 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mt-4" />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <h2 className="text-3xl font-bold mb-12 text-center gradient-text">Proceso de Franquicia</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {steps.map((step, index) => (
                 <motion.div
                   key={index}
@@ -150,7 +142,7 @@ export default function FranquiciatePage() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="relative"
                 >
-                  <div className="bg-white/80 backdrop-blur-sm border border-deep/10 hover:border-primary/30 hover:shadow-xl rounded-2xl p-8 h-full transition-all duration-300">
+                  <div className="bg-white border-2 border-deep/10 rounded-lg p-8 h-full">
                     <div className="absolute -top-5 -left-5 w-14 h-14 bg-gradient-to-br from-primary to-accent text-white font-bold text-2xl rounded-full flex items-center justify-center shadow-lg">
                       {step.number}
                     </div>
@@ -168,9 +160,9 @@ export default function FranquiciatePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="bg-gradient-to-r from-primary to-dark rounded-2xl p-12 text-white text-center"
+            className="bg-gradient-to-r from-primary to-dark rounded-xl p-12 text-white text-center"
           >
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">¿Interesado en la Franquicia?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">¿Interesado en la Franquicia?</h2>
             <p className="text-lg mb-8 text-white/90 max-w-2xl mx-auto">
               Contáctanos para conocer más detalles sobre esta oportunidad de negocio y cómo puedes ser parte del crecimiento de IDEMA.
             </p>
@@ -180,7 +172,7 @@ export default function FranquiciatePage() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center gap-2 px-8 py-3 bg-white text-primary font-bold rounded-full hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-1"
+                  className="px-8 py-4 bg-white text-primary font-bold rounded-full flex items-center gap-2 justify-center hover:shadow-lg transition-all duration-300"
                 >
                   <FaPhone className="text-xl" />
                   Llamar Ahora
@@ -191,7 +183,7 @@ export default function FranquiciatePage() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-8 py-3 bg-white/20 border-2 border-white text-white font-bold rounded-full hover:bg-white/30 transition-all duration-300"
+                  className="px-8 py-4 bg-white/20 border-2 border-white text-white font-bold rounded-full hover:bg-white/30 transition-all duration-300"
                 >
                   Solicitar Propuesta
                 </motion.button>

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { FaBook, FaExclamationTriangle } from 'react-icons/fa'
-import { useToast } from '../../hooks/useToast'
+import { useToast } from '../hooks/useToast'
 
 interface ReclamacionForm {
   tipoDocumento: string
@@ -83,9 +83,10 @@ export default function LibroReclamacionesPage() {
       </Helmet>
 
       {/* Hero */}
-      <div className="relative h-72 md:h-80 overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.jpeg')" }} />
-        <div className="absolute inset-0 bg-gradient-to-r from-dark/85 via-dark/60 to-transparent" />
+      <div className="relative h-72 md:h-80 overflow-hidden bg-gradient-to-br from-dark to-deep">
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-primary rounded-full blur-3xl opacity-20 animate-pulse"></div>
+        </div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -93,14 +94,13 @@ export default function LibroReclamacionesPage() {
           className="relative h-full flex flex-col justify-center items-center text-white text-center p-6"
         >
           <FaBook className="text-5xl text-primary mb-4" />
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4">Libro de Reclamaciones</h1>
-          <p className="text-lg sm:text-xl text-white/80">Conforme al Código de Protección y Defensa del Consumidor - Ley N° 29571</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-2">Libro de Reclamaciones</h1>
+          <p className="text-sm md:text-base text-primary">Conforme al Código de Protección y Defensa del Consumidor - Ley N° 29571</p>
         </motion.div>
       </div>
 
-      <div className="bg-white py-16 sm:py-20 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
+      <div className="bg-white py-16">
+        <div className="max-w-3xl mx-auto px-6">
           {submitted ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -135,10 +135,10 @@ export default function LibroReclamacionesPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="mb-10 p-6 bg-surface rounded-2xl"
+                className="mb-10 p-6 bg-surface rounded-xl"
               >
                 <h3 className="font-bold text-deep mb-3">Datos del Proveedor</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 text-sm text-deep">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-deep">
                   <p><strong>Razón Social:</strong> Instituto de Educación Superior IDEMA E.I.R.L.</p>
                   <p><strong>RUC:</strong> 20601522876</p>
                   <p><strong>Dirección:</strong> Urb. Las Malvinas U-1 Pedregal - Majes, Arequipa</p>
@@ -153,7 +153,7 @@ export default function LibroReclamacionesPage() {
                     <span className="w-8 h-8 bg-primary/15 text-primary rounded-full flex items-center justify-center text-sm font-bold">1</span>
                     Datos del Consumidor
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-deep mb-1">Tipo de Documento</label>
                       <select name="tipoDocumento" value={formData.tipoDocumento} onChange={handleChange}
@@ -272,7 +272,6 @@ export default function LibroReclamacionesPage() {
               </form>
             </>
           )}
-        </div>
         </div>
       </div>
     </>

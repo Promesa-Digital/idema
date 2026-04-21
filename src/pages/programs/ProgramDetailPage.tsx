@@ -142,7 +142,7 @@ export default function ProgramDetailPage() {
 
       {/* Hero Section */}
       <div className="relative h-96 md:h-[500px] overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: `url('${program.image}')` }} />
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('${program.image}')` }} />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40" />
         {isCarrera && (
           <motion.div

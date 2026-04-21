@@ -94,43 +94,23 @@ export default function ContactSection() {
 
     setIsSubmitting(true)
 
-    try {
-      const formBody = new FormData()
-      formBody.append('access_key', 'c58368ae-ca4c-419b-91a7-d19435dafcfc')
-      formBody.append('subject', `Nuevo contacto: ${formData.firstName} ${formData.lastName}`)
-      formBody.append('from_name', 'IDEMA Contacto Web')
-      formBody.append('Nombre', `${formData.firstName} ${formData.lastName}`)
-      formBody.append('Teléfono', `+${formData.countryCode} ${formData.phone}`)
-      formBody.append('Email', formData.email)
-      formBody.append('Mensaje', formData.comment)
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 2000))
 
-      const response = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        body: formBody,
-      })
+    setSubmitSuccess(true)
+    setFormData({
+      firstName: '',
+      lastName: '',
+      countryCode: '51',
+      phone: '',
+      email: '',
+      comment: '',
+      acceptPolicies: false,
+    })
 
-      const data = await response.json()
-
-      if (data.success) {
-        setSubmitSuccess(true)
-        setFormData({
-          firstName: '',
-          lastName: '',
-          countryCode: '51',
-          phone: '',
-          email: '',
-          comment: '',
-          acceptPolicies: false,
-        })
-        setTimeout(() => setSubmitSuccess(false), 3000)
-      } else {
-        setErrors({ submit: 'Error al enviar el mensaje. Intenta nuevamente.' })
-      }
-    } catch {
-      setErrors({ submit: 'Error de conexión. Intenta nuevamente.' })
-    } finally {
-      setIsSubmitting(false)
-    }
+    // Reset success message after 3 seconds
+    setTimeout(() => setSubmitSuccess(false), 3000)
+    setIsSubmitting(false)
   }
 
   return (
@@ -171,16 +151,6 @@ export default function ContactSection() {
                   className="bg-primary/10 border border-primary/30 text-deep px-4 py-3 rounded-lg"
                 >
                   ¡Gracias por tu mensaje! Nos contactaremos pronto.
-                </motion.div>
-              )}
-
-              {errors.submit && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-cta/10 border border-cta/30 text-white px-4 py-3 rounded-lg"
-                >
-                  {errors.submit}
                 </motion.div>
               )}
 
@@ -345,7 +315,8 @@ export default function ContactSection() {
           >
             {/* Map placeholder */}
             <div className="rounded-2xl overflow-hidden shadow-xl h-64 sm:h-72 lg:h-96 bg-surface">
-              <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d956.9149699538272!2d-71.5312063!3d-16.3912795!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91424a4de1c2d297%3A0x3ea4ad2e98c96fd7!2sManuel%20Ugarteche%20207%2C%20Arequipa%2004001!5e0!3m2!1ses!2spe!4v1776438054499!5m2!1ses!2spe" 
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3824.4651159437463!2d-71.5366!3d-16.3894!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sIDEMA!5e0!3m2!1ses!2spe!4v"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
@@ -367,7 +338,7 @@ export default function ContactSection() {
                 <div>
                   <p className="font-semibold text-white">Dirección</p>
                   <p className="text-white/80 text-sm">
-                    Calle Manuel Ugarteche 207, Selva Alegre
+                    Arequipa, Perú
                   </p>
                 </div>
               </motion.div>
@@ -381,10 +352,10 @@ export default function ContactSection() {
                 <div>
                   <p className="font-semibold text-white">Teléfono</p>
                   <a
-                    href="tel: 054209978"
+                    href="tel:+5156161234"
                     className="text-white/80 text-sm hover:text-white transition"
                   >
-                     (054) 209978
+                    +51 (6) 1612345
                   </a>
                 </div>
               </motion.div>

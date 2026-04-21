@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { FaTrash, FaExclamationTriangle } from 'react-icons/fa'
-import { useToast } from '../../hooks/useToast'
+import { useToast } from '../hooks/useToast'
 
 export default function EliminarCuentaPage() {
   const [email, setEmail] = useState('')
@@ -29,23 +29,20 @@ export default function EliminarCuentaPage() {
         <meta name="description" content="Solicitar la eliminación de tu cuenta y datos personales en IDEMA" />
       </Helmet>
 
-      <div className="relative h-72 overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.jpeg')" }} />
-        <div className="absolute inset-0 bg-gradient-to-r from-dark/85 via-dark/60 to-transparent" />
+      <div className="relative h-72 overflow-hidden bg-gradient-to-br from-dark to-deep">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="relative h-full flex flex-col justify-center items-center text-white text-center p-6"
         >
           <FaTrash className="text-4xl text-cta mb-4" />
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4">Eliminar Cuenta</h1>
-          <p className="text-lg sm:text-xl text-white/80">Solicitud de eliminación de datos personales</p>
+          <h1 className="text-4xl font-bold mb-2">Eliminar Cuenta</h1>
+          <p className="text-primary text-sm">Solicitud de eliminación de datos personales</p>
         </motion.div>
       </div>
 
-      <div className="bg-white py-16 sm:py-20 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
+      <div className="bg-white py-16">
+        <div className="max-w-2xl mx-auto px-6">
           {submitted ? (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
               <h2 className="text-2xl font-bold text-deep mb-4">Solicitud Recibida</h2>
@@ -88,7 +85,6 @@ export default function EliminarCuentaPage() {
               </form>
             </>
           )}
-        </div>
         </div>
       </div>
     </>

@@ -159,9 +159,11 @@ export default function OrientacionVocacionalPage() {
       </Helmet>
 
       {/* Hero Section */}
-      <div className="relative h-80 md:h-96 overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.jpeg')" }} />
-        <div className="absolute inset-0 bg-gradient-to-r from-dark/85 via-dark/60 to-transparent" />
+      <div className="relative h-80 md:h-96 overflow-hidden bg-gradient-to-br from-dark to-deep">
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-primary rounded-full blur-3xl opacity-20 animate-pulse"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent rounded-full blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -169,14 +171,14 @@ export default function OrientacionVocacionalPage() {
           transition={{ duration: 0.6 }}
           className="relative h-full flex flex-col justify-center items-center text-white text-center p-6"
         >
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4">Orientación Vocacional</h1>
-          <p className="text-lg sm:text-xl text-white/80">Descubre tu carrera ideal</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-2">Orientación Vocacional</h1>
+          <p className="text-sm md:text-base text-primary">Descubre tu carrera ideal</p>
         </motion.div>
       </div>
 
       {/* Main Content */}
-      <div className="bg-white py-16 sm:py-20 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-white py-16 md:py-24">
+        <div className="max-w-3xl mx-auto px-6 md:px-12">
           <AnimatePresence mode="wait">
             {!showResults ? (
               <motion.div
@@ -223,7 +225,7 @@ export default function OrientacionVocacionalPage() {
                         whileHover={{ scale: 1.02, x: 10 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => handleAnswer(answer.careers)}
-                        className="w-full p-6 bg-gradient-to-r from-surface to-white border border-deep/10 rounded-2xl text-left font-semibold text-deep hover:border-primary/30 hover:shadow-xl transition-all duration-300"
+                        className="w-full p-6 bg-gradient-to-r from-surface to-white border-2 border-deep/10 rounded-xl text-left font-semibold text-deep hover:border-primary hover:bg-primary/10 transition-all duration-300"
                       >
                         {answer.text}
                       </motion.button>
@@ -250,7 +252,7 @@ export default function OrientacionVocacionalPage() {
                     <FaCheckCircle />
                   </motion.div>
 
-                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-deep mb-4">¡Listo!</h2>
+                  <h2 className="text-4xl font-bold text-deep mb-4">¡Listo!</h2>
                   <p className="text-lg text-deep mb-8">
                     Basado en tus respuestas, hemos identificado la carrera que mejor se ajusta a tus intereses y aptitudes.
                   </p>
@@ -262,12 +264,12 @@ export default function OrientacionVocacionalPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
-                    className="bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/30 rounded-2xl p-12 mb-12 text-center"
+                    className="bg-gradient-to-br from-primary/10 to-accent/10 border-2 border-primary/40 rounded-xl p-12 mb-12 text-center"
                   >
                     <h3 className="text-3xl font-bold gradient-text mb-4">{topCareerData.title}</h3>
                     <p className="text-deep mb-6 text-lg">{topCareerData.description}</p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                       <div>
                         <p className="text-deep/80 font-semibold">Duración</p>
                         <p className="text-2xl text-primary font-bold">{topCareerData.duration}</p>
@@ -299,7 +301,7 @@ export default function OrientacionVocacionalPage() {
                   className="mb-12"
                 >
                   <h4 className="text-2xl font-bold text-deep mb-6">También te podrían interesar:</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {Object.entries(scores)
                       .sort(([, a], [, b]) => b - a)
                       .slice(1, 3)
@@ -309,7 +311,7 @@ export default function OrientacionVocacionalPage() {
                           <Link key={slug} to={`/carreras/${slug}`}>
                             <motion.div
                               whileHover={{ translateY: -5 }}
-                              className="bg-white/80 backdrop-blur-sm rounded-2xl border border-deep/10 hover:border-primary/30 hover:shadow-xl transition-all duration-300 p-4 cursor-pointer"
+                              className="bg-white border-2 border-deep/10 rounded-lg p-4 hover:border-primary/40 transition-all cursor-pointer"
                             >
                               <h5 className="font-bold text-deep mb-2">{career.title}</h5>
                               <div className="flex items-center gap-2 text-primary font-semibold text-sm">
@@ -327,7 +329,7 @@ export default function OrientacionVocacionalPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.5 }}
-                  className="bg-gradient-to-r from-primary to-dark rounded-2xl p-8 text-white text-center mb-8"
+                  className="bg-gradient-to-r from-primary to-dark rounded-xl p-8 text-white text-center mb-8"
                 >
                   <h4 className="text-2xl font-bold mb-3">¿Listo para comenzar?</h4>
                   <p className="mb-6">Contáctanos para más información sobre tu carrera recomendada</p>
@@ -335,7 +337,7 @@ export default function OrientacionVocacionalPage() {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="inline-flex items-center gap-2 px-8 py-3 bg-white text-primary font-bold rounded-full hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-1"
+                      className="px-6 py-2 bg-white text-primary font-bold rounded-full hover:shadow-lg transition-all duration-300"
                     >
                       Solicitar Información
                     </motion.button>

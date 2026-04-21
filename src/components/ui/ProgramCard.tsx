@@ -19,15 +19,15 @@ export default function ProgramCard({ program, basePath, index = 0 }: Props) {
     >
       <Link to={`${basePath}/${program.slug}`} className="block no-underline">
         <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2">
-          <div className="relative h-48 overflow-hidden bg-surface">
+          <div className="relative h-48 overflow-hidden">
             <img
               src={program.image}
               alt={program.title}
-              className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <span className="absolute bottom-3 left-3 bg-white/90 text-deep text-xs font-bold px-3 py-1 rounded-full backdrop-blur-sm">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <span className="absolute bottom-3 left-3 bg-primary/90 text-white text-xs font-bold px-3 py-1 rounded-full backdrop-blur-sm">
               {program.duration}
             </span>
           </div>

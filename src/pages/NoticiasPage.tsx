@@ -49,15 +49,13 @@ export default function NoticiasPage() {
       </Helmet>
 
       {/* Hero */}
-      <section className="relative pt-32 pb-16 overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.jpeg')" }} />
-        <div className="absolute inset-0 bg-gradient-to-r from-dark/85 via-dark/60 to-transparent" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="pt-32 pb-16 bg-gradient-to-br from-dark to-deep">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4"
+            className="text-4xl sm:text-5xl font-bold text-white mb-4"
           >
             Noticias
           </motion.h1>
@@ -65,7 +63,7 @@ export default function NoticiasPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg sm:text-xl text-white/80 max-w-2xl mx-auto"
+            className="text-white/80 text-lg max-w-2xl mx-auto"
           >
             Explora las últimas novedades del Instituto IDEMA
           </motion.p>
@@ -74,7 +72,7 @@ export default function NoticiasPage() {
       </section>
 
       {/* News list */}
-      <section className="py-16 sm:py-20 lg:py-24 bg-surface">
+      <section className="py-16 sm:py-20 bg-surface">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
@@ -107,7 +105,7 @@ export default function NoticiasPage() {
                   whileHover={{ y: -8 }}
                   className="group block"
                 >
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden border border-deep/10 hover:border-primary/30 hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+                  <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
                     {/* Image */}
                     <div className="relative h-48 sm:h-56 overflow-hidden">
                       <img

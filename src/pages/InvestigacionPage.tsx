@@ -51,9 +51,11 @@ export default function InvestigacionPage() {
       </Helmet>
 
       {/* Hero Section */}
-      <div className="relative h-96 md:h-[500px] overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.jpeg')" }} />
-        <div className="absolute inset-0 bg-gradient-to-r from-dark/85 via-dark/60 to-transparent" />
+      <div className="relative h-96 md:h-[500px] overflow-hidden bg-gradient-to-br from-dark to-deep">
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-primary rounded-full blur-3xl opacity-20 animate-pulse"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent rounded-full blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -61,25 +63,22 @@ export default function InvestigacionPage() {
           transition={{ duration: 0.6 }}
           className="relative h-full flex flex-col justify-center items-center text-white text-center p-6"
         >
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4">Investigación e Innovación</h1>
-          <p className="text-lg sm:text-xl text-white/80 max-w-2xl">Avanzando en la educación técnica a través de la investigación</p>
+          <h1 className="text-5xl md:text-6xl font-bold mb-4">Investigación e Innovación</h1>
+          <p className="text-lg md:text-xl text-primary max-w-2xl">Avanzando en la educación técnica a través de la investigación</p>
         </motion.div>
       </div>
 
       {/* Main Content */}
-      <div className="bg-white py-16 sm:py-20 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-white py-16 md:py-24">
+        <div className="max-w-6xl mx-auto px-6 md:px-12">
           {/* Introduction */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="mb-16 sm:mb-20 text-center"
+            className="mb-20 text-center"
           >
-            <div className="text-center mb-12 sm:mb-16">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 gradient-text">Nuestro Compromiso con la Investigación</h2>
-              <div className="h-1 w-16 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mt-4" />
-            </div>
+            <h2 className="text-4xl font-bold mb-6 gradient-text">Nuestro Compromiso con la Investigación</h2>
             <p className="text-lg text-deep max-w-3xl mx-auto">
               En IDEMA, la investigación e innovación son fundamentales para mantener nuestros programas actualizados y relevantes. Desarrollamos estudios que contribuyen al avance de la educación técnica superior en Perú y la región.
             </p>
@@ -91,13 +90,10 @@ export default function InvestigacionPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="mb-16 sm:mb-20"
+            className="mb-20"
           >
-            <div className="text-center mb-12 sm:mb-16">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 gradient-text">Líneas de Investigación</h2>
-              <div className="h-1 w-16 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mt-4" />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <h2 className="text-3xl font-bold mb-12 text-center gradient-text">Líneas de Investigación</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {researchLines.map((line, index) => (
                 <motion.div
                   key={index}
@@ -106,7 +102,7 @@ export default function InvestigacionPage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ translateY: -10 }}
-                  className="bg-gradient-to-br from-surface to-white p-8 rounded-2xl border border-deep/10 hover:border-primary/30 hover:shadow-xl transition-all duration-300"
+                  className="bg-gradient-to-br from-surface to-white p-8 rounded-xl border-2 border-deep/10 hover:border-primary/40 transition-all"
                 >
                   <line.icon className="text-4xl text-primary mb-4" />
                   <h3 className="text-xl font-bold text-deep mb-3">{line.title}</h3>
@@ -122,12 +118,9 @@ export default function InvestigacionPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="mb-16 sm:mb-20"
+            className="mb-20"
           >
-            <div className="text-center mb-12 sm:mb-16">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 gradient-text">Publicaciones Recientes</h2>
-              <div className="h-1 w-16 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mt-4" />
-            </div>
+            <h2 className="text-3xl font-bold mb-12 text-center gradient-text">Publicaciones Recientes</h2>
             <div className="space-y-4">
               {publications.map((pub, index) => (
                 <motion.div
@@ -137,7 +130,7 @@ export default function InvestigacionPage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ translateX: 10 }}
-                  className="bg-white/80 backdrop-blur-sm rounded-2xl border border-deep/10 hover:border-primary/30 hover:shadow-xl transition-all duration-300 p-6 cursor-pointer"
+                  className="bg-white border-2 border-deep/10 rounded-lg p-6 hover:border-primary/40 transition-all cursor-pointer"
                 >
                   <div className="flex items-start gap-4">
                     <FaFileAlt className="text-primary text-2xl mt-1 flex-shrink-0" />
@@ -164,10 +157,9 @@ export default function InvestigacionPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="mb-16 sm:mb-20 bg-gradient-to-br from-accent/10 to-cta/10 p-12 rounded-2xl border border-accent/20"
+            className="mb-20 bg-gradient-to-br from-accent/10 to-cta/10 p-12 rounded-xl border-2 border-accent/20"
           >
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 gradient-text">Proyectos de Innovación</h2>
-            <div className="h-1 w-16 bg-gradient-to-r from-primary to-accent rounded-full mt-4 mb-8 sm:mb-12" />
+            <h2 className="text-3xl font-bold mb-6 gradient-text">Proyectos de Innovación</h2>
             <div className="space-y-6">
               <div>
                 <h3 className="text-xl font-bold text-deep mb-3">Plataforma de Aprendizaje Virtual Avanzada</h3>
@@ -204,9 +196,9 @@ export default function InvestigacionPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="bg-gradient-to-r from-primary to-dark rounded-2xl p-12 text-white text-center"
+            className="bg-gradient-to-r from-primary to-dark rounded-xl p-12 text-white text-center"
           >
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">¿Interesado en Nuestras Investigaciones?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">¿Interesado en Nuestras Investigaciones?</h2>
             <p className="text-lg mb-8 text-white/90 max-w-2xl mx-auto">
               Puedes acceder a publicaciones, reportes y datos de investigación. Contáctanos para conocer más sobre nuestro trabajo académico.
             </p>
@@ -215,7 +207,7 @@ export default function InvestigacionPage() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-2 px-8 py-3 bg-white text-primary font-bold rounded-full hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-1"
+                className="px-8 py-4 bg-white text-primary font-bold rounded-full hover:shadow-lg transition-all duration-300"
               >
                 Solicitar Información
               </motion.button>
