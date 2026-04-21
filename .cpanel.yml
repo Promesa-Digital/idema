@@ -3,9 +3,12 @@ deployment:
   tasks:
     - export DEPLOYPATH=/home/idemaedu/public_html/
     - export HOME=/home/idemaedu
-    - source /home/idemaedu/.nvm/nvm.sh
-    - nvm use 20
+    - export PATH=/home/idemaedu/.nvm/versions/node/v20.20.2/bin:$PATH
     - cd /home/idemaedu/repositories/idema
-    - /home/idemaedu/.nvm/versions/node/v20.20.2/bin/npm install
+    - echo "[deploy $(date '+%F %T')] Starting"
+    - /home/idemaedu/.nvm/versions/node/v20.20.2/bin/npm ci --silent --no-audit --no-fund
     - /home/idemaedu/.nvm/versions/node/v20.20.2/bin/npm run build
-    - cp -r dist/* $DEPLOYPATH
+    - test -f dist/index.html
+    - test -f dist/.htaccess
+    - /usr/bin/rsync -a --delete --exclude='.well-known' --exclude='cgi-bin' --exclude='.cpanel' dist/ $DEPLOYPATH
+    - echo "[deploy $(date '+%F %T')] Done - $(du -sh $DEPLOYPATH | cut -f1)"
