@@ -33,9 +33,22 @@ export default function NosotrosPage() {
       </Helmet>
 
       {/* Hero Section */}
-      <div className="relative h-96 md:h-[500px] overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.jpeg')" }} />
-        <div className="absolute inset-0 bg-gradient-to-r from-dark/85 via-dark/60 to-transparent" />
+      <div className="relative h-96 md:h-[500px] overflow-hidden bg-gradient-to-br from-dark to-deep">
+        {/* Imagen de fondo del equipo */}
+        <img
+          src="/assets/img/team/equipo.webp"
+          alt="Equipo IDEMA"
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="eager"
+          fetchPriority="high"
+        />
+        {/* Overlay oscuro para legibilidad del texto */}
+        <div className="absolute inset-0 bg-gradient-to-b from-dark/80 via-dark/50 to-dark/80"></div>
+        {/* Efectos luminosos (sobre la imagen) */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-primary rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        </div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
