@@ -94,13 +94,27 @@ export default function NewsSection() {
               >
                 <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
                   {/* Image */}
-                  <div className="relative h-48 sm:h-52 overflow-hidden">
-                    <img
-                      src={noticia.image}
-                      alt={noticia.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  <div className="relative h-48 sm:h-52 overflow-hidden bg-gradient-to-br from-primary/90 via-primary to-accent">
+                    {noticia.image ? (
+                      <img
+                        src={noticia.image}
+                        alt={noticia.title}
+                        loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none'
+                        }}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center p-6">
+                        <img
+                          src="/assets/img/avatarIDEMA.png"
+                          alt="IDEMA"
+                          className="w-24 h-24 object-contain opacity-80 group-hover:scale-110 transition-transform duration-500"
+                        />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
                   </div>
 
                   {/* Content */}

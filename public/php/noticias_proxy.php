@@ -93,6 +93,59 @@ function first_image_from_html(string $html): ?string {
 }
 
 /**
+ * Fallback: fetchea la página /node/XXX y extrae og:image o la primera <img> de contenido.
+ * Resultado se cachea en disco indefinidamente (raras veces cambia) salvo que se pida refresh.
+ */
+function fetch_og_image(string $url): ?string {
+    $cacheDir = __DIR__ . '/cache/images';
+    if (!is_dir($cacheDir)) @mkdir($cacheDir, 0755, true);
+    $key  = $cacheDir . '/' . md5($url) . '.txt';
+    if (is_file($key)) {
+        $cached = @file_get_contents($key);
+        if ($cached !== false) return $cached === '__NONE__' ? null : $cached;
+    }
+
+    $html = null;
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_TIMEOUT        => 6,
+            CURLOPT_CONNECTTIMEOUT => 4,
+            CURLOPT_USERAGENT      => 'IDEMA-Proxy/1.0',
+            CURLOPT_SSL_VERIFYPEER => true,
+        ]);
+        $body = curl_exec($ch);
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        if ($body !== false && $code >= 200 && $code < 300) $html = $body;
+    }
+    if ($html === null) return null;
+
+    $img = null;
+    // 1) og:image
+    if (preg_match('/<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']/i', $html, $m)) {
+        $img = $m[1];
+    }
+    // 2) twitter:image
+    if ($img === null && preg_match('/<meta[^>]+name=["\']twitter:image["\'][^>]+content=["\']([^"\']+)["\']/i', $html, $m)) {
+        $img = $m[1];
+    }
+    // 3) primera <img> dentro de article/node
+    if ($img === null && preg_match('/<article[^>]*>.*?<img[^>]+src=["\']([^"\']+)["\']/is', $html, $m)) {
+        $img = $m[1];
+    }
+    // Normaliza relativos
+    if ($img !== null && !preg_match('#^https?://#i', $img)) {
+        $img = 'https://website.instituto-idema.org' . (str_starts_with($img, '/') ? $img : '/' . $img);
+    }
+
+    @file_put_contents($key, $img ?? '__NONE__', LOCK_EX);
+    return $img;
+}
+
+/**
  * Extrae el cuerpo real de una noticia de Drupal desde el HTML del <description>.
  * Busca <div class="... field--name-body ..."> y devuelve su texto plano.
  * Si no lo encuentra, cae a un strip_tags global.
@@ -163,6 +216,9 @@ function parse_rss(string $xml): array {
         $descHtml    = (string) $item->description;
 
         $image    = first_image_from_html($descHtml);
+        if ($image === null && $link !== '') {
+            $image = fetch_og_image($link);
+        }
         $bodyText = extract_body_text($descHtml);
         $excerpt  = $bodyText !== ''
             ? cut_excerpt($bodyText, EXCERPT_LEN)
