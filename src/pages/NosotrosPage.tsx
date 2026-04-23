@@ -9,7 +9,15 @@ export default function NosotrosPage() {
     { icon: FaBookOpen, label: 'Cursos Online', value: '+250' },
   ]
 
-  const leader = { name: 'Mg. Raúl Herrera Flores', role: 'Gerente General', image: '/assets/img/team/GerenteGeneral.webp' }
+  const staff = [
+    { name: 'Mg. Raúl Herrera Flores', role: 'Gerente General', image: '/assets/img/team/GerenteGeneral.webp' },
+    { name: 'Mg. Máximo Vidal Falcón Bellido', role: 'Director', image: '/assets/img/team/maximo-falcon.jpeg' },
+    { name: 'Ing. Mario Ezequiel Chávez Cáceres', role: 'Coordinador Agropecuaria', image: '/assets/img/team/mario-chavez.jpeg' },
+    { name: 'Ing. Jaime Santiago Pino Mansilla', role: 'Coordinador Prácticas Agropecuaria', image: '/assets/img/team/jaime-pino.jpeg' },
+    { name: 'Lic. Deisy Huerta Huerta', role: 'Coordinador Prácticas Avanzadas', image: '/assets/img/team/deisy-huerta.jpeg' },
+    { name: 'Ing. Julio Calcina', role: 'Coordinador de Gestión de la Calidad', image: '/assets/img/team/julio-calcina.jpeg' },
+    { name: 'Lic. Giannina Jennifer Vásquez Quispe', role: 'Coord. Prácticas Básicas Enfermería', image: '/assets/img/team/giannina-vasquez.jpeg' },
+  ]
 
   const teamMembers = [
     { name: 'Equipo Marketing y Publicidad', role: 'Estrategia y comunicación', image: '/assets/img/team/1marketing.webp' },
@@ -199,37 +207,10 @@ export default function NosotrosPage() {
               <div className="h-1 w-16 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mt-4" />
             </div>
 
-            {/* Leader */}
-            <div className="flex justify-center mb-4">
-              <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5 }} whileHover={{ translateY: -10 }} className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden border border-deep/10 hover:border-primary/30 hover:shadow-xl transition-all duration-300 w-72">
-                <div className="h-64 overflow-hidden">
-                  <img src={leader.image} alt={leader.name} className="w-full h-full object-cover object-top" />
-                </div>
-                <div className="p-6 text-center">
-                  <h3 className="text-lg font-bold text-deep mb-2">{leader.name}</h3>
-                  <p className="text-primary font-semibold text-sm">{leader.role}</p>
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Connector line */}
-            <div className="hidden lg:flex justify-center mb-0">
-              <div className="w-0.5 h-10 bg-primary/30"></div>
-            </div>
-            <div className="hidden lg:block relative mb-4">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-0.5 bg-primary/30"></div>
-              <div className="flex justify-around w-3/4 mx-auto">
-                {teamMembers.map((_, i) => (
-                  <div key={i} className="w-0.5 h-10 bg-primary/30"></div>
-                ))}
-              </div>
-            </div>
-
-            {/* Team members */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-5xl mx-auto">
-              {teamMembers.map((member, index) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+              {[...staff, ...teamMembers].map((member, index) => (
                 <motion.div key={index} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: index * 0.1 }} whileHover={{ translateY: -10 }} className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden border border-deep/10 hover:border-primary/30 hover:shadow-xl transition-all duration-300">
-                  <div className="h-52 overflow-hidden">
+                  <div className="h-64 overflow-hidden">
                     <img src={member.image} alt={member.name} className="w-full h-full object-cover object-top" />
                   </div>
                   <div className="p-6 text-center">
