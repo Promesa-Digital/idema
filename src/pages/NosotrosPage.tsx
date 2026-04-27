@@ -119,6 +119,35 @@ export default function NosotrosPage() {
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 gradient-text">Nuestros Logros</h2>
               <div className="h-1 w-16 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mt-4" />
             </div>
+
+            {/* Premio Empresa Peruana del Año */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <a
+                href="https://website.instituto-idema.org/node/230"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col md:flex-row items-center gap-8 bg-white/70 backdrop-blur-sm rounded-2xl p-6 mb-10 border border-primary/20 shadow-lg hover:shadow-xl hover:border-primary/50 transition-all duration-300 group no-underline"
+              >
+                <img
+                  src="/assets/images/idemaempresaanho.webp"
+                  alt="Empresa Peruana del Año 2025"
+                  className="w-40 sm:w-48 object-contain drop-shadow-xl flex-shrink-0 group-hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                />
+                <div>
+                  <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-1">Reconocimiento Nacional</p>
+                  <h3 className="text-2xl sm:text-3xl font-bold text-deep mb-2 group-hover:text-primary transition-colors">Empresa Peruana del Año 2025</h3>
+                  <p className="text-deep/70 leading-relaxed">Instituto IDEMA fue reconocido como <strong>Empresa Peruana del Año 2025</strong>, distinción que reafirma nuestro compromiso con la excelencia educativa, la formación técnica de calidad y el desarrollo sostenible de nuestra región y país.</p>
+                  <p className="text-primary text-sm font-semibold mt-3 group-hover:underline">Ver noticia →</p>
+                </div>
+              </a>
+            </motion.div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
               {stats.map((stat, index) => (
                 <motion.div key={index} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: index * 0.1 }} className="text-center">
