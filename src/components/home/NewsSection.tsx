@@ -108,7 +108,7 @@ export default function NewsSection() {
                     ) : (
                       <div className="w-full h-full flex items-center justify-center p-6">
                         <img
-                          src="/assets/img/avatarIDEMA.png"
+                          src="/assets/img/avatarIDEMA.webp"
                           alt="IDEMA"
                           className="w-24 h-24 object-contain opacity-80 group-hover:scale-110 transition-transform duration-500"
                         />

@@ -2,17 +2,17 @@ import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
 const companies = [
-  { name: 'MINEDU', logo: '/assets/img/logos/minedu.jpg' },
-  { name: 'Universidad Continental', logo: '/assets/img/logos/Universidad-Continental.png' },
-  { name: 'ProInnovate', logo: '/assets/img/logos/proinnovate.png' },
-  { name: 'CEAGRO', logo: '/assets/img/logos/ceagro.png' },
-  { name: 'Greenland', logo: '/assets/img/logos/greenland.jpeg' },
-  { name: 'Michigan', logo: '/assets/img/logos/michigan.png' },
+  { name: 'MINEDU', logo: '/assets/img/logos/minedu.webp' },
+  { name: 'Universidad Continental', logo: '/assets/img/logos/Universidad-Continental.webp' },
+  { name: 'ProInnovate', logo: '/assets/img/logos/proinnovate.webp' },
+  { name: 'CEAGRO', logo: '/assets/img/logos/ceagro.webp' },
+  { name: 'Greenland', logo: '/assets/img/logos/greenland.webp' },
+  { name: 'Michigan', logo: '/assets/img/logos/michigan.webp' },
   { name: 'Chamilo LMS', logo: '/assets/img/logos/Chamilo_LMS.svg' },
   { name: 'Microsoft 365', logo: '/assets/img/logos/Office_Microsoft_365.webp' },
-  { name: 'Aviacon', logo: '/assets/img/logos/aviacon.jpg' },
-  { name: 'Andrew Pietowsky', logo: '/assets/img/logos/pietowsky.jpg' },
-  { name: 'Brasilero', logo: '/assets/img/logos/brasilero.png' },
+  { name: 'Aviacon', logo: '/assets/img/logos/aviacon.webp' },
+  { name: 'Andrew Pietowsky', logo: '/assets/img/logos/pietowsky.webp' },
+  { name: 'Brasilero', logo: '/assets/img/logos/brasilero.webp' },
 ]
 
 export default function CompaniesSection() {

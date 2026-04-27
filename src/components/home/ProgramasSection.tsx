@@ -8,7 +8,7 @@ import { programCategories, type ProgramCategory } from '../../data/programs/cat
 
 import 'swiper/swiper-bundle.css'
 
-const cursosAgropecuaria = [
+const cursosCarrusel = [
   { src: '/assets/images/Agropecuaria-Produccion-de-aves.webp', label: 'Producción de Aves', slug: 'produccion-de-aves' },
   { src: '/assets/images/Agropecuaria-Produccion-de-pastos.webp', label: 'Producción de Pastos', slug: 'produccion-de-pastos' },
   { src: '/assets/images/Agropecuaria-Biologia.webp', label: 'Biología', slug: 'biologia-agropecuaria' },
@@ -19,6 +19,17 @@ const cursosAgropecuaria = [
   { src: '/assets/images/Agropecuaria-cursos-Produccion-de-tuberosas.webp', label: 'Producción de Tuberosas', slug: 'produccion-de-tuberosas' },
   { src: '/assets/images/Agropecuaria-Botanica-y-Fisiologia-vegetal.webp', label: 'Botánica y Fisiología Vegetal', slug: 'botanica-fisiologia-vegetal' },
   { src: '/assets/images/Agropecuaria-Preparacion-de-terrenos-ed.webp', label: 'Preparación de Terrenos', slug: 'preparacion-de-terrenos' },
+  { src: '/assets/images/salud_publica.webp', label: 'Salud Pública', slug: 'salud-publica' },
+  { src: '/assets/images/terminologiaen_salud.webp', label: 'Terminología en Salud', slug: 'terminologia-en-salud' },
+  { src: '/assets/images/primeros_auxilios.webp', label: 'Primeros Auxilios', slug: 'primeros-auxilios' },
+  { src: '/assets/images/bioseguridad.webp', label: 'Bioseguridad', slug: 'bioseguridad' },
+  { src: '/assets/images/documentacion_salud.webp', label: 'Documentación en Salud', slug: 'documentacion-en-salud' },
+  { src: '/assets/images/educacion_parasalud.webp', label: 'Educación para la Salud', slug: 'educacion-para-la-salud' },
+  { src: '/assets/images/biologia_general.webp', label: 'Biología General', slug: 'biologia-general' },
+  { src: '/assets/images/asistenciaen_inmunizaciones.webp', label: 'Asistencia en Inmunizaciones', slug: 'asistencia-en-inmunizaciones' },
+  { src: '/assets/images/anatomia_funcional.webp', label: 'Anatomía Funcional', slug: 'anatomia-funcional' },
+  { src: '/assets/images/actividades_saludcomunitaria.webp', label: 'Actividades de Salud Comunitaria', slug: 'actividades-salud-comunitaria' },
+  { src: '/assets/images/Document-controller-imagen.webp', label: 'Document Controller', slug: 'document-controller' },
 ]
 
 const containerVariants = {
@@ -154,7 +165,7 @@ export default function ProgramasSection() {
               1024: { slidesPerView: 4, spaceBetween: 16 },
             }}
           >
-            {cursosAgropecuaria.map((curso) => (
+            {cursosCarrusel.map((curso) => (
               <SwiperSlide key={curso.slug}>
                 <Link to={`/cursos/${curso.slug}`} className="block no-underline group">
                   <div className="relative rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 h-44 sm:h-48">

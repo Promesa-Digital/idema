@@ -161,9 +161,28 @@ export default function CursoDetailPage() {
                 <div className="bg-white rounded-2xl shadow-xl border border-deep/10 overflow-hidden">
                   {/* Price header */}
                   <div className="bg-gradient-to-r from-dark to-deep p-6 text-center">
-                    <p className="text-primary text-sm font-semibold uppercase tracking-wider mb-2">Precio del Curso</p>
-                    <p className="text-4xl font-bold text-white">{curso.price || 'Consultar'}</p>
-                    <p className="text-white/60 text-sm mt-1">Pago único</p>
+                    {curso.matricula ? (
+                      <>
+                        <p className="text-primary text-sm font-semibold uppercase tracking-wider mb-2">Inversión</p>
+                        <div className="flex justify-center gap-6 text-white">
+                          <div>
+                            <p className="text-xs text-white/60 mb-1">Matrícula</p>
+                            <p className="text-2xl font-bold">{curso.matricula}</p>
+                          </div>
+                          <div className="w-px bg-white/20" />
+                          <div>
+                            <p className="text-xs text-white/60 mb-1">Pensión</p>
+                            <p className="text-2xl font-bold">{curso.price || 'Consultar'}</p>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-primary text-sm font-semibold uppercase tracking-wider mb-2">Precio del Curso</p>
+                        <p className="text-4xl font-bold text-white">{curso.price || 'Consultar'}</p>
+                        <p className="text-white/60 text-sm mt-1">Pago único</p>
+                      </>
+                    )}
                   </div>
 
                   {/* Payment actions */}

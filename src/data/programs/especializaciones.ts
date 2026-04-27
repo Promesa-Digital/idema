@@ -10,7 +10,7 @@ export const especializaciones: Carrera[] = [
     modality: '100% Virtual',
     category: 'especializacion',
     description: 'Nuestra Especialización en Veterinaria fortalece tus competencias para el bienestar animal y la salud pública, con enfoque práctico en la prevención, evaluación y apoyo al diagnóstico. Desarrolla criterios y técnicas actualizadas para el manejo responsable de animales de compañía y de producción.',
-    image: '/assets/img/portfolio/esp-veterinaria.jpg',
+    image: '/assets/img/portfolio/esp-veterinaria.webp',
     matricula: 'S/ 100',
     priceVirtual: 'S/ 150',
     features: [
@@ -37,7 +37,7 @@ export const especializaciones: Carrera[] = [
     modality: '100% Virtual',
     category: 'especializacion',
     description: 'La especialización en Farmacia prepara profesionales para la correcta gestión, preparación y dispensación de medicamentos, asegurando su calidad, uso seguro y cumplimiento de las normativas sanitarias, con un enfoque en la atención y bienestar del paciente.',
-    image: '/assets/img/portfolio/esp-farmacia.jpg',
+    image: '/assets/img/portfolio/esp-farmacia.webp',
     matricula: 'S/ 100',
     priceVirtual: 'S/ 150',
     features: [
@@ -64,7 +64,7 @@ export const especializaciones: Carrera[] = [
     modality: '100% Virtual',
     category: 'especializacion',
     description: 'La especialización en Agronomía te forma para diseñar y gestionar sistemas de producción agrícola: planificación de cultivos, manejo de suelos y riego, sanidad vegetal y agricultura sostenible.',
-    image: '/assets/img/portfolio/esp-agronomia.jpg',
+    image: '/assets/img/portfolio/esp-agronomia.webp',
     matricula: 'S/ 100',
     priceVirtual: 'S/ 150',
     features: [
@@ -91,7 +91,7 @@ export const especializaciones: Carrera[] = [
     modality: '100% Virtual',
     category: 'especializacion',
     description: 'La especialización en Psicología es una formación técnica que te capacita para apoyar en intervención psicológica, aplicación de técnicas de evaluación y promoción de la salud mental. Te prepara para trabajar en equipos de salud, educación o proyectos sociales, con herramientas concretas y criterio ético.',
-    image: '/assets/img/portfolio/psicologia.jpg',
+    image: '/assets/img/portfolio/psicologia.webp',
     matricula: 'S/ 100',
     priceVirtual: 'S/ 150',
     features: [

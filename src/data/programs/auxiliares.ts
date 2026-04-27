@@ -10,7 +10,7 @@ export const auxiliares: Carrera[] = [
     modality: 'Virtual',
     category: 'auxiliar',
     description: 'Estudiar auxiliar en veterinaria te permite contribuir al bienestar animal y la salud pública, trabajando en el cuidado y protección de animales domésticos y de producción. Aprende a manejar equipos modernos de diagnóstico y tratamiento veterinario con tecnología de vanguardia.',
-    image: '/assets/img/portfolio/veterinaria.jpg',
+    image: '/assets/img/portfolio/veterinaria.webp',
     matricula: 'S/ 100',
     priceVirtual: 'S/ 150',
     features: [
@@ -56,7 +56,7 @@ export const auxiliares: Carrera[] = [
     modality: 'Virtual',
     category: 'auxiliar',
     description: 'Farmacia pertenece al Área de Ciencias de la Salud y la Vida. Aprenderás técnicas de atención al usuario, apoyo en urgencias, dispensación de medicamentos y procedimientos de comercialización en establecimientos farmacéuticos.',
-    image: '/assets/img/portfolio/farmacia.jpg',
+    image: '/assets/img/portfolio/farmacia.webp',
     matricula: 'S/ 100',
     priceVirtual: 'S/ 150',
     features: [
@@ -102,7 +102,7 @@ export const auxiliares: Carrera[] = [
     modality: 'Virtual',
     category: 'auxiliar',
     description: 'Estudiar auxiliar agrónomo te permite desarrollar habilidades en el manejo de cultivos, suelos, riego y producción agrícola sostenible. Aprende las técnicas más modernas para optimizar la producción agrícola y contribuir al desarrollo del sector agropecuario en el Perú.',
-    image: '/assets/img/portfolio/agronomia.jpg',
+    image: '/assets/img/portfolio/agronomia.webp',
     matricula: 'S/ 100',
     priceVirtual: 'S/ 150',
     features: [

@@ -169,7 +169,7 @@ export default function NosotrosPage() {
                   <h3 className="text-2xl font-bold text-deep">Visión</h3>
                 </div>
                 <p className="text-deep leading-relaxed">
-                  Ser una organización educativa que forma y capacita profesionales de éxito, líderes en tecnología y ejemplos para su comunidad. Reconocidos por la excelencia en nuestra enseñanza, formación y calidad de los servicios, el respeto en nuestros actos, el cuidado del medio ambiente y el compromiso con el desarrollo de nuestra Región y País.
+                  Ser una Plataforma Educativa Certificada, Licenciada y Acreditada, de alcance nacional, mediante modelos flexibles, modulares, accesibles y capaces de conectar estudiantes, docentes y el sector productivo en Ciencias Agropecuarias, Salud y Gestión Empresarial. Reconocidos por la excelencia en nuestra enseñanza, formación y calidad de servicios, por el respeto que evidenciamos en todos nuestros actos y por la convicción de contribuir al desarrollo de nuestra Región y País.
                 </p>
               </motion.div>
             </div>

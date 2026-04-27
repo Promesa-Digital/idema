@@ -25,7 +25,7 @@ export const programCategories: ProgramCategory[] = [
     titulo: 'Carreras Técnicas',
     descripcion:
       'Formación profesional de 3 años con título oficial reconocido por el MINEDU. Áreas de agropecuaria, salud y ciencias empresariales. Modalidades presencial, semipresencial y virtual para que estudies a tu ritmo.',
-    imagen: '/assets/img/programs/carreras.png',
+    imagen: '/assets/img/programs/carreras.webp',
     ruta: '/programas?categoria=carrera',
     cantidad: carreras.length,
     imagenIzquierda: true,
@@ -40,7 +40,7 @@ export const programCategories: ProgramCategory[] = [
     titulo: 'Auxiliares',
     descripcion:
       'Formación corta e intensiva de 10 meses, ideal para insertarte rápidamente al mercado laboral. Certificado reconocido por MINEDU con modalidad 100% virtual y horarios completamente flexibles.',
-    imagen: '/assets/img/programs/auxiliares.png',
+    imagen: '/assets/img/programs/auxiliares.webp',
     ruta: '/programas?categoria=auxiliar',
     cantidad: auxiliares.length,
     imagenIzquierda: false,
@@ -54,7 +54,7 @@ export const programCategories: ProgramCategory[] = [
     titulo: 'Especializaciones',
     descripcion:
       'Profundización en un área específica para profesionales que ya cuentan con base técnica. Potencia tus habilidades y amplía tu empleabilidad con programas diseñados para el mercado actual.',
-    imagen: '/assets/img/programs/especializaciones.png',
+    imagen: '/assets/img/programs/especializaciones.webp',
     ruta: '/programas?categoria=especializacion',
     cantidad: especializaciones.length,
     imagenIzquierda: true,
@@ -68,7 +68,7 @@ export const programCategories: ProgramCategory[] = [
     titulo: 'Cursos Cortos',
     descripcion:
       'Capacitaciones puntuales con certificado de participación. Modalidad flexible, duración reducida y contenido práctico para quienes buscan actualizar conocimientos de forma rápida y efectiva.',
-    imagen: '/assets/img/programs/cursos.png',
+    imagen: '/assets/img/programs/cursos.webp',
     ruta: '/programas?categoria=curso',
     cantidad: cursos.length,
     imagenIzquierda: false,
