@@ -2,7 +2,24 @@ import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { Link } from 'react-router-dom'
 import { MdArrowForward } from 'react-icons/md'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Autoplay, Pagination, Navigation } from 'swiper/modules'
 import { programCategories, type ProgramCategory } from '../../data/programs/categories'
+
+import 'swiper/swiper-bundle.css'
+
+const cursosAgropecuaria = [
+  { src: '/assets/images/Agropecuaria-Produccion-de-aves.webp', label: 'Producción de Aves', slug: 'produccion-de-aves' },
+  { src: '/assets/images/Agropecuaria-Produccion-de-pastos.webp', label: 'Producción de Pastos', slug: 'produccion-de-pastos' },
+  { src: '/assets/images/Agropecuaria-Biologia.webp', label: 'Biología', slug: 'biologia-agropecuaria' },
+  { src: '/assets/images/Agropecuaria-Produccion-de-cuyes.webp', label: 'Producción de Cuyes', slug: 'produccion-de-cuyes' },
+  { src: '/assets/images/Agropecuaria-Alimentacion-y-nutricion-animal.webp', label: 'Alimentación y Nutrición Animal', slug: 'alimentacion-nutricion-animal' },
+  { src: '/assets/images/Agropecuaria-Produccion-de-cereales-y-leguminosas.webp', label: 'Producción de Cereales y Leguminosas', slug: 'produccion-cereales-leguminosas' },
+  { src: '/assets/images/Agropecuaria-Anatomia-y-fisiologia-animal.webp', label: 'Anatomía y Fisiología Animal', slug: 'anatomia-fisiologia-animal' },
+  { src: '/assets/images/Agropecuaria-cursos-Produccion-de-tuberosas.webp', label: 'Producción de Tuberosas', slug: 'produccion-de-tuberosas' },
+  { src: '/assets/images/Agropecuaria-Botanica-y-Fisiologia-vegetal.webp', label: 'Botánica y Fisiología Vegetal', slug: 'botanica-fisiologia-vegetal' },
+  { src: '/assets/images/Agropecuaria-Preparacion-de-terrenos-ed.webp', label: 'Preparación de Terrenos', slug: 'preparacion-de-terrenos' },
+]
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -106,6 +123,58 @@ export default function ProgramasSection() {
             Carreras, programas auxiliares, especializaciones y cursos cortos
           </p>
           <div className="h-1 w-16 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mt-4" />
+        </motion.div>
+
+        {/* Carrusel de cursos agropecuarios */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mb-12 sm:mb-16"
+        >
+          <div className="relative">
+          <button className="cursos-prev absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 z-10 bg-white shadow-md rounded-full w-9 h-9 flex items-center justify-center hover:bg-primary hover:text-white transition-colors duration-200">
+            <MdArrowForward className="text-lg rotate-180" />
+          </button>
+          <button className="cursos-next absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 z-10 bg-white shadow-md rounded-full w-9 h-9 flex items-center justify-center hover:bg-primary hover:text-white transition-colors duration-200">
+            <MdArrowForward className="text-lg" />
+          </button>
+          <Swiper
+            modules={[Autoplay, Pagination, Navigation]}
+            autoplay={{ delay: 2800, disableOnInteraction: false }}
+            pagination={{ clickable: true, el: '.cursos-pagination' }}
+            navigation={{ prevEl: '.cursos-prev', nextEl: '.cursos-next' }}
+            loop
+            observer
+            observeParents
+            spaceBetween={12}
+            slidesPerView={2}
+            breakpoints={{
+              640: { slidesPerView: 3, spaceBetween: 14 },
+              1024: { slidesPerView: 4, spaceBetween: 16 },
+            }}
+          >
+            {cursosAgropecuaria.map((curso) => (
+              <SwiperSlide key={curso.slug}>
+                <Link to={`/cursos/${curso.slug}`} className="block no-underline group">
+                  <div className="relative rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 h-44 sm:h-48">
+                    <img
+                      src={curso.src}
+                      alt={curso.label}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
+                    <p className="absolute bottom-0 left-0 right-0 text-white text-xs font-semibold px-3 py-2 leading-snug">
+                      {curso.label}
+                    </p>
+                  </div>
+                </Link>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+          </div>
+          <div className="cursos-pagination flex justify-center gap-1 mt-4" />
         </motion.div>
 
         {/* Cards grid */}
