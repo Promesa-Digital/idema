@@ -194,6 +194,7 @@ export const carreras: Carrera[] = [
     modality: 'Presencial y Virtual',
     category: 'carrera',
     titulacion: 'Título a Nombre de la Nación',
+    convenio: { name: 'Andrew Pietowsky', logo: '/assets/img/logos/pietowsky.webp' },
     description: 'La carrera de Administración de Empresas permite al estudiante aprender todo lo relacionado con el fenómeno empresarial, conociendo con profundidad las estructuras y mecanismos que hacen posible la generación de bienes y servicios para satisfacer las necesidades de los consumidores.',
     image: '/assets/img/portfolio/administracion.webp',
     // mallaCurricularImage: '/assets/malla_curricular/Carrera_tecnica_adm.empresas.png',

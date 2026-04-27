@@ -161,6 +161,12 @@ export default function ProgramDetailPage() {
           transition={{ duration: 0.6 }}
           className="relative h-full flex flex-col justify-end p-6 md:p-12 text-white"
         >
+          {program.convenio && (
+            <div className="flex items-center gap-2 mb-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 w-fit">
+              <img src={program.convenio.logo} alt={program.convenio.name} className="h-6 w-auto object-contain" />
+              <span className="text-white/90 text-sm font-medium">En convenio con {program.convenio.name}</span>
+            </div>
+          )}
           <h1 className="text-4xl md:text-5xl font-bold mb-2">{program.title}</h1>
           {program.subtitle && <p className="text-primary text-lg mb-2">{program.subtitle}</p>}
           <p className="text-lg md:text-xl text-white/70 max-w-2xl">

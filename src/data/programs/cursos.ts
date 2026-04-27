@@ -714,6 +714,7 @@ export const cursos: Carrera[] = [
     duration: '3 meses',
     modality: '100% Virtual',
     category: 'curso',
+    convenio: { name: 'CETPAR', logo: '/assets/img/logos/cetpar.webp' },
     description: 'Programa técnico orientado al sector minero que forma Asistentes en Document Controller. Aprende a organizar, registrar y controlar documentos en proyectos mineros, dar soporte al Document Controller y manejar transmittals y archivos técnicos. Alta demanda laboral en contratistas, subcontratistas, oficinas técnicas y áreas administrativas de obra.',
     image: '/assets/images/Document-controller-imagen.webp',
     price: 'S/.800',

@@ -29,7 +29,7 @@ const cursosCarrusel = [
   { src: '/assets/images/asistenciaen_inmunizaciones.webp', label: 'Asistencia en Inmunizaciones', slug: 'asistencia-en-inmunizaciones' },
   { src: '/assets/images/anatomia_funcional.webp', label: 'Anatomía Funcional', slug: 'anatomia-funcional' },
   { src: '/assets/images/actividades_saludcomunitaria.webp', label: 'Actividades de Salud Comunitaria', slug: 'actividades-salud-comunitaria' },
-  { src: '/assets/images/Document-controller-imagen.webp', label: 'Document Controller', slug: 'document-controller' },
+  { src: '/assets/images/Document-controller-imagen.webp', label: 'Document Controller', slug: 'document-controller', convenioLogo: '/assets/img/logos/cetpar.webp' },
 ]
 
 const containerVariants = {
@@ -176,9 +176,17 @@ export default function ProgramasSection() {
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
-                    <p className="absolute bottom-0 left-0 right-0 text-white text-xs font-semibold px-3 py-2 leading-snug">
-                      {curso.label}
-                    </p>
+                    <div className="absolute bottom-0 left-0 right-0 px-3 py-2">
+                      {'convenioLogo' in curso && curso.convenioLogo && (
+                        <div className="flex items-center gap-1 bg-white/90 rounded px-1.5 py-0.5 w-fit mb-1">
+                          <img src={curso.convenioLogo as string} alt="Convenio" className="h-4 w-auto object-contain" />
+                          <span className="text-[10px] font-bold text-deep leading-none">CETPAR</span>
+                        </div>
+                      )}
+                      <p className="text-white text-xs font-semibold leading-snug">
+                        {curso.label}
+                      </p>
+                    </div>
                   </div>
                 </Link>
               </SwiperSlide>

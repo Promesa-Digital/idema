@@ -31,6 +31,7 @@ export interface Carrera {
   titulacion?: string
   mallaCurricularImage?: string
   subtitle?: string
+  convenio?: { name: string; logo: string }
 }
 
 export interface ContactFormData {

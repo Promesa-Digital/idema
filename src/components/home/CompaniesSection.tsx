@@ -13,6 +13,8 @@ const companies = [
   { name: 'Aviacon', logo: '/assets/img/logos/aviacon.webp' },
   { name: 'Andrew Pietowsky', logo: '/assets/img/logos/pietowsky.webp' },
   { name: 'Brasilero', logo: '/assets/img/logos/brasilero.webp' },
+  { name: 'CETPAR', logo: '/assets/img/logos/cetpar.webp' },
+  { name: 'Pro Avance', logo: '/assets/img/logos/proavance.webp' },
 ]
 
 export default function CompaniesSection() {
