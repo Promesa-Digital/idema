@@ -8,28 +8,30 @@ import { programCategories, type ProgramCategory } from '../../data/programs/cat
 
 import 'swiper/swiper-bundle.css'
 
+const IDEMA_LOGO = '/assets/img/logos/idema-logo.webp'
+
 const cursosCarrusel = [
-  { src: '/assets/images/Agropecuaria-Produccion-de-aves.webp', label: 'Producción de Aves', slug: 'produccion-de-aves' },
-  { src: '/assets/images/Agropecuaria-Produccion-de-pastos.webp', label: 'Producción de Pastos', slug: 'produccion-de-pastos' },
-  { src: '/assets/images/Agropecuaria-Biologia.webp', label: 'Biología', slug: 'biologia-agropecuaria' },
-  { src: '/assets/images/Agropecuaria-Produccion-de-cuyes.webp', label: 'Producción de Cuyes', slug: 'produccion-de-cuyes' },
-  { src: '/assets/images/Agropecuaria-Alimentacion-y-nutricion-animal.webp', label: 'Alimentación y Nutrición Animal', slug: 'alimentacion-nutricion-animal' },
-  { src: '/assets/images/Agropecuaria-Produccion-de-cereales-y-leguminosas.webp', label: 'Producción de Cereales y Leguminosas', slug: 'produccion-cereales-leguminosas' },
-  { src: '/assets/images/Agropecuaria-Anatomia-y-fisiologia-animal.webp', label: 'Anatomía y Fisiología Animal', slug: 'anatomia-fisiologia-animal' },
-  { src: '/assets/images/Agropecuaria-cursos-Produccion-de-tuberosas.webp', label: 'Producción de Tuberosas', slug: 'produccion-de-tuberosas' },
-  { src: '/assets/images/Agropecuaria-Botanica-y-Fisiologia-vegetal.webp', label: 'Botánica y Fisiología Vegetal', slug: 'botanica-fisiologia-vegetal' },
-  { src: '/assets/images/Agropecuaria-Preparacion-de-terrenos-ed.webp', label: 'Preparación de Terrenos', slug: 'preparacion-de-terrenos' },
-  { src: '/assets/images/salud_publica.webp', label: 'Salud Pública', slug: 'salud-publica' },
-  { src: '/assets/images/terminologiaen_salud.webp', label: 'Terminología en Salud', slug: 'terminologia-en-salud' },
-  { src: '/assets/images/primeros_auxilios.webp', label: 'Primeros Auxilios', slug: 'primeros-auxilios' },
-  { src: '/assets/images/bioseguridad.webp', label: 'Bioseguridad', slug: 'bioseguridad' },
-  { src: '/assets/images/documentacion_salud.webp', label: 'Documentación en Salud', slug: 'documentacion-en-salud' },
-  { src: '/assets/images/educacion_parasalud.webp', label: 'Educación para la Salud', slug: 'educacion-para-la-salud' },
-  { src: '/assets/images/biologia_general.webp', label: 'Biología General', slug: 'biologia-general' },
-  { src: '/assets/images/asistenciaen_inmunizaciones.webp', label: 'Asistencia en Inmunizaciones', slug: 'asistencia-en-inmunizaciones' },
-  { src: '/assets/images/anatomia_funcional.webp', label: 'Anatomía Funcional', slug: 'anatomia-funcional' },
-  { src: '/assets/images/actividades_saludcomunitaria.webp', label: 'Actividades de Salud Comunitaria', slug: 'actividades-salud-comunitaria' },
-  { src: '/assets/images/Document-controller-imagen.webp', label: 'Document Controller', slug: 'document-controller', convenioLogo: '/assets/img/logos/cetpar.webp' },
+  { src: '/assets/images/Agropecuaria-Produccion-de-aves.webp', label: 'Producción de Aves', slug: 'produccion-de-aves', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/Agropecuaria-Produccion-de-pastos.webp', label: 'Producción de Pastos', slug: 'produccion-de-pastos', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/Agropecuaria-Biologia.webp', label: 'Biología', slug: 'biologia-agropecuaria', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/Agropecuaria-Produccion-de-cuyes.webp', label: 'Producción de Cuyes', slug: 'produccion-de-cuyes', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/Agropecuaria-Alimentacion-y-nutricion-animal.webp', label: 'Alimentación y Nutrición Animal', slug: 'alimentacion-nutricion-animal', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/Agropecuaria-Produccion-de-cereales-y-leguminosas.webp', label: 'Producción de Cereales y Leguminosas', slug: 'produccion-cereales-leguminosas', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/Agropecuaria-Anatomia-y-fisiologia-animal.webp', label: 'Anatomía y Fisiología Animal', slug: 'anatomia-fisiologia-animal', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/Agropecuaria-cursos-Produccion-de-tuberosas.webp', label: 'Producción de Tuberosas', slug: 'produccion-de-tuberosas', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/Agropecuaria-Botanica-y-Fisiologia-vegetal.webp', label: 'Botánica y Fisiología Vegetal', slug: 'botanica-fisiologia-vegetal', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/Agropecuaria-Preparacion-de-terrenos-ed.webp', label: 'Preparación de Terrenos', slug: 'preparacion-de-terrenos', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/salud_publica.webp', label: 'Salud Pública', slug: 'salud-publica', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/terminologiaen_salud.webp', label: 'Terminología en Salud', slug: 'terminologia-en-salud', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/primeros_auxilios.webp', label: 'Primeros Auxilios', slug: 'primeros-auxilios', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/bioseguridad.webp', label: 'Bioseguridad', slug: 'bioseguridad', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/documentacion_salud.webp', label: 'Documentación en Salud', slug: 'documentacion-en-salud', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/educacion_parasalud.webp', label: 'Educación para la Salud', slug: 'educacion-para-la-salud', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/biologia_general.webp', label: 'Biología General', slug: 'biologia-general', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/asistenciaen_inmunizaciones.webp', label: 'Asistencia en Inmunizaciones', slug: 'asistencia-en-inmunizaciones', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/anatomia_funcional.webp', label: 'Anatomía Funcional', slug: 'anatomia-funcional', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/actividades_saludcomunitaria.webp', label: 'Actividades de Salud Comunitaria', slug: 'actividades-salud-comunitaria', convenioLogo: IDEMA_LOGO, convenioNombre: 'IDEMA' },
+  { src: '/assets/images/Document-controller-imagen.webp', label: 'Document Controller', slug: 'document-controller', convenioLogo: '/assets/img/logos/cetpar.webp', convenioNombre: 'CETPAR' },
 ]
 
 const containerVariants = {
@@ -179,8 +181,8 @@ export default function ProgramasSection() {
                     <div className="absolute bottom-0 left-0 right-0 px-3 py-2">
                       {'convenioLogo' in curso && curso.convenioLogo && (
                         <div className="flex items-center gap-1 bg-white/90 rounded px-1.5 py-0.5 w-fit mb-1">
-                          <img src={curso.convenioLogo as string} alt="Convenio" className="h-4 w-auto object-contain" />
-                          <span className="text-[10px] font-bold text-deep leading-none">CETPAR</span>
+                          <img src={curso.convenioLogo as string} alt={curso.convenioNombre as string} className="h-4 w-auto object-contain" />
+                          <span className="text-[10px] font-bold text-deep leading-none">{curso.convenioNombre as string}</span>
                         </div>
                       )}
                       <p className="text-white text-xs font-semibold leading-snug">
