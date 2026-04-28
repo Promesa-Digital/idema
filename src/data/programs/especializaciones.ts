@@ -26,6 +26,7 @@ export const especializaciones: Carrera[] = [
       { title: 'Nutrición y Farmacia Veterinaria', description: 'Asesoría técnica en alimentación y productos especializados' },
     ],
     certification: ['Diplomado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa la Especialización en Veterinaria en IDEMA.',
   },
   {
@@ -53,6 +54,7 @@ export const especializaciones: Carrera[] = [
       { title: 'Regulación y Distribución', description: 'DIGEMID, cadenas farmacéuticas y cumplimiento normativo' },
     ],
     certification: ['Diplomado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa la Especialización en Farmacia en IDEMA.',
   },
   {
@@ -80,6 +82,7 @@ export const especializaciones: Carrera[] = [
       { title: 'Investigación y Desarrollo', description: 'Estaciones experimentales, semillas y mejoramiento agrícola' },
     ],
     certification: ['Diplomado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa la Especialización en Agronomía en IDEMA.',
   },
   {
@@ -107,6 +110,7 @@ export const especializaciones: Carrera[] = [
       { title: 'ONGs y Comunidad', description: 'Programas de intervención social' },
     ],
     certification: ['Diplomado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa la Especialización en Psicología en IDEMA.',
   },
 ]

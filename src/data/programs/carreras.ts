@@ -59,6 +59,7 @@ export const carreras: Carrera[] = [
       'Procesamiento y transformación de productos agropecuarios',
       'Asesoramiento técnico independiente',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa la Carrera Técnica en Agropecuaria en IDEMA.',
   },
   {
@@ -121,6 +122,7 @@ export const carreras: Carrera[] = [
       'Cuidados de enfermería en el hogar',
       'Servicios de salud ocupacional y medicina del trabajo',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa la Carrera Técnica en Enfermería en IDEMA.',
   },
   {
@@ -183,6 +185,7 @@ export const carreras: Carrera[] = [
       'Instituciones del gobierno y entidades estatales',
       'Asesoramiento contable y financiero independiente',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa la Carrera Técnica en Contabilidad en IDEMA.',
   },
   {
@@ -305,6 +308,7 @@ export const carreras: Carrera[] = [
       'Compañías de seguros y afianzadoras',
       'Asesoramiento financiero independiente a empresas',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa la Carrera Técnica en Administración Bancaria en IDEMA.',
   },
 ]

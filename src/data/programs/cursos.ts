@@ -27,6 +27,7 @@ export const cursos: Carrera[] = [
       'Casos de estudio prácticos',
       'Análisis de situaciones reales',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Clasificación de Medicamentos en IDEMA.',
   },
   {
@@ -55,6 +56,7 @@ export const cursos: Carrera[] = [
       'Evaluación de resultados',
       'Casos prácticos',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Inseminación Artificial en IDEMA.',
   },
   {
@@ -85,6 +87,7 @@ export const cursos: Carrera[] = [
       'Recursos y redes de apoyo',
       'Autocuidado del cuidador',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Asistencia al Usuario Oncológico en IDEMA.',
   },
   {
@@ -105,6 +108,7 @@ export const cursos: Carrera[] = [
       'Fidelización de clientes',
       'Manejo de situaciones difíciles',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Atención al Cliente en Centros Veterinarios en IDEMA.',
   },
   {
@@ -125,6 +129,7 @@ export const cursos: Carrera[] = [
       'Normativa y regulación',
       'Herramientas digitales',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Certificados y Firmas Digitales en IDEMA.',
   },
   {
@@ -145,6 +150,7 @@ export const cursos: Carrera[] = [
       'Software de facturación en la nube',
       'Gestión tributaria digital',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Facturación Electrónica SUNAT en IDEMA.',
   },
   {
@@ -165,6 +171,7 @@ export const cursos: Carrera[] = [
       'Electroestimulación',
       'Recuperación del paciente',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Fisioterapia y Rehabilitación en IDEMA.',
   },
   {
@@ -185,6 +192,7 @@ export const cursos: Carrera[] = [
       'Implementos de labranza',
       'Tecnología aplicada al campo',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Mecanización Agrícola en IDEMA.',
   },
   {
@@ -205,6 +213,7 @@ export const cursos: Carrera[] = [
       'Gestión del tiempo',
       'Herramientas de productividad',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Planeación y Organización en IDEMA.',
   },
   {
@@ -225,6 +234,7 @@ export const cursos: Carrera[] = [
       'Asistencia odontológica',
       'Promoción de la salud bucal',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Salud Bucal en IDEMA.',
   },
   {
@@ -249,6 +259,7 @@ export const cursos: Carrera[] = [
       'Registros productivos',
       'Comercialización y rentabilidad',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Producción de Aves en IDEMA.',
   },
   {
@@ -273,6 +284,7 @@ export const cursos: Carrera[] = [
       'Gramíneas y leguminosas forrajeras',
       'Carga animal y capacidad de pastoreo',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Producción de Pastos en IDEMA.',
   },
   {
@@ -297,6 +309,7 @@ export const cursos: Carrera[] = [
       'Biología reproductiva',
       'Técnicas de laboratorio básicas',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Biología en IDEMA.',
   },
   {
@@ -321,6 +334,7 @@ export const cursos: Carrera[] = [
       'Registros de producción',
       'Rentabilidad y comercialización',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Producción de Cuyes en IDEMA.',
   },
   {
@@ -345,6 +359,7 @@ export const cursos: Carrera[] = [
       'Gestión de costos de alimentación',
       'Calidad e inocuidad de alimentos',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Alimentación y Nutrición Animal en IDEMA.',
   },
   {
@@ -369,6 +384,7 @@ export const cursos: Carrera[] = [
       'Cosecha y poscosecha',
       'Comercialización de granos',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Producción de Cereales y Leguminosas en IDEMA.',
   },
   {
@@ -393,6 +409,7 @@ export const cursos: Carrera[] = [
       'Exploración clínica básica',
       'Aplicación en el manejo ganadero',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Anatomía y Fisiología Animal en IDEMA.',
   },
   {
@@ -417,6 +434,7 @@ export const cursos: Carrera[] = [
       'Cosecha y almacenamiento',
       'Comercialización y valor agregado',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Producción de Tuberosas en IDEMA.',
   },
   {
@@ -441,6 +459,7 @@ export const cursos: Carrera[] = [
       'Fitohormonas y reguladores',
       'Respuestas al estrés hídrico y térmico',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Botánica y Fisiología Vegetal en IDEMA.',
   },
   {
@@ -465,6 +484,7 @@ export const cursos: Carrera[] = [
       'Trazado y nivelación de terrenos',
       'Agricultura de conservación',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Preparación de Terrenos en IDEMA.',
   },
   {
@@ -489,6 +509,7 @@ export const cursos: Carrera[] = [
       'Indicadores de salud pública',
       'Gestión de recursos en salud',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Salud Pública en IDEMA.',
   },
   {
@@ -513,6 +534,7 @@ export const cursos: Carrera[] = [
       'Documentación y registros clínicos',
       'Vocabulario en farmacología',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Terminología en Salud en IDEMA.',
   },
   {
@@ -537,6 +559,7 @@ export const cursos: Carrera[] = [
       'Emergencias respiratorias y convulsiones',
       'Traslado seguro del paciente',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Primeros Auxilios en IDEMA.',
   },
   {
@@ -561,6 +584,7 @@ export const cursos: Carrera[] = [
       'Normativa MINSA y OMS',
       'Planes de contingencia y emergencia',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Bioseguridad en IDEMA.',
   },
   {
@@ -585,6 +609,7 @@ export const cursos: Carrera[] = [
       'Estadística e indicadores hospitalarios',
       'Documentación en emergencias',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Documentación en Salud en IDEMA.',
   },
   {
@@ -609,6 +634,7 @@ export const cursos: Carrera[] = [
       'Evaluación de actividades educativas',
       'Coordinación con actores locales',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Educación para la Salud en IDEMA.',
   },
   {
@@ -633,6 +659,7 @@ export const cursos: Carrera[] = [
       'Técnicas básicas de laboratorio',
       'Aplicaciones en ciencias de la salud',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Biología General en IDEMA.',
   },
   {
@@ -657,6 +684,7 @@ export const cursos: Carrera[] = [
       'Estrategias de captación y cobertura',
       'Seguridad en el manejo de jeringas',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Asistencia en Inmunizaciones en IDEMA.',
   },
   {
@@ -681,6 +709,7 @@ export const cursos: Carrera[] = [
       'Sistema urinario y reproductor',
       'Planos anatómicos y orientación clínica',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Anatomía Funcional en IDEMA.',
   },
   {
@@ -705,6 +734,7 @@ export const cursos: Carrera[] = [
       'Coordinación con gobiernos locales',
       'Registro y reporte de actividades extramurales',
     ],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Actividades de Salud Comunitaria en IDEMA.',
   },
   {

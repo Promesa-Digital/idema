@@ -30,6 +30,18 @@ export default function ProgramCard({ program, basePath, index = 0 }: Props) {
             <span className="absolute bottom-3 left-3 bg-white/90 text-deep text-xs font-bold px-3 py-1 rounded-full backdrop-blur-sm">
               {program.duration}
             </span>
+            <div className="absolute top-3 right-3 flex items-center gap-1.5">
+              {program.category === 'curso' && (
+                <div className="bg-primary/90 backdrop-blur-sm rounded-full px-2 h-6 flex items-center">
+                  <span className="text-[10px] font-bold text-white leading-none">Curso Virtual</span>
+                </div>
+              )}
+              {program.convenio && (
+                <div className="bg-white/90 backdrop-blur-sm rounded-full px-2 py-1">
+                  <img src={program.convenio.logo} alt={program.convenio.name} className="h-4 w-auto object-contain" />
+                </div>
+              )}
+            </div>
           </div>
           <div className="p-5">
             <h3 className="font-bold text-lg text-deep mb-2 group-hover:text-primary transition-colors">

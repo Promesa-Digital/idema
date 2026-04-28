@@ -162,9 +162,9 @@ export default function ProgramDetailPage() {
           className="relative h-full flex flex-col justify-end p-6 md:p-12 text-white"
         >
           {program.convenio && (
-            <div className="flex items-center gap-2 mb-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 w-fit">
-              <img src={program.convenio.logo} alt={program.convenio.name} className="h-6 w-auto object-contain" />
-              <span className="text-white/90 text-sm font-medium">En convenio con {program.convenio.name}</span>
+            <div className="flex items-center gap-2 mb-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-3 py-2 w-fit max-w-full">
+              <img src={program.convenio.logo} alt={program.convenio.name} className="h-5 w-auto object-contain flex-shrink-0" />
+              <span className="text-white/90 text-xs sm:text-sm font-medium truncate">En convenio con {program.convenio.name}</span>
             </div>
           )}
           <h1 className="text-4xl md:text-5xl font-bold mb-2">{program.title}</h1>

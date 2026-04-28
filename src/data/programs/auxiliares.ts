@@ -45,6 +45,7 @@ export const auxiliares: Carrera[] = [
       },
     ],
     certification: ['Certificado Nacional reconocido por MINEDU', 'Certificación Internacional ISO 21001'],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el programa Auxiliar en Veterinaria en IDEMA.',
   },
   {
@@ -91,6 +92,7 @@ export const auxiliares: Carrera[] = [
       },
     ],
     certification: ['Certificado Nacional reconocido por MINEDU', 'Certificación Internacional ISO 21001'],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el programa Auxiliar en Farmacia en IDEMA.',
   },
   {
@@ -137,6 +139,7 @@ export const auxiliares: Carrera[] = [
       },
     ],
     certification: ['Certificado Nacional reconocido por MINEDU', 'Certificación Internacional ISO 21001'],
+    convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el programa Auxiliar en Agronomía en IDEMA.',
   },
 ]
