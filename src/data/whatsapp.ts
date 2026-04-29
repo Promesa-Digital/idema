@@ -3,9 +3,10 @@ import type { WhatsAppRep } from '../types'
 export const whatsappReps: WhatsAppRep[] = [
   { name: 'MERY', phone: '51997185822', probability: 0.10 },
   { name: 'RODOLFO', phone: '51969360623', probability: 0.20 },
-  { name: 'TATIANA', phone: '51986035468', probability: 0.30 },
-  { name: 'RODRIGO', phone: '51987155725', probability: 0.30 },
+  { name: 'TATIANA', phone: '51986035468', probability: 0.25 },
+  { name: 'RODRIGO', phone: '51987155725', probability: 0.25 },
   { name: 'GERALDINE', phone: '51961768262', probability: 0.10 },
+  { name: 'ADRIAN', phone: '51991317346', probability: 0.10 },
 ]
 
 export function selectWhatsAppRep(): WhatsAppRep {
