@@ -9,6 +9,7 @@ const repImages: Record<string, string> = {
   TATIANA: '/assets/img/idemaNEWLOGO2026.png',
   RODRIGO: '/assets/img/idemaNEWLOGO2026.png',
   GERALDINE: '/assets/img/vendedoras/GERALDINE.png',
+  ADRIAN: '/assets/img/idemaNEWLOGO2026.png',
 }
 
 export default function WhatsAppButton() {
