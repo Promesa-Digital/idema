@@ -16,6 +16,10 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/noticias/, '/php/noticias_proxy.php'),
       },
+      '/php/lead_intake_proxy.php': {
+        target: 'https://idema.edu.pe',
+        changeOrigin: true,
+      },
     },
   },
 })

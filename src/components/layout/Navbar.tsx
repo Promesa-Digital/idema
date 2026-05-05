@@ -19,6 +19,7 @@ import {
 import { mainNavLinks, accederDropdown, countryCodes } from '../../data/navigation'
 import { useCart } from '../../context/CartContext'
 import { validateName, validatePhone, validateEmail, validateComment } from '../../utils/validation'
+import { submitLead } from '../../utils/leadIntake'
 import { useToast } from '../../hooks/useToast'
 import type { ContactFormData } from '../../types'
 
@@ -111,34 +112,36 @@ export default function Navbar() {
     e.preventDefault()
     if (!validateForm()) return
 
-    try {
-      const formBody = new FormData()
-      formBody.append('access_key', 'c58368ae-ca4c-419b-91a7-d19435dafcfc')
-      formBody.append('subject', `Nuevo contacto: ${formData.firstName} ${formData.lastName}`)
-      formBody.append('from_name', 'IDEMA Contacto Web')
-      formBody.append('Nombre', `${formData.firstName} ${formData.lastName}`)
-      formBody.append('Teléfono', `+${formData.countryCode} ${formData.phone}`)
-      formBody.append('Email', formData.email)
-      formBody.append('Mensaje', formData.comment)
+    const result = await submitLead({
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      phone: formData.phone,
+      email: formData.email,
+      form: 1,
+      message: formData.comment,
+    })
 
-      const response = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        body: formBody,
-      })
-
-      const data = await response.json()
-
-      if (data.success) {
-        addToast('success', '¡Enviado!', 'Gracias, te llamaremos pronto.')
-        setFormData({ firstName: '', lastName: '', countryCode: '51', phone: '', email: '', comment: '', acceptPolicies: false })
-        setShowContactForm(false)
-        setOpenDropdown(null)
-      } else {
-        addToast('error', 'Error', 'No se pudo enviar. Intenta nuevamente.')
-      }
-    } catch {
-      addToast('error', 'Error', 'Error de conexión. Intenta nuevamente.')
+    if (result.ok) {
+      addToast('success', '¡Enviado!', 'Gracias, te llamaremos pronto.')
+      setFormData({ firstName: '', lastName: '', countryCode: '51', phone: '', email: '', comment: '', acceptPolicies: false })
+      setShowContactForm(false)
+      setOpenDropdown(null)
+      return
     }
+
+    if (result.duplicate) {
+      addToast('info', 'Ya estás registrado', 'Tus datos ya están en nuestro sistema. Pronto te contactamos.')
+      setShowContactForm(false)
+      return
+    }
+
+    if (result.queued) {
+      addToast('warning', 'Sin conexión', 'Guardamos tus datos y reintentaremos en breve.')
+      setShowContactForm(false)
+      return
+    }
+
+    addToast('error', 'Error', result.error || 'No se pudo enviar. Intenta nuevamente.')
   }
 
   // Navbar background: on home transparent until scrolled, on other pages always dark
