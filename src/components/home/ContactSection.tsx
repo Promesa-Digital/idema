@@ -1,14 +1,16 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { MdPhone, MdEmail, MdLocationOn } from 'react-icons/md'
 import {
-  validateName,
+  validateNamePart,
   validatePhone,
   validateEmail,
   validateComment,
 } from '../../utils/validation'
 import { submitLead } from '../../utils/leadIntake'
+import SuccessCheck from '../ui/SuccessCheck'
+import FieldError from '../ui/FieldError'
 import type { ContactFormData } from '../../types'
 
 export default function ContactSection() {
@@ -24,7 +26,12 @@ export default function ContactSection() {
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitSuccess, setSubmitSuccess] = useState(false)
+  const [submittedLead, setSubmittedLead] = useState<{ code?: string } | null>(null)
+
+  const resetForm = () => {
+    setSubmittedLead(null)
+    setErrors({})
+  }
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -47,41 +54,51 @@ export default function ContactSection() {
     }
   }
 
+  const fieldError = (name: string, value: string | boolean): string | undefined => {
+    switch (name) {
+      case 'firstName':      return validateNamePart(String(value), 'nombre').error
+      case 'lastName':       return validateNamePart(String(value), 'apellido').error
+      case 'phone':          return validatePhone(String(value)).error
+      case 'email': {
+        const r = validateEmail(String(value))
+        if (r.valid) return undefined
+        return r.suggestion ? `${r.error} (${r.suggestion})` : r.error
+      }
+      case 'comment':        return validateComment(String(value)).error
+      case 'acceptPolicies': return value ? undefined : 'Acepta la política de privacidad para continuar.'
+      default:               return undefined
+    }
+  }
+
+  const handleBlur = (
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target
+    const err = fieldError(name, value)
+    setErrors(prev => {
+      if (!err) {
+        const next = { ...prev }
+        delete next[name]
+        return next
+      }
+      return { ...prev, [name]: err }
+    })
+  }
+
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {}
-
-    const nameValidation = validateName(formData.firstName)
-    if (!nameValidation.valid) {
-      newErrors.firstName = nameValidation.error || 'Error de validación'
+    const fields: Array<[string, string | boolean]> = [
+      ['firstName', formData.firstName],
+      ['lastName',  formData.lastName],
+      ['phone',     formData.phone],
+      ['email',     formData.email],
+      ['comment',   formData.comment],
+      ['acceptPolicies', formData.acceptPolicies],
+    ]
+    for (const [name, value] of fields) {
+      const err = fieldError(name, value)
+      if (err) newErrors[name] = err
     }
-
-    const lastNameValidation = validateName(formData.lastName)
-    if (!lastNameValidation.valid) {
-      newErrors.lastName = lastNameValidation.error || 'Error de validación'
-    }
-
-    const phoneValidation = validatePhone(formData.phone)
-    if (!phoneValidation.valid) {
-      newErrors.phone = phoneValidation.error || 'Error de validación'
-    }
-
-    const emailValidation = validateEmail(formData.email)
-    if (!emailValidation.valid) {
-      newErrors.email = emailValidation.error || 'Error de validación'
-    } else if (emailValidation.suggestion) {
-      // Offer suggestion for typo
-      newErrors.email = `${emailValidation.error} (${emailValidation.suggestion})`
-    }
-
-    const commentValidation = validateComment(formData.comment)
-    if (!commentValidation.valid) {
-      newErrors.comment = commentValidation.error || 'Error de validación'
-    }
-
-    if (!formData.acceptPolicies) {
-      newErrors.acceptPolicies = 'Debes aceptar la política de privacidad'
-    }
-
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -105,7 +122,7 @@ export default function ContactSection() {
     })
 
     if (result.ok) {
-      setSubmitSuccess(true)
+      setSubmittedLead({ code: result.leadCode })
       setFormData({
         firstName: '',
         lastName: '',
@@ -115,7 +132,6 @@ export default function ContactSection() {
         comment: '',
         acceptPolicies: false,
       })
-      setTimeout(() => setSubmitSuccess(false), 3000)
     } else if (result.duplicate) {
       setErrors({ submit: 'Ya estás registrado. Pronto te contactamos.' })
     } else if (result.queued) {
@@ -151,183 +167,248 @@ export default function ContactSection() {
 
         {/* Content grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Form */}
+          {/* Form / Success */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
             transition={{ duration: 0.6 }}
           >
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
-              {submitSuccess && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-primary/10 border border-primary/30 text-deep px-4 py-3 rounded-lg"
-                >
-                  ¡Gracias por tu mensaje! Nos contactaremos pronto.
-                </motion.div>
-              )}
-
-              {errors.submit && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-cta/10 border border-cta/30 text-white px-4 py-3 rounded-lg"
-                >
-                  {errors.submit}
-                </motion.div>
-              )}
-
-              {/* Names row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-white text-sm font-semibold mb-2">
-                    Nombre
-                  </label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    placeholder="Tu nombre"
-                    className={`w-full px-4 py-3 rounded-lg bg-white/90 text-deep placeholder-deep/50 focus:outline-none focus:ring-2 focus:ring-primary transition ${
-                      errors.firstName ? 'ring-2 ring-cta' : ''
-                    }`}
-                  />
-                  {errors.firstName && (
-                    <p className="text-cta text-xs mt-1">
-                      {errors.firstName}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-white text-sm font-semibold mb-2">
-                    Apellido
-                  </label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    placeholder="Tu apellido"
-                    className={`w-full px-4 py-3 rounded-lg bg-white/90 text-deep placeholder-deep/50 focus:outline-none focus:ring-2 focus:ring-primary transition ${
-                      errors.lastName ? 'ring-2 ring-cta' : ''
-                    }`}
-                  />
-                  {errors.lastName && (
-                    <p className="text-cta text-xs mt-1">
-                      {errors.lastName}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Phone with country code */}
-              <div>
-                <label className="block text-white text-sm font-semibold mb-2">
-                  Teléfono
-                </label>
-                <div className="flex gap-2">
-                  <select
-                    name="countryCode"
-                    value={formData.countryCode}
-                    onChange={handleChange}
-                    className="px-3 py-3 rounded-lg bg-white/90 text-deep focus:outline-none focus:ring-2 focus:ring-primary transition"
+            <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm shadow-2xl p-6 sm:p-8 relative overflow-hidden">
+              <AnimatePresence mode="wait">
+                {submittedLead ? (
+                  <motion.div
+                    key="success"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex flex-col items-center text-center py-6 sm:py-10"
                   >
-                    <option value="51">🇵🇪 +51</option>
-                    <option value="1">🇺🇸 +1</option>
-                    <option value="34">🇪🇸 +34</option>
-                  </select>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="123456789"
-                    className={`flex-1 px-4 py-3 rounded-lg bg-white/90 text-deep placeholder-deep/50 focus:outline-none focus:ring-2 focus:ring-primary transition ${
-                      errors.phone ? 'ring-2 ring-cta' : ''
-                    }`}
-                  />
-                </div>
-                {errors.phone && (
-                  <p className="text-cta text-xs mt-1">{errors.phone}</p>
-                )}
-              </div>
-
-              {/* Email */}
-              <div>
-                <label className="block text-white text-sm font-semibold mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="tu@email.com"
-                  className={`w-full px-4 py-3 rounded-lg bg-white/90 text-deep placeholder-deep/50 focus:outline-none focus:ring-2 focus:ring-primary transition ${
-                    errors.email ? 'ring-2 ring-cta' : ''
-                  }`}
-                />
-                {errors.email && (
-                  <p className="text-cta text-xs mt-1">{errors.email}</p>
-                )}
-              </div>
-
-              {/* Comment */}
-              <div>
-                <label className="block text-white text-sm font-semibold mb-2">
-                  Mensaje
-                </label>
-                <textarea
-                  name="comment"
-                  value={formData.comment}
-                  onChange={handleChange}
-                  placeholder="Cuéntanos sobre tu interés..."
-                  rows={4}
-                  className={`w-full px-4 py-3 rounded-lg bg-white/90 text-deep placeholder-deep/50 focus:outline-none focus:ring-2 focus:ring-primary transition resize-none ${
-                    errors.comment ? 'ring-2 ring-cta' : ''
-                  }`}
-                />
-                {errors.comment && (
-                  <p className="text-cta text-xs mt-1">{errors.comment}</p>
-                )}
-              </div>
-
-              {/* Privacy checkbox */}
-              <div className="flex items-start gap-2">
-                <input
-                  type="checkbox"
-                  name="acceptPolicies"
-                  checked={formData.acceptPolicies}
-                  onChange={handleChange}
-                  className="w-5 h-5 mt-1 rounded cursor-pointer"
-                />
-                <label className="text-white/90 text-sm">
-                  Acepto la{' '}
-                  <a
-                    href="/politica-privacidad"
-                    className="underline hover:text-white"
+                    <SuccessCheck size={108} />
+                    <motion.h3
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.7, duration: 0.45 }}
+                      className="mt-6 text-white font-bold text-2xl sm:text-3xl leading-tight"
+                    >
+                      ¡Mensaje enviado!
+                    </motion.h3>
+                    <motion.p
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.85, duration: 0.45 }}
+                      className="mt-3 text-white/85 text-base sm:text-lg leading-relaxed max-w-md"
+                    >
+                      Nos pondremos en contacto contigo en breve por teléfono o WhatsApp.
+                    </motion.p>
+                    <motion.button
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 1, duration: 0.4 }}
+                      onClick={resetForm}
+                      className="mt-8 px-8 py-3 rounded-full font-semibold text-sm text-white bg-gradient-to-r from-cta to-accent hover:translate-y-[-2px] hover:shadow-[0_8px_24px_rgba(253,61,181,0.45)] transition-all duration-300"
+                    >
+                      Enviar otro mensaje
+                    </motion.button>
+                  </motion.div>
+                ) : (
+                  <motion.form
+                    key="form"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    onSubmit={handleSubmit}
+                    className="space-y-4 sm:space-y-5"
+                    noValidate
                   >
-                    política de privacidad
-                  </a>
-                </label>
-              </div>
-              {errors.acceptPolicies && (
-                <p className="text-cta text-xs">{errors.acceptPolicies}</p>
-              )}
+                    {errors.submit && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-cta/15 border border-cta/40 text-white px-4 py-3 rounded-lg text-sm"
+                        role="alert"
+                      >
+                        {errors.submit}
+                      </motion.div>
+                    )}
 
-              {/* Submit button */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full px-6 py-3 sm:py-4 bg-cta text-white font-bold rounded-lg hover:shadow-lg hover:shadow-cta/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? 'Enviando...' : 'Enviar Mensaje'}
-              </motion.button>
-            </form>
+                    {/* Names row */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="cs-firstName" className="block text-white text-sm font-semibold mb-2">
+                          Nombre
+                        </label>
+                        <input
+                          id="cs-firstName"
+                          type="text"
+                          name="firstName"
+                          value={formData.firstName}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          placeholder="Tu nombre"
+                          autoComplete="given-name"
+                          disabled={isSubmitting}
+                          aria-invalid={!!errors.firstName}
+                          aria-describedby={errors.firstName ? 'cs-err-firstName' : undefined}
+                          className={`w-full px-4 py-3 rounded-lg bg-white/95 text-deep placeholder-deep/50 focus:outline-none focus:ring-2 focus:ring-primary transition disabled:opacity-60 ${
+                            errors.firstName ? 'ring-2 ring-rose-400' : ''
+                          }`}
+                        />
+                        <FieldError id="cs-err-firstName" message={errors.firstName} />
+                      </div>
+                      <div>
+                        <label htmlFor="cs-lastName" className="block text-white text-sm font-semibold mb-2">
+                          Apellido
+                        </label>
+                        <input
+                          id="cs-lastName"
+                          type="text"
+                          name="lastName"
+                          value={formData.lastName}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          placeholder="Tu apellido"
+                          autoComplete="family-name"
+                          disabled={isSubmitting}
+                          aria-invalid={!!errors.lastName}
+                          aria-describedby={errors.lastName ? 'cs-err-lastName' : undefined}
+                          className={`w-full px-4 py-3 rounded-lg bg-white/95 text-deep placeholder-deep/50 focus:outline-none focus:ring-2 focus:ring-primary transition disabled:opacity-60 ${
+                            errors.lastName ? 'ring-2 ring-rose-400' : ''
+                          }`}
+                        />
+                        <FieldError id="cs-err-lastName" message={errors.lastName} />
+                      </div>
+                    </div>
+
+                    {/* Phone */}
+                    <div>
+                      <label htmlFor="cs-phone" className="block text-white text-sm font-semibold mb-2">
+                        Teléfono
+                      </label>
+                      <div className="flex gap-2">
+                        <select
+                          name="countryCode"
+                          value={formData.countryCode}
+                          onChange={handleChange}
+                          disabled={isSubmitting}
+                          className="px-3 py-3 rounded-lg bg-white/95 text-deep focus:outline-none focus:ring-2 focus:ring-primary transition disabled:opacity-60"
+                        >
+                          <option value="51">🇵🇪 +51</option>
+                          <option value="1">🇺🇸 +1</option>
+                          <option value="34">🇪🇸 +34</option>
+                        </select>
+                        <input
+                          id="cs-phone"
+                          type="tel"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          placeholder="987 654 321"
+                          autoComplete="tel-national"
+                          inputMode="numeric"
+                          maxLength={9}
+                          disabled={isSubmitting}
+                          aria-invalid={!!errors.phone}
+                          aria-describedby={errors.phone ? 'cs-err-phone' : undefined}
+                          className={`flex-1 min-w-0 px-4 py-3 rounded-lg bg-white/95 text-deep placeholder-deep/50 focus:outline-none focus:ring-2 focus:ring-primary transition disabled:opacity-60 ${
+                            errors.phone ? 'ring-2 ring-rose-400' : ''
+                          }`}
+                        />
+                      </div>
+                      <FieldError id="cs-err-phone" message={errors.phone} />
+                    </div>
+
+                    {/* Email */}
+                    <div>
+                      <label htmlFor="cs-email" className="block text-white text-sm font-semibold mb-2">
+                        Email
+                      </label>
+                      <input
+                        id="cs-email"
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        placeholder="tu@email.com"
+                        autoComplete="email"
+                        disabled={isSubmitting}
+                        aria-invalid={!!errors.email}
+                        aria-describedby={errors.email ? 'cs-err-email' : undefined}
+                        className={`w-full px-4 py-3 rounded-lg bg-white/95 text-deep placeholder-deep/50 focus:outline-none focus:ring-2 focus:ring-primary transition disabled:opacity-60 ${
+                          errors.email ? 'ring-2 ring-rose-400' : ''
+                        }`}
+                      />
+                      <FieldError id="cs-err-email" message={errors.email} />
+                    </div>
+
+                    {/* Mensaje */}
+                    <div>
+                      <label htmlFor="cs-comment" className="block text-white text-sm font-semibold mb-2">
+                        Mensaje
+                      </label>
+                      <textarea
+                        id="cs-comment"
+                        name="comment"
+                        value={formData.comment}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        placeholder="Cuéntanos sobre tu interés..."
+                        rows={4}
+                        disabled={isSubmitting}
+                        aria-invalid={!!errors.comment}
+                        aria-describedby={errors.comment ? 'cs-err-comment' : undefined}
+                        className={`w-full px-4 py-3 rounded-lg bg-white/95 text-deep placeholder-deep/50 focus:outline-none focus:ring-2 focus:ring-primary transition resize-none disabled:opacity-60 ${
+                          errors.comment ? 'ring-2 ring-rose-400' : ''
+                        }`}
+                      />
+                      <FieldError id="cs-err-comment" message={errors.comment} />
+                    </div>
+
+                    {/* Privacy */}
+                    <div>
+                      <div className="flex items-start gap-2">
+                        <input
+                          id="cs-policies"
+                          type="checkbox"
+                          name="acceptPolicies"
+                          checked={formData.acceptPolicies}
+                          onChange={handleChange}
+                          disabled={isSubmitting}
+                          className="w-5 h-5 mt-0.5 rounded cursor-pointer accent-primary"
+                        />
+                        <label htmlFor="cs-policies" className="text-white/90 text-sm cursor-pointer select-none">
+                          Acepto la{' '}
+                          <a href="/politica-privacidad" className="underline hover:text-white">
+                            política de privacidad
+                          </a>
+                        </label>
+                      </div>
+                      <FieldError message={errors.acceptPolicies} />
+                    </div>
+
+                    {/* Submit */}
+                    <motion.button
+                      whileHover={!isSubmitting ? { scale: 1.02 } : {}}
+                      whileTap={!isSubmitting ? { scale: 0.98 } : {}}
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full px-6 py-3 sm:py-4 text-white font-bold rounded-lg bg-gradient-to-r from-cta to-accent hover:shadow-[0_8px_24px_rgba(253,61,181,0.45)] transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {isSubmitting && (
+                        <span
+                          className="inline-block w-5 h-5 rounded-full border-2 border-white/30 border-t-white animate-spin"
+                          aria-hidden
+                        />
+                      )}
+                      {isSubmitting ? 'Enviando…' : 'Enviar Mensaje'}
+                    </motion.button>
+                  </motion.form>
+                )}
+              </AnimatePresence>
+            </div>
           </motion.div>
 
           {/* Contact Info */}
