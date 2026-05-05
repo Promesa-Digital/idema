@@ -5,6 +5,23 @@ interface ValidationResult {
   suggestion?: string
 }
 
+/**
+ * Valida un campo de nombre o apellido por separado.
+ * Para nombre completo (un solo input), usar validateName.
+ */
+export function validateNamePart(name: string, field: 'nombre' | 'apellido' = 'nombre'): ValidationResult {
+  const c = name.trim()
+  if (c.length === 0) return { valid: false, error: `Ingresa tu ${field}.` }
+  if (c.length < 2) return { valid: false, error: `Tu ${field} es muy corto.` }
+  if (c.length > 50) return { valid: false, error: `Tu ${field} es demasiado largo.` }
+  if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'-]+$/.test(c)) return { valid: false, error: `${field === 'nombre' ? 'El nombre' : 'El apellido'} solo debe contener letras.` }
+  return { valid: true, formatted: c }
+}
+
+/**
+ * Valida nombre completo (nombres y apellidos en un solo input).
+ * Para campos separados, usar validateNamePart.
+ */
 export function validateName(name: string): ValidationResult {
   const c = name.trim()
   if (c.length < 3) return { valid: false, error: 'El nombre debe tener al menos 3 caracteres.' }
@@ -14,16 +31,16 @@ export function validateName(name: string): ValidationResult {
   return { valid: true, formatted: c }
 }
 
+/**
+ * Valida un celular peruano: exactamente 9 dígitos empezando con 9.
+ * Es lo que exige el CRM de IDEMA para los leads.
+ */
 export function validatePhone(phone: string): ValidationResult {
-  let c = phone.replace(/[^0-9]/g, '')
-  if (c.length === 0) return { valid: false, error: 'El teléfono es obligatorio.' }
-  if (c.length < 6) return { valid: false, error: 'El número debe tener al menos 6 dígitos.' }
-  if (c.length > 11) return { valid: false, error: 'El número tiene demasiados dígitos.' }
-  if (c.startsWith('51') && c.length === 11) return { valid: true, formatted: c }
-  if (c.length === 9 && c.startsWith('9')) return { valid: true, formatted: '51' + c }
-  if (c.length >= 6 && c.length <= 7) return { valid: true, formatted: '51' + c }
-  if (c.length === 9) return { valid: true, formatted: '51' + c }
-  if (!c.startsWith('51')) c = '51' + c
+  const c = phone.replace(/\D/g, '')
+  if (c.length === 0) return { valid: false, error: 'Ingresa tu teléfono.' }
+  if (c.length < 9) return { valid: false, error: `Faltan ${9 - c.length} dígito${9 - c.length === 1 ? '' : 's'}.` }
+  if (c.length > 9) return { valid: false, error: 'El teléfono debe tener 9 dígitos.' }
+  if (!c.startsWith('9')) return { valid: false, error: 'Debe empezar con 9.' }
   return { valid: true, formatted: c }
 }
 
@@ -43,8 +60,8 @@ export function validateEmail(email: string): ValidationResult {
 
 export function validateComment(comment: string): ValidationResult {
   const c = comment.trim()
-  if (c.length === 0) return { valid: false, error: 'Indica tu interés.' }
-  if (c.length < 3) return { valid: false, error: 'Sé más específico.' }
-  if (c.length > 500) return { valid: false, error: 'Comentario muy largo.' }
+  if (c.length === 0) return { valid: false, error: 'Cuéntanos qué te interesa.' }
+  if (c.length < 3) return { valid: false, error: 'Sé un poco más específico.' }
+  if (c.length > 500) return { valid: false, error: 'Tu mensaje es demasiado largo.' }
   return { valid: true, formatted: c }
 }
