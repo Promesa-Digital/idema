@@ -2,28 +2,30 @@
 declare(strict_types=1);
 
 /**
- * Proxy de ingesta de leads → CRM IDEMA
+ * lead_intake_proxy.php
  *
- * Este archivo se sube a https://idema.edu.pe/php/lead_intake_proxy.php
- * La página pública (idema.edu.pe) hace POST aquí desde el browser; este
- * script agrega la API key (que vive SOLO en el servidor) y reenvía al CRM.
+ * Proxy de ingesta de leads → CRM IDEMA (https://leads.idema.edu.pe).
  *
- * Configuración:
- *   1) Definir la env var IDEMA_CRM_API_KEY en el hosting (recomendado).
- *      Apache:  SetEnv IDEMA_CRM_API_KEY "<KEY>"  (en .htaccess o vhost)
- *   2) O bien, reemplazar el fallback de IDEMA_CRM_API_KEY abajo por la key
- *      real (NO COMMITEAR esa edición a git).
+ * El SPA público (idema.edu.pe) hace POST aquí; este script agrega la
+ * API key (que vive SOLO en el servidor, fuera de public_html) y reenvía
+ * la petición al CRM.
  *
- * Si cambia el asesor asignado, editar LEAD_ASESOR_USERNAME.
+ * Se desplegó originalmente en /home/idemaedu/public_html/php/ vía el build
+ * de Vite (public/php/ del repo se copia a dist/php/ y luego a public_html/php/).
+ *
+ * Configuración del servidor (una sola vez, NO en git):
+ *   1) Crear el archivo /home/idemaedu/idema_secrets.php con:
+ *      <?php
+ *      return [
+ *          'IDEMA_CRM_API_KEY' => 'la-key-real-aca',
+ *      ];
+ *   2) chmod 600 ese archivo (solo el dueño lo lee).
+ *
+ * Si cambia el asesor asignado, editar LEAD_ASESOR_USERNAME abajo y deployar.
  */
 
 // ---------------- Config ----------------
-$API_KEY = getenv('IDEMA_CRM_API_KEY');
-if ($API_KEY === false || $API_KEY === '') {
-    // Fallback — reemplazar por la key real en deploy si no se usa env var.
-    $API_KEY = '__REPLACE_WITH_API_KEY__';
-}
-
+const SECRETS_FILE         = '/home/idemaedu/idema_secrets.php';
 const LEAD_ASESOR_USERNAME = 'geralhanari@gmail.com';
 const CRM_ENDPOINT         = 'https://leads.idema.edu.pe/api/public/lead-intake';
 const TIMEOUT_SECONDS      = 10;
@@ -33,21 +35,38 @@ header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
 // ---------------- Method ----------------
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     http_response_code(405);
     echo json_encode(['success' => false, 'error' => 'method_not_allowed']);
     exit;
 }
 
-// ---------------- API key sanity ----------------
-if ($API_KEY === '__REPLACE_WITH_API_KEY__') {
+// ---------------- Cargar secretos ----------------
+$API_KEY = '';
+if (is_file(SECRETS_FILE) && is_readable(SECRETS_FILE)) {
+    $secrets = require SECRETS_FILE;
+    if (is_array($secrets) && isset($secrets['IDEMA_CRM_API_KEY'])) {
+        $API_KEY = (string) $secrets['IDEMA_CRM_API_KEY'];
+    }
+}
+// Fallback: variable de entorno (por si más adelante se configura via cPanel/Apache)
+if ($API_KEY === '') {
+    $envKey = getenv('IDEMA_CRM_API_KEY');
+    if ($envKey !== false) $API_KEY = $envKey;
+}
+
+if ($API_KEY === '' || $API_KEY === '__REPLACE_WITH_API_KEY__') {
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'server_misconfigured']);
+    echo json_encode([
+        'success' => false,
+        'error'   => 'server_misconfigured',
+        'detail'  => 'Falta IDEMA_CRM_API_KEY en ' . SECRETS_FILE,
+    ]);
     exit;
 }
 
 // ---------------- Parse body ----------------
-$raw = file_get_contents('php://input');
+$raw   = file_get_contents('php://input');
 $input = json_decode($raw, true);
 if (!is_array($input)) {
     http_response_code(400);
@@ -55,7 +74,7 @@ if (!is_array($input)) {
     exit;
 }
 
-// Aceptar SOLO los campos que enviamos. asesorUsername se setea acá, nunca
+// Aceptar SOLO los campos que enviamos. asesorUsername se setea acá, NUNCA
 // se acepta del cliente, para que el navegador no pueda redirigir leads.
 $firstName = trim((string)($input['firstName'] ?? ''));
 $lastName  = trim((string)($input['lastName']  ?? ''));
@@ -100,6 +119,8 @@ curl_setopt_array($ch, [
     ],
     CURLOPT_TIMEOUT        => TIMEOUT_SECONDS,
     CURLOPT_CONNECTTIMEOUT => 5,
+    CURLOPT_SSL_VERIFYPEER => true,
+    CURLOPT_SSL_VERIFYHOST => 2,
 ]);
 
 $response = curl_exec($ch);
@@ -108,8 +129,8 @@ $curlErr  = curl_error($ch);
 curl_close($ch);
 
 if ($response === false || $httpCode === 0) {
-    // Devolvemos 502 para que el cliente sepa que es un fallo de red al CRM
-    // (y guarde el lead en la cola de reintento local).
+    // 502 → el cliente sabe que es fallo de red al CRM y guarda el lead
+    // en la cola de reintento local (localStorage).
     http_response_code(502);
     echo json_encode(['success' => false, 'error' => 'crm_unreachable', 'detail' => $curlErr]);
     exit;
