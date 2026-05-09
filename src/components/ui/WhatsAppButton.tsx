@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaWhatsapp, FaTimes } from 'react-icons/fa'
-import { whatsappReps, getWhatsAppUrl } from '../../data/whatsapp'
+import { getWhatsAppUrl, selectWhatsAppRep } from '../../data/whatsapp'
 
 const repImages: Record<string, string> = {
   MERY: '/assets/img/vendedoras/idema-mery.jpeg',
   RODOLFO: '/assets/img/vendedoras/idema-rodolfo.jpeg',
   TATIANA: '/assets/img/idemaNEWLOGO2026.png',
-  RODRIGO: '/assets/img/idemaNEWLOGO2026.png',
   GERALDINE: '/assets/img/vendedoras/GERALDINE.png',
   ADRIAN: '/assets/img/idemaNEWLOGO2026.png',
 }
@@ -16,6 +15,8 @@ export default function WhatsAppButton() {
   const [showMenu, setShowMenu] = useState(false)
   const [isFooterInView, setIsFooterInView] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  // Asesor asignado al cargar la página: se mantiene durante toda la sesión.
+  const [assignedRep] = useState(() => selectWhatsAppRep())
 
   useEffect(() => {
     const footer = document.querySelector('footer')
@@ -41,8 +42,11 @@ export default function WhatsAppButton() {
     }
   }, [showMenu])
 
-  const handleRepClick = (rep: typeof whatsappReps[0]) => {
-    const url = getWhatsAppUrl(rep.phone, 'Hola! Me interesa obtener información sobre los cursos de IDEMA.')
+  const handleRepClick = () => {
+    const url = getWhatsAppUrl(
+      assignedRep.phone,
+      'Hola! Me interesa obtener información sobre los cursos de IDEMA.',
+    )
     window.open(url, '_blank')
     setShowMenu(false)
   }
@@ -72,47 +76,46 @@ export default function WhatsAppButton() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-bold text-base">¡Hola! 👋</h3>
-                      <p className="text-xs text-white/80 mt-0.5">Selecciona un asesor</p>
+                      <p className="text-xs text-white/80 mt-0.5">Tu asesor te está esperando</p>
                     </div>
                     <button
                       onClick={() => setShowMenu(false)}
                       className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+                      aria-label="Cerrar"
                     >
                       <FaTimes className="w-3 h-3" />
                     </button>
                   </div>
                 </div>
 
-                {/* Rep List */}
-                <div className="max-h-72 overflow-y-auto">
-                  {whatsappReps.map((rep, i) => (
-                    <motion.button
-                      key={rep.phone}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      onClick={() => handleRepClick(rep)}
-                      className="w-full px-4 py-3 text-left border-b border-deep/5 last:border-b-0 hover:bg-primary/10 transition-colors flex items-center gap-3 group"
-                    >
-                      <div className="w-10 h-10 rounded-full overflow-hidden bg-surface flex-shrink-0 ring-2 ring-whatsapp/20">
-                        <img
-                          src={repImages[rep.name] || '/assets/img/idemaNEWLOGO2026.png'}
-                          alt={rep.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = '/assets/img/idemaNEWLOGO2026.png'
-                          }}
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm text-deep">{rep.name}</p>
-                        <p className="text-xs text-deep/50">Asesor de ventas</p>
-                      </div>
-                      <div className="w-8 h-8 rounded-full bg-whatsapp flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <FaWhatsapp className="w-4 h-4 text-white" />
-                      </div>
-                    </motion.button>
-                  ))}
+                {/* Asesor asignado */}
+                <div>
+                  <motion.button
+                    key={assignedRep.phone}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.25 }}
+                    onClick={handleRepClick}
+                    className="w-full px-4 py-3 text-left hover:bg-primary/10 transition-colors flex items-center gap-3 group"
+                  >
+                    <div className="w-10 h-10 rounded-full overflow-hidden bg-surface flex-shrink-0 ring-2 ring-whatsapp/20">
+                      <img
+                        src={repImages[assignedRep.name] || '/assets/img/idemaNEWLOGO2026.png'}
+                        alt={assignedRep.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = '/assets/img/idemaNEWLOGO2026.png'
+                        }}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm text-deep">{assignedRep.name}</p>
+                      <p className="text-xs text-deep/50">Asesor de ventas</p>
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-whatsapp flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <FaWhatsapp className="w-4 h-4 text-white" />
+                    </div>
+                  </motion.button>
                 </div>
 
                 {/* Footer note */}
