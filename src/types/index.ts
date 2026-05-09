@@ -84,3 +84,14 @@ export interface Noticia {
   image: string
   externalUrl?: string
 }
+
+export interface Anuncio {
+  id: string
+  image: string
+  alt: string
+  startDate?: string
+  endDate?: string
+  cta?: { label: string; href: string; external?: boolean }
+  frequency?: 'session' | 'day' | 'always'
+  pages?: string[]
+}
