@@ -6,6 +6,7 @@ import ToastContainer from './ui/ToastContainer'
 import WhatsAppButton from './ui/WhatsAppButton'
 import ScrollToTop from './ui/ScrollToTop'
 import CartDrawer from './cart/CartDrawer'
+import AnnouncementModal from './ui/AnnouncementModal'
 import { usePageTracking } from '../hooks/useAnalytics'
 import { flushRetryQueue } from '../utils/leadIntake'
 
@@ -26,6 +27,7 @@ export default function Layout() {
       <Footer />
       <WhatsAppButton />
       <CartDrawer />
+      <AnnouncementModal />
       <ToastContainer />
     </div>
   )
