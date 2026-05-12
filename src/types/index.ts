@@ -32,6 +32,7 @@ export interface Carrera {
   mallaCurricularImage?: string
   subtitle?: string
   convenio?: { name: string; logo: string }
+  culqiLink?: string
 }
 
 export interface ContactFormData {

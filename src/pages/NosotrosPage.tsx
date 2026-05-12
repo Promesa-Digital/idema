@@ -20,10 +20,12 @@ export default function NosotrosPage() {
   ]
 
   const teamMembers = [
-    { name: 'Equipo Marketing y Publicidad', role: 'Estrategia y comunicación', image: '/assets/img/team/1marketing.webp' },
-    { name: 'Equipo Ventas y Asesoría', role: 'Atención al estudiante', image: '/assets/img/team/1ventas.webp' },
-    { name: 'Equipo Proyectos y Procesos', role: 'Gestión y calidad', image: '/assets/img/team/1procesos.webp' },
-    { name: 'Equipo Tecnología e Innovación', role: 'Desarrollo y sistemas', image: '/assets/img/team/1developer.webp' },
+    { name: 'Equipo Administración', role: 'Gestión administrativa', image: '/assets/img/team/administracion.png' },
+    { name: 'Equipo Marketing y Publicidad', role: 'Estrategia y comunicación', image: '/assets/img/team/marketing-nuevo.png' },
+    { name: 'Equipo Pre-venta', role: 'Captación y orientación', image: '/assets/img/team/preventaa.jpg' },
+    { name: 'Equipo Recursos Humanos', role: 'Talento y bienestar', image: '/assets/img/team/rh.jpeg' },
+    { name: 'Equipo Ingeniería y Datos', role: 'Desarrollo y tecnología', image: '/assets/img/team/sistemas.jpg', naturalHeight: true },
+    { name: 'Equipo Post-venta', role: 'Atención y seguimiento', image: '/assets/img/team/ventas-postventa.png' },
   ]
 
   const locations = [
@@ -239,8 +241,8 @@ export default function NosotrosPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
               {[...staff, ...teamMembers].map((member, index) => (
                 <motion.div key={index} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: index * 0.1 }} whileHover={{ translateY: -10 }} className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden border border-deep/10 hover:border-primary/30 hover:shadow-xl transition-all duration-300">
-                  <div className="h-64 overflow-hidden">
-                    <img src={member.image} alt={member.name} className="w-full h-full object-cover object-top" />
+                  <div className={`${'naturalHeight' in member ? '' : ('imageHeight' in member ? member.imageHeight : 'h-64')} overflow-hidden`}>
+                    <img src={member.image} alt={member.name} className={`w-full ${'naturalHeight' in member ? 'h-auto' : 'h-full object-cover'} ${'imagePosition' in member ? member.imagePosition : 'object-top'}`} />
                   </div>
                   <div className="p-6 text-center">
                     <h3 className="text-lg font-bold text-deep mb-2">{member.name}</h3>

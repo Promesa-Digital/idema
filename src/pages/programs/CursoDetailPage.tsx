@@ -32,6 +32,10 @@ export default function CursoDetailPage() {
   const priceCents = priceNumber * 100
 
   const handlePayment = () => {
+    if (curso.culqiLink) {
+      window.open(curso.culqiLink, '_blank', 'noopener,noreferrer')
+      return
+    }
     if (!priceCents) return
     openCheckout({
       title: curso.title,
