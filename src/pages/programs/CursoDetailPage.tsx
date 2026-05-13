@@ -18,7 +18,7 @@ export default function CursoDetailPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
           <h1 className="text-5xl font-bold text-white mb-4">404</h1>
           <p className="text-xl text-white/50 mb-8">Curso no encontrado</p>
-          <Link to="/programas?categoria=curso">
+          <Link to="/carreras?categoria=curso">
             <button className="px-8 py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-full hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 hover:scale-105">
               Ver Cursos
             </button>
@@ -80,7 +80,7 @@ export default function CursoDetailPage() {
         <div className="max-w-6xl mx-auto flex items-center gap-2 text-sm text-deep/80">
           <Link to="/" className="hover:text-primary">Inicio</Link>
           <span>/</span>
-          <Link to="/programas?categoria=curso" className="hover:text-primary">Cursos</Link>
+          <Link to="/carreras?categoria=curso" className="hover:text-primary">Cursos</Link>
           <span>/</span>
           <span className="text-deep font-semibold">{curso.title}</span>
         </div>

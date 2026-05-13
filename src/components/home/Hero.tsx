@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FiChevronLeft, FiChevronRight, FiChevronDown } from 'react-icons/fi'
 import { theme } from '@/theme'
@@ -10,7 +10,7 @@ const slides = [
     titulo:    'Instituto IDEMA',
     subtitulo: 'Más de 30 años transformando la educación técnica en el Perú',
     cta:       'Conoce nuestros programas',
-    ctaLink:   '/programas',
+    ctaLink:   '/carreras',
   },
   {
     desktop: '/assets/img/hero/desktop/ADMI_EMPRESAS_1.webp',
@@ -55,7 +55,7 @@ export default function Hero() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const pauseRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const mq = window.matchMedia('(max-width: 768px)')
     setIsMobile(mq.matches)
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
