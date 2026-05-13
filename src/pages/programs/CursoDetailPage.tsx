@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { FaCheck, FaClock, FaBook, FaCertificate, FaCalendar, FaWhatsapp, FaEnvelope, FaCreditCard, FaShieldAlt, FaShoppingCart } from 'react-icons/fa'
 import { cursos } from '../../data/programs/cursos'
 import { useCulqi } from '../../hooks/useCulqi'
-import { useCart } from '../../hooks/useCart'
+import { useCart } from '../../context/CartContext'
 
 export default function CursoDetailPage() {
   const { slug } = useParams<{ slug: string }>()

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useLayoutEffect, useMemo } from 'react'
 import { useSearchParams, useNavigate, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
@@ -17,8 +17,6 @@ const categories = [
   { key: 'especializacion', label: 'Especializaciones' },
   { key: 'curso', label: 'Cursos Cortos' },
 ] as const
-
-type CategoryKey = typeof categories[number]['key']
 
 const categoryBasePath: Record<string, string> = {
   carrera: '/carreras',
@@ -62,18 +60,20 @@ const learningPath = [
 ]
 
 export default function ProgramasPage() {
+  const [activeFilter, setActiveFilter] = useState<string>('todos')
   const [search, setSearch] = useState('')
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
 
-  const activeFilter = useMemo<CategoryKey>(() => {
+  useLayoutEffect(() => {
     const categoria = searchParams.get('categoria')
 
     if (categoria && categories.some(c => c.key === categoria)) {
-      return categoria as CategoryKey
+      setActiveFilter(categoria)
+      return
     }
-    return 'todos'
-  }, [searchParams])
+    setActiveFilter('todos')
+  }, [searchParams, categories])
 
   const filtered = useMemo(() => {
     return allPrograms.filter((p) => {
@@ -132,6 +132,7 @@ export default function ProgramasPage() {
                 <button
                   key={cat.key}
                   onClick={() => {
+                    setActiveFilter(cat.key)
                     navigate(`/carreras?categoria=${cat.key}`)
                   }}
                   className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
@@ -167,7 +168,7 @@ export default function ProgramasPage() {
             <div className="text-center py-20">
               <p className="text-deep/60 text-lg">No se encontraron programas con esos criterios.</p>
               <button
-                onClick={() => { navigate('/carreras'); setSearch('') }}
+                onClick={() => { setActiveFilter('todos'); navigate('/carreras'); setSearch('') }}
                 className="mt-4 text-primary font-semibold hover:underline"
               >
                 Limpiar filtros

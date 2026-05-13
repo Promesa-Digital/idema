@@ -1,8 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useContext } from 'react'
 import { FaCheck, FaTimes, FaExclamationTriangle, FaInfoCircle } from 'react-icons/fa'
-import { ToastContext } from '../../context/ToastContextType'
-import type { Toast } from '../../context/ToastContextType'
+import { ToastContext } from '../../context/ToastContext'
+import type { Toast } from '../../context/ToastContext'
 
 const iconMap = {
   success: FaCheck,

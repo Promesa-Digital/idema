@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react'
 import type { ChangeEvent, ComponentType, FocusEvent, FormEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, useLocation } from 'react-router-dom'
@@ -19,7 +19,7 @@ import {
   FaShoppingCart,
 } from 'react-icons/fa'
 import { mainNavLinks, accederDropdown, countryCodes } from '../../data/navigation'
-import { useCart } from '../../hooks/useCart'
+import { useCart } from '../../context/CartContext'
 import { validateNamePart, validatePhone, validateEmail, validateComment } from '../../utils/validation'
 import { submitLead } from '../../utils/leadIntake'
 import SuccessCheck from '../ui/SuccessCheck'
@@ -80,6 +80,13 @@ export default function Navbar() {
     handleScroll()
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Close mobile menu on route change
+  useLayoutEffect(() => {
+    setIsMobileOpen(false)
+    setOpenDropdown(null)
+    setShowContactForm(false)
+  }, [location.pathname])
 
   // Close only the dropdown when clicking outside the navbar.
   // The popup has its own overlay click handler — and ahora vive en un Portal,

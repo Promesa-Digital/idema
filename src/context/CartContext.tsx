@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useContext } from 'react'
 import type { ReactNode } from 'react'
 import { CartContext, type CartItem } from './CartContextType'
 import type { Carrera } from '../types'
@@ -61,4 +61,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       {children}
     </CartContext.Provider>
   )
+}
+
+export function useCart() {
+  const context = useContext(CartContext)
+  if (!context) throw new Error('useCart must be used within CartProvider')
+  return context
 }

@@ -3,7 +3,7 @@ import type { FormEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaTimes, FaTrash, FaMinus, FaPlus, FaShoppingCart, FaWhatsapp, FaCheckCircle } from 'react-icons/fa'
 import { MdArrowBack, MdSend } from 'react-icons/md'
-import { useCart } from '../../hooks/useCart'
+import { useCart } from '../../context/CartContext'
 
 type Step = 'cart' | 'form' | 'success'
 
