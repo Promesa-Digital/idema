@@ -4,11 +4,11 @@ import { FaWhatsapp, FaTimes } from 'react-icons/fa'
 import { getWhatsAppUrl, selectWhatsAppRep } from '../../data/whatsapp'
 
 const repImages: Record<string, string> = {
-  MERY: '/assets/img/vendedoras/mery.jpeg',
-  RODOLFO: '/assets/img/vendedoras/rodolfo.png',
-  TATIANA: '/assets/img/idemaNEWLOGO2026.png',
+  ADRIAN: '/assets/img/vendedoras/adrian.png',
   GERALDINE: '/assets/img/vendedoras/geraldine.png',
-  ADRIAN: '/assets/img/idemaNEWLOGO2026.png',
+  RODOLFO: '/assets/img/vendedoras/rodolfo.png',
+  MERY: '/assets/img/vendedoras/mery.jpeg',
+  TATIANA: '/assets/img/vendedoras/tatiana.png',
 }
 
 export default function WhatsAppButton() {
