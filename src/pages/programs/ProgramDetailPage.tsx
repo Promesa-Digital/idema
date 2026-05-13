@@ -5,7 +5,7 @@ import { FaCheck, FaClock, FaBook, FaCertificate, FaCalendar, FaWhatsapp, FaEnve
 import { carreras } from '../../data/programs/carreras'
 import { auxiliares } from '../../data/programs/auxiliares'
 import { especializaciones } from '../../data/programs/especializaciones'
-import { useCart } from '../../context/CartContext'
+import { useCart } from '../../hooks/useCart'
 import { getAssignedWhatsAppRep, getWhatsAppUrl } from '../../data/whatsapp'
 import type { Carrera } from '../../types'
 

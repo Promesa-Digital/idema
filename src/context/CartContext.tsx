@@ -1,29 +1,9 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { useState, useCallback } from 'react'
+import type { ReactNode } from 'react'
+import { CartContext, type CartItem } from './CartContextType'
 import type { Carrera } from '../types'
 
-export interface CartItem {
-  product: Carrera
-  quantity: number
-  modality?: string
-  price: number
-}
-
-interface CartContextType {
-  items: CartItem[]
-  isOpen: boolean
-  totalItems: number
-  totalPrice: number
-  addItem: (product: Carrera, price: number, modality?: string) => void
-  removeItem: (slug: string) => void
-  updateQuantity: (slug: string, quantity: number) => void
-  clearCart: () => void
-  toggleCart: () => void
-  closeCart: () => void
-}
-
-const CartContext = createContext<CartContextType | undefined>(undefined)
-
-export function CartProvider({ children }: { children: React.ReactNode }) {
+export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
   const [isOpen, setIsOpen] = useState(false)
 
@@ -81,10 +61,4 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       {children}
     </CartContext.Provider>
   )
-}
-
-export function useCart() {
-  const context = useContext(CartContext)
-  if (!context) throw new Error('useCart must be used within CartProvider')
-  return context
 }

@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useSyncExternalStore } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FiChevronLeft, FiChevronRight, FiChevronDown } from 'react-icons/fi'
 import { theme } from '@/theme'
@@ -48,20 +48,23 @@ const slides = [
 
 const INTERVAL = 5000
 const PAUSE_AFTER_MANUAL = 3000
+const MOBILE_QUERY = '(max-width: 768px)'
+
+function subscribeToViewport(callback: () => void) {
+  const mq = window.matchMedia(MOBILE_QUERY)
+  mq.addEventListener('change', callback)
+  return () => mq.removeEventListener('change', callback)
+}
+
+function getViewportSnapshot() {
+  return window.matchMedia(MOBILE_QUERY).matches
+}
 
 export default function Hero() {
   const [current, setCurrent] = useState(0)
-  const [isMobile, setIsMobile] = useState(false)
+  const isMobile = useSyncExternalStore(subscribeToViewport, getViewportSnapshot, () => false)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const pauseRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useLayoutEffect(() => {
-    const mq = window.matchMedia('(max-width: 768px)')
-    setIsMobile(mq.matches)
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
-  }, [])
 
   const startAutoplay = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current)

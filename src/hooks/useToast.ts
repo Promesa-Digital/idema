@@ -1,24 +1,16 @@
-import { useState, useCallback } from 'react'
-import type { ToastMessage } from '../types'
-
-let toastId = 0
+import { useCallback, useContext } from 'react'
+import { ToastContext } from '../context/ToastContextType'
+import type { Toast } from '../context/ToastContextType'
 
 export function useToast() {
-  const [toasts, setToasts] = useState<ToastMessage[]>([])
+  const context = useContext(ToastContext)
+  if (!context) {
+    throw new Error('useToast must be used within ToastProvider')
+  }
 
-  const addToast = useCallback((type: ToastMessage['type'], title: string, message: string, duration = 5000) => {
-    const id = String(++toastId)
-    const toast: ToastMessage = { id, type, title, message, duration }
-    setToasts(prev => [...prev, toast])
-    if (duration > 0) {
-      setTimeout(() => removeToast(id), duration)
-    }
-    return id
-  }, [])
+  const addToast = useCallback((type: Toast['type'], title: string, message: string) => {
+    context.addToast(type, title, message)
+  }, [context])
 
-  const removeToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(t => t.id !== id))
-  }, [])
-
-  return { toasts, addToast, removeToast }
+  return { addToast }
 }

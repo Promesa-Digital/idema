@@ -1,8 +1,9 @@
 import { useState } from 'react'
+import type { FormEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaTimes, FaTrash, FaMinus, FaPlus, FaShoppingCart, FaWhatsapp, FaCheckCircle } from 'react-icons/fa'
 import { MdArrowBack, MdSend } from 'react-icons/md'
-import { useCart } from '../../context/CartContext'
+import { useCart } from '../../hooks/useCart'
 
 type Step = 'cart' | 'form' | 'success'
 
@@ -36,6 +37,7 @@ export default function CartDrawer() {
   const [sending, setSending] = useState(false)
   const [form, setForm] = useState({ nombre: '', email: '', telefono: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [submitFeedback, setSubmitFeedback] = useState<string | null>(null)
 
   const handleClose = () => {
     closeCart()
@@ -51,8 +53,9 @@ export default function CartDrawer() {
     return Object.keys(e).length === 0
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    setSubmitFeedback(null)
     if (!validate()) return
 
     const itemsList = items.map(i => `• ${i.product.title} — S/.${(i.price * i.quantity).toFixed(2)}`).join('\n')
@@ -61,7 +64,14 @@ export default function CartDrawer() {
     try {
       setSending(true)
       const body = new FormData()
-      body.append('access_key', 'c58368ae-ca4c-419b-91a7-d19435dafcfc')
+      const accessKey = import.meta.env.VITE_WEB3FORMS_KEY
+
+      if (!accessKey) {
+        setSubmitFeedback('No se pudo enviar en este momento. Falta configurar el formulario.')
+        return
+      }
+
+      body.append('access_key', accessKey)
       body.append('subject', `💳 Pago pendiente – ${form.nombre} | ${items.map(i => i.product.shortTitle || i.product.title).join(', ')}`)
       body.append('from_name', 'IDEMA Carrito Web')
       body.append('Nombre', form.nombre)
@@ -77,9 +87,11 @@ export default function CartDrawer() {
       if (data.success) {
         setStep('success')
         clearCart()
+      } else {
+        setSubmitFeedback('Error al enviar. Intenta de nuevo.')
       }
     } catch {
-      // silent
+      setSubmitFeedback('Error de conexión. Intenta más tarde.')
     } finally {
       setSending(false)
     }
@@ -233,6 +245,11 @@ export default function CartDrawer() {
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="px-4 pb-6 space-y-3">
                   <p className="text-xs font-bold text-deep uppercase tracking-wider mb-1 pt-2">Tus datos</p>
+                  {submitFeedback && (
+                    <p className="rounded-lg bg-cta/10 px-3 py-2 text-xs text-cta">
+                      {submitFeedback}
+                    </p>
+                  )}
 
                   <div>
                     <input

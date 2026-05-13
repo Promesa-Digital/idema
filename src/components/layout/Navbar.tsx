@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import type { ChangeEvent, ComponentType, FocusEvent, FormEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -18,14 +19,14 @@ import {
   FaShoppingCart,
 } from 'react-icons/fa'
 import { mainNavLinks, accederDropdown, countryCodes } from '../../data/navigation'
-import { useCart } from '../../context/CartContext'
+import { useCart } from '../../hooks/useCart'
 import { validateNamePart, validatePhone, validateEmail, validateComment } from '../../utils/validation'
 import { submitLead } from '../../utils/leadIntake'
 import SuccessCheck from '../ui/SuccessCheck'
 import FieldError from '../ui/FieldError'
 import type { ContactFormData } from '../../types'
 
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   FaSitemap,
   FaNewspaper,
   FaGraduationCap,
@@ -67,19 +68,18 @@ export default function Navbar() {
   // Check if we're on the home page (hero has dark bg, so transparent works)
   const isHome = location.pathname === '/'
 
+  const closeNavigationState = () => {
+    setIsMobileOpen(false)
+    setOpenDropdown(null)
+    setShowContactForm(false)
+  }
+
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 80)
     window.addEventListener('scroll', handleScroll, { passive: true })
     handleScroll()
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
-
-  // Close mobile menu on route change
-  useEffect(() => {
-    setIsMobileOpen(false)
-    setOpenDropdown(null)
-    setShowContactForm(false)
-  }, [location.pathname])
 
   // Close only the dropdown when clicking outside the navbar.
   // The popup has its own overlay click handler — and ahora vive en un Portal,
@@ -114,7 +114,7 @@ export default function Navbar() {
   // Calcula la posición del popup según el botón "¡Contáctanos!".
   // En mobile (<lg) el botón vive dentro del menú móvil y se cierra al abrir
   // el popup, así que caemos a un anclaje "top-right del viewport".
-  const computePopupPos = () => {
+  const computePopupPos = useCallback(() => {
     const btn = contactBtnRef.current
     if (!btn || window.innerWidth < 1024) {
       return { top: 76, right: 16 }
@@ -124,7 +124,7 @@ export default function Navbar() {
       top: Math.max(64, rect.bottom + 10),
       right: Math.max(16, window.innerWidth - rect.right),
     }
-  }
+  }, [])
 
   // Reposicionar mientras el popup está abierto (resize, scroll de cualquier
   // contenedor). El cálculo inicial se hace en el handler del click para
@@ -138,7 +138,7 @@ export default function Navbar() {
       window.removeEventListener('resize', update)
       window.removeEventListener('scroll', update, true)
     }
-  }, [showContactForm])
+  }, [showContactForm, computePopupPos])
 
   const openContactForm = () => {
     setPopupPos(computePopupPos())
@@ -156,7 +156,7 @@ export default function Navbar() {
     return () => document.removeEventListener('keydown', onKey)
   }, [showContactForm])
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleFormChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target
     setFormData(prev => ({
       ...prev,
@@ -187,7 +187,7 @@ export default function Navbar() {
     }
   }
 
-  const handleFormBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleFormBlur = (e: FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     const err = fieldError(name, value)
     setFormErrors(prev => {
@@ -218,7 +218,7 @@ export default function Navbar() {
     return Object.keys(errors).length === 0
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (!validateForm()) return
 
@@ -280,7 +280,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex-shrink-0 flex items-center gap-3">
+          <Link to="/" onClick={closeNavigationState} className="flex-shrink-0 flex items-center gap-3">
             <img
               src="/assets/img/idema-white.png"
               alt="IDEMA"
@@ -302,6 +302,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 to={link.href}
+                onClick={closeNavigationState}
                 className="text-white/90 hover:text-primary transition-colors text-sm font-semibold uppercase tracking-wider px-3 py-2"
               >
                 {link.label}
@@ -337,9 +338,9 @@ export default function Navbar() {
                         </>
                       )
                       return item.external ? (
-                        <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" className={cls}>{inner}</a>
+                        <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" onClick={() => setOpenDropdown(null)} className={cls}>{inner}</a>
                       ) : (
-                        <Link key={item.href} to={item.href} onClick={() => setOpenDropdown(null)} className={cls}>{inner}</Link>
+                        <Link key={item.href} to={item.href} onClick={closeNavigationState} className={cls}>{inner}</Link>
                       )
                     })}
                   </motion.div>
@@ -419,7 +420,7 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   to={link.href}
-                  onClick={() => setIsMobileOpen(false)}
+                  onClick={closeNavigationState}
                   className="block text-white/90 hover:text-primary py-2.5 text-sm font-semibold uppercase tracking-wider"
                 >
                   {link.label}
@@ -448,9 +449,9 @@ export default function Navbar() {
                         const cls = "flex items-center gap-2 text-white/60 hover:text-primary py-1.5 text-sm"
                         const inner = (<><Icon className="w-3 h-3" />{item.label}</>)
                         return item.external ? (
-                          <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" onClick={() => setIsMobileOpen(false)} className={cls}>{inner}</a>
+                          <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" onClick={closeNavigationState} className={cls}>{inner}</a>
                         ) : (
-                          <Link key={item.href} to={item.href} onClick={() => setIsMobileOpen(false)} className={cls}>{inner}</Link>
+                          <Link key={item.href} to={item.href} onClick={closeNavigationState} className={cls}>{inner}</Link>
                         )
                       })}
                     </motion.div>
