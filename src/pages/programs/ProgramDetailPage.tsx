@@ -6,6 +6,7 @@ import { carreras } from '../../data/programs/carreras'
 import { auxiliares } from '../../data/programs/auxiliares'
 import { especializaciones } from '../../data/programs/especializaciones'
 import { useCart } from '../../context/CartContext'
+import { getAssignedWhatsAppRep, getWhatsAppUrl } from '../../data/whatsapp'
 import type { Carrera } from '../../types'
 
 interface CategoryConfig {
@@ -28,7 +29,7 @@ const categoryMap: Record<string, CategoryConfig> = {
   carreras: {
     data: carreras,
     breadcrumbLabel: 'Carreras',
-    breadcrumbLink: '/programas?categoria=carrera',
+    breadcrumbLink: '/carreras?categoria=carrera',
     curriculumTitle: 'Malla Curricular',
     featuresTitle: 'Beneficios Institucionales',
     priceTitle: 'Inversión Mensual',
@@ -43,7 +44,7 @@ const categoryMap: Record<string, CategoryConfig> = {
   auxiliares: {
     data: auxiliares,
     breadcrumbLabel: 'Programas Auxiliares',
-    breadcrumbLink: '/programas?categoria=auxiliar',
+    breadcrumbLink: '/carreras?categoria=auxiliar',
     curriculumTitle: 'Plan de Estudios',
     featuresTitle: 'Beneficios Institucionales',
     priceTitle: 'Inversión',
@@ -58,7 +59,7 @@ const categoryMap: Record<string, CategoryConfig> = {
   especializaciones: {
     data: especializaciones,
     breadcrumbLabel: 'Especializaciones',
-    breadcrumbLink: '/programas?categoria=especializacion',
+    breadcrumbLink: '/carreras?categoria=especializacion',
     curriculumTitle: 'Plan de Estudios',
     featuresTitle: 'Beneficios Institucionales',
     priceTitle: 'Inversión',
@@ -91,9 +92,9 @@ export default function ProgramDetailPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
           <h1 className="text-5xl font-bold text-white mb-4">404</h1>
           <p className="text-xl text-white/50 mb-8">Programa no encontrado</p>
-          <Link to="/programas">
+          <Link to="/carreras">
             <button className="px-8 py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-full hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 hover:scale-105">
-              Ver Programas
+              Ver Carreras
             </button>
           </Link>
         </motion.div>
@@ -109,9 +110,9 @@ export default function ProgramDetailPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
           <h1 className="text-5xl font-bold text-white mb-4">404</h1>
           <p className="text-xl text-white/50 mb-8">{config.notFoundLabel}</p>
-          <Link to="/programas">
+          <Link to="/carreras">
             <button className="px-8 py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-full hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 hover:scale-105">
-              Ver Programas
+              Ver Carreras
             </button>
           </Link>
         </motion.div>
@@ -131,6 +132,7 @@ export default function ProgramDetailPage() {
     addItem(program, numPrice, modality)
   }
 
+  const assignedRep = getAssignedWhatsAppRep()
   const isCarrera = category === 'carreras'
 
   return (
@@ -337,7 +339,7 @@ export default function ProgramDetailPage() {
             <p className="text-lg mb-8 text-white/90 max-w-2xl mx-auto">{config.ctaText}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href={`https://wa.me/?text=${encodeURIComponent(program.whatsappMessage || config.whatsappFallback)}`}
+                href={getWhatsAppUrl(assignedRep.phone, program.whatsappMessage || config.whatsappFallback)}
                 target="_blank"
                 rel="noopener noreferrer"
               >

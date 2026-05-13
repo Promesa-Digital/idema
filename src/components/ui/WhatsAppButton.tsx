@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaWhatsapp, FaTimes } from 'react-icons/fa'
-import { getWhatsAppUrl, selectWhatsAppRep } from '../../data/whatsapp'
+import { getAssignedWhatsAppRep, getWhatsAppUrl } from '../../data/whatsapp'
 
 const repImages: Record<string, string> = {
   ADRIAN: '/assets/img/vendedoras/adrian.png',
@@ -16,7 +16,7 @@ export default function WhatsAppButton() {
   const [isFooterInView, setIsFooterInView] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   // Asesor asignado al cargar la página: se mantiene durante toda la sesión.
-  const [assignedRep] = useState(() => selectWhatsAppRep())
+  const [assignedRep] = useState(() => getAssignedWhatsAppRep())
 
   useEffect(() => {
     const footer = document.querySelector('footer')

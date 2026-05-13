@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useLayoutEffect, useMemo } from 'react'
 import { useSearchParams, useNavigate, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
@@ -65,13 +65,13 @@ export default function ProgramasPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const categoria = searchParams.get('categoria')
 
     if (categoria && categories.some(c => c.key === categoria)) {
       setActiveFilter(categoria)
     }
-  }, [searchParams])
+  }, [searchParams, categories])
 
   const filtered = useMemo(() => {
     return allPrograms.filter((p) => {
@@ -131,7 +131,7 @@ export default function ProgramasPage() {
                   key={cat.key}
                   onClick={() => {
                     setActiveFilter(cat.key)
-                    navigate(`/programas?categoria=${cat.key}`)
+                    navigate(`/carreras?categoria=${cat.key}`)
                   }}
                   className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
                     activeFilter === cat.key

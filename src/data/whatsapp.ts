@@ -8,6 +8,9 @@ export const whatsappReps: WhatsAppRep[] = [
   { name: 'TATIANA', phone: '51986035468', probability: 0.15 },
 ]
 
+const ASSIGNED_REP_STORAGE_KEY = 'idema_assigned_whatsapp_rep'
+let assignedRep: WhatsAppRep | null = null
+
 export function selectWhatsAppRep(): WhatsAppRep {
   const rand = Math.random()
   let cumulative = 0
@@ -16,6 +19,27 @@ export function selectWhatsAppRep(): WhatsAppRep {
     if (rand <= cumulative) return rep
   }
   return whatsappReps[whatsappReps.length - 1]
+}
+
+export function getAssignedWhatsAppRep(): WhatsAppRep {
+  if (assignedRep) return assignedRep
+
+  if (typeof window !== 'undefined') {
+    const savedPhone = window.sessionStorage.getItem(ASSIGNED_REP_STORAGE_KEY)
+    const savedRep = whatsappReps.find(rep => rep.phone === savedPhone)
+    if (savedRep) {
+      assignedRep = savedRep
+      return assignedRep
+    }
+  }
+
+  assignedRep = selectWhatsAppRep()
+
+  if (typeof window !== 'undefined') {
+    window.sessionStorage.setItem(ASSIGNED_REP_STORAGE_KEY, assignedRep.phone)
+  }
+
+  return assignedRep
 }
 
 export function getWhatsAppUrl(phone: string, message: string): string {

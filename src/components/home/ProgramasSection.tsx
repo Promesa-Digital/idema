@@ -200,7 +200,7 @@ export default function ProgramasSection() {
           className="text-center mt-10 sm:mt-12"
         >
           <Link
-            to="/programas"
+            to="/carreras"
             className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-white font-semibold rounded-full hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-1"
           >
             Ver toda la oferta educativa
