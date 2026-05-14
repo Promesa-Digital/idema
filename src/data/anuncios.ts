@@ -1,5 +1,4 @@
 import type { Anuncio } from '../types'
-import diaDeLaMadre from '../assets/anuncios/diaDeLaMadre.jpeg'
 
 /**
  * Registro de anuncios full-screen.
@@ -11,14 +10,4 @@ import diaDeLaMadre from '../assets/anuncios/diaDeLaMadre.jpeg'
  *   5. `pages`: rutas donde aparece (default solo `'/'`).
  * Se muestra el primero cuyo rango y página coinciden y que el usuario no haya descartado.
  */
-export const anuncios: Anuncio[] = [
-  {
-    id: 'dia-de-la-madre-2026',
-    image: diaDeLaMadre,
-    alt: 'Feliz Día de las Madres — IDEMA',
-    startDate: '2026-05-01',
-    endDate: '2026-05-15',
-    frequency: 'always',
-    pages: ['/'],
-  },
-]
+export const anuncios: Anuncio[] = []
