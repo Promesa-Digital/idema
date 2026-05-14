@@ -27,8 +27,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          {/* Programas */}
-          <Route path="programas" element={<ProgramasPage />} />
+          {/* Oferta educativa */}
+          <Route path="carreras" element={<ProgramasPage />} />
+          <Route path="programas" element={<Navigate to="/carreras" replace />} />
           {/* Detalle de programas */}
           <Route path="carreras/:slug" element={<ProgramDetailPage />} />
           <Route path="auxiliares/:slug" element={<ProgramDetailPage />} />
@@ -39,7 +40,7 @@ function App() {
           {/* Institucional */}
           <Route path="nosotros" element={<NosotrosPage />} />
           <Route path="cursos-gratis" element={<CursosGratisPage />} />
-          <Route path="idema-educa" element={<Navigate to="/programas" replace />} />
+          <Route path="idema-educa" element={<Navigate to="/carreras" replace />} />
           <Route path="orientacion-vocacional" element={<OrientacionVocacionalPage />} />
           {/* Info pages */}
           <Route path="faq" element={<FAQPage />} />

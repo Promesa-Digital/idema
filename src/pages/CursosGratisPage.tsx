@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { FaVideo, FaBook, FaUsers, FaCertificate, FaArrowRight } from 'react-icons/fa'
+import type { ComponentType } from 'react'
 
 interface FreeCourse {
   id: string
@@ -10,7 +11,7 @@ interface FreeCourse {
   level: string
   instructor: string
   students: number
-  icon: React.ComponentType<any>
+  icon: ComponentType<{ className?: string }>
 }
 
 const freeCourses: FreeCourse[] = [
