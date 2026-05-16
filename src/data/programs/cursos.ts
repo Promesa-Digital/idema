@@ -311,7 +311,6 @@ export const cursos: Carrera[] = [
     ],
     convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
     whatsappMessage: 'Hola! Me interesa el curso de Biología en IDEMA.',
-    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=e28709b7-5609-4ca6-b41f-b8a717864f09',
   },
   {
     slug: 'produccion-de-cuyes',
