@@ -1,16 +1,26 @@
+import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import { motion } from 'framer-motion'
-import { FaCheck, FaClock, FaBook, FaCertificate, FaCalendar, FaWhatsapp, FaEnvelope, FaCreditCard, FaShieldAlt, FaShoppingCart } from 'react-icons/fa'
+import { motion, AnimatePresence } from 'framer-motion'
+import { FaCheck, FaClock, FaBook, FaCertificate, FaCalendar, FaWhatsapp, FaEnvelope, FaCreditCard, FaShieldAlt, FaShoppingCart, FaUniversity, FaChevronUp } from 'react-icons/fa'
 import { cursos } from '../../data/programs/cursos'
 import { useCulqi } from '../../hooks/useCulqi'
 import { useCart } from '../../context/CartContext'
 
+const paymentMethods = [
+  { bank: 'BCP', lines: ['Recaudación: 20430', 'Cuenta: 25105155619028', 'CCI: 00225110515561902870'] },
+  { bank: 'BCP Móvil', lines: ['Pago de Servicios → Instituto Idema'] },
+  { bank: 'Yape / Plin', lines: ['991 317 346'] },
+  { bank: 'BBVA', lines: ['001107630200236164'] },
+  { bank: 'Interbank', lines: ['Cuenta: 5503004249241', 'CCI: 003550003004249241'] },
+]
+
 export default function CursoDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const curso = cursos.find(c => c.slug === slug)
-  const { openCheckout } = useCulqi()
+  useCulqi()
   const { addItem } = useCart()
+  const [showPaymentMethods, setShowPaymentMethods] = useState(false)
 
   if (!curso) {
     return (
@@ -31,20 +41,12 @@ export default function CursoDetailPage() {
   const priceNumber = curso.price ? parseInt(curso.price.replace(/[^0-9]/g, ''), 10) : 0
   const priceCents = priceNumber * 100
 
-  const handlePayment = () => {
+  const handlePaymentClick = () => {
     if (curso.culqiLink) {
       window.open(curso.culqiLink, '_blank', 'noopener,noreferrer')
       return
     }
-    if (!priceCents) return
-    openCheckout({
-      title: curso.title,
-      amount: priceCents,
-      description: `Curso: ${curso.title} - ${curso.duration}`,
-      onSuccess: (token) => {
-        console.log('Payment token received:', token.id)
-      },
-    })
+    setShowPaymentMethods(v => !v)
   }
 
   return (
@@ -198,10 +200,42 @@ export default function CursoDetailPage() {
                   {/* Payment actions */}
                   <div className="p-6 space-y-4">
                     {priceCents > 0 && (
-                      <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={handlePayment}
-                        className="w-full py-4 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl flex items-center justify-center gap-3 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300">
-                        <FaCreditCard className="text-lg" /> Comprar Ahora
-                      </motion.button>
+                      <>
+                        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                          onClick={handlePaymentClick}
+                          className="w-full py-4 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl flex items-center justify-center gap-3 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300">
+                          <FaCreditCard className="text-lg" />
+                          Medios de Pago
+                          <motion.span animate={{ rotate: showPaymentMethods ? 0 : 180 }} transition={{ duration: 0.2 }}>
+                            <FaChevronUp className="text-sm" />
+                          </motion.span>
+                        </motion.button>
+
+                        <AnimatePresence>
+                          {showPaymentMethods && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{ duration: 0.25 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="bg-surface rounded-xl p-4 space-y-3">
+                                {paymentMethods.map((m, i) => (
+                                  <div key={i} className="bg-white rounded-lg p-3 border border-deep/10">
+                                    <p className="text-xs font-bold text-primary flex items-center gap-1 mb-1">
+                                      <FaUniversity className="text-xs" /> {m.bank}
+                                    </p>
+                                    {m.lines.map((l, j) => (
+                                      <p key={j} className="text-xs text-deep/70">{l}</p>
+                                    ))}
+                                  </div>
+                                ))}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </>
                     )}
 
                     <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
@@ -228,24 +262,6 @@ export default function CursoDetailPage() {
                     <div className="flex items-center gap-2 text-xs text-deep/50 justify-center pt-2">
                       <FaShieldAlt />
                       <span>Pago seguro con Culqi</span>
-                    </div>
-
-                    <div className="border-t border-deep/10 pt-4 mt-4">
-                      <p className="text-sm font-bold text-deep mb-3">Transferencia / Depósito bancario:</p>
-                      <div className="space-y-3">
-                        {[
-                          { bank: 'BCP', lines: ['Recaudación: 20430', 'Cuenta: 25105155619028', 'CCI: 00225110515561902870'] },
-                          { bank: 'BCP Móvil', lines: ['Pago de Servicios → Instituto Idema'] },
-                          { bank: 'Yape / Plin', lines: ['991 317 346'] },
-                          { bank: 'BBVA', lines: ['001107630200236164'] },
-                          { bank: 'Interbank', lines: ['Cuenta: 5503004249241', 'CCI: 003550003004249241'] },
-                        ].map((m, i) => (
-                          <div key={i} className="bg-surface rounded-lg p-3">
-                            <p className="text-xs font-bold text-primary mb-1">{m.bank}</p>
-                            {m.lines.map((l, j) => <p key={j} className="text-xs text-deep/70">{l}</p>)}
-                          </div>
-                        ))}
-                      </div>
                     </div>
 
                     <div className="border-t border-deep/10 pt-4 mt-4">
