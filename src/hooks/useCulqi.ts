@@ -26,15 +26,21 @@ interface CulqiPaymentConfig {
   onError?: (error: string) => void
 }
 
-// Culqi public key - replace with production key for deploy
-const CULQI_PUBLIC_KEY = 'pk_test_90667d0a57d45c48' // Test key - update for production
+const CULQI_PUBLIC_KEY = import.meta.env.VITE_CULQI_PUBLIC_KEY as string
 
 export function useCulqi() {
   const { addToast } = useToast()
   const callbackRef = useRef<CulqiPaymentConfig | null>(null)
 
   useEffect(() => {
-    // Set up the global culqi callback
+    // Load Culqi script dynamically if not already present
+    if (!document.getElementById('culqi-script')) {
+      const script = document.createElement('script')
+      script.id = 'culqi-script'
+      script.src = 'https://checkout.culqi.com/js/v4'
+      document.head.appendChild(script)
+    }
+
     window.culqi = () => {
       if (window.Culqi.token) {
         const token = window.Culqi.token
@@ -48,7 +54,6 @@ export function useCulqi() {
     }
 
     return () => {
-      // Clean up
       window.culqi = () => {}
     }
   }, [addToast])
