@@ -231,6 +231,24 @@ export default function CursoDetailPage() {
                     </div>
 
                     <div className="border-t border-deep/10 pt-4 mt-4">
+                      <p className="text-sm font-bold text-deep mb-3">Transferencia / Depósito bancario:</p>
+                      <div className="space-y-3">
+                        {[
+                          { bank: 'BCP', lines: ['Recaudación: 20430', 'Cuenta: 25105155619028', 'CCI: 00225110515561902870'] },
+                          { bank: 'BCP Móvil', lines: ['Pago de Servicios → Instituto Idema'] },
+                          { bank: 'Yape / Plin', lines: ['991 317 346'] },
+                          { bank: 'BBVA', lines: ['001107630200236164'] },
+                          { bank: 'Interbank', lines: ['Cuenta: 5503004249241', 'CCI: 003550003004249241'] },
+                        ].map((m, i) => (
+                          <div key={i} className="bg-surface rounded-lg p-3">
+                            <p className="text-xs font-bold text-primary mb-1">{m.bank}</p>
+                            {m.lines.map((l, j) => <p key={j} className="text-xs text-deep/70">{l}</p>)}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="border-t border-deep/10 pt-4 mt-4">
                       <p className="text-sm font-bold text-deep mb-3">Este curso incluye:</p>
                       <ul className="space-y-2">
                         {['Acceso a plataforma virtual', 'Material didáctico digital', 'Certificado virtual incluido', 'Certificación ISO 21001', 'Soporte por WhatsApp'].map((item, i) => (
