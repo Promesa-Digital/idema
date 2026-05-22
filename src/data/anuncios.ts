@@ -10,4 +10,15 @@ import type { Anuncio } from '../types'
  *   5. `pages`: rutas donde aparece (default solo `'/'`).
  * Se muestra el primero cuyo rango y página coinciden y que el usuario no haya descartado.
  */
-export const anuncios: Anuncio[] = []
+// Popup del día (home): 22/05/2026 hasta 23:59 (hora local del navegador)
+export const anuncios: Anuncio[] = [
+  {
+    id: 'excel-basico-live-2026-05-22',
+    image: '/assets/img/anuncios/excel-basico-live.webp',
+    alt: 'Ruta al éxito digital: Potencia tu carrera con Excel básico (Live)',
+    startDate: '2026-05-22',
+    endDate: '2026-05-22',
+    frequency: 'session',
+    pages: ['/'],
+  },
+]
