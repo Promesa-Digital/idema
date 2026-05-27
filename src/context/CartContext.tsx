@@ -12,10 +12,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = useCallback((product: Carrera, price: number, modality?: string) => {
     setItems(prev => {
-      const existing = prev.find(i => i.product.slug === product.slug)
+      const key = `${product.slug}|${modality ?? ''}`
+      const existing = prev.find(i => `${i.product.slug}|${i.modality ?? ''}` === key)
       if (existing) {
         return prev.map(i =>
-          i.product.slug === product.slug
+          `${i.product.slug}|${i.modality ?? ''}` === key
             ? { ...i, quantity: i.quantity + 1 }
             : i
         )
@@ -25,17 +26,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setIsOpen(true)
   }, [])
 
-  const removeItem = useCallback((slug: string) => {
-    setItems(prev => prev.filter(i => i.product.slug !== slug))
+  // identifier: 'slug|modality' (modality may be empty)
+  const removeItem = useCallback((identifier: string) => {
+    setItems(prev => prev.filter(i => `${i.product.slug}|${i.modality ?? ''}` !== identifier))
   }, [])
 
-  const updateQuantity = useCallback((slug: string, quantity: number) => {
+  const updateQuantity = useCallback((identifier: string, quantity: number) => {
     if (quantity <= 0) {
-      setItems(prev => prev.filter(i => i.product.slug !== slug))
+      setItems(prev => prev.filter(i => `${i.product.slug}|${i.modality ?? ''}` !== identifier))
       return
     }
     setItems(prev =>
-      prev.map(i => (i.product.slug === slug ? { ...i, quantity } : i))
+      prev.map(i => (`${i.product.slug}|${i.modality ?? ''}` === identifier ? { ...i, quantity } : i))
     )
   }, [])
 

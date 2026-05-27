@@ -149,7 +149,7 @@ export default function CartDrawer() {
                     <div className="space-y-4">
                       {items.map(item => (
                         <motion.div
-                          key={item.product.slug} layout
+                          key={`${item.product.slug}|${item.modality ?? ''}`} layout
                           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: 100 }}
                           className="bg-surface rounded-xl p-4 border border-deep/10"
                         >
@@ -162,17 +162,17 @@ export default function CartDrawer() {
                               <p className="text-xs text-deep/70 mt-0.5">{item.product.duration} • {item.modality || item.product.modality}</p>
                               <p className="text-primary font-bold mt-1">S/.{item.price.toFixed(2)}</p>
                             </div>
-                            <button onClick={() => removeItem(item.product.slug)} className="text-deep/50 hover:text-cta transition-colors p-1 self-start">
+                            <button onClick={() => removeItem(`${item.product.slug}|${item.modality ?? ''}`)} className="text-deep/50 hover:text-cta transition-colors p-1 self-start">
                               <FaTrash className="text-sm" />
                             </button>
                           </div>
                           <div className="flex items-center justify-between mt-3 pt-3 border-t border-deep/10">
                             <div className="flex items-center gap-3">
-                              <button onClick={() => updateQuantity(item.product.slug, item.quantity - 1)} className="w-7 h-7 rounded-full bg-surface flex items-center justify-center">
+                              <button onClick={() => updateQuantity(`${item.product.slug}|${item.modality ?? ''}`, item.quantity - 1)} className="w-7 h-7 rounded-full bg-surface flex items-center justify-center">
                                 <FaMinus className="text-[10px]" />
                               </button>
                               <span className="font-semibold text-deep w-6 text-center">{item.quantity}</span>
-                              <button onClick={() => updateQuantity(item.product.slug, item.quantity + 1)} className="w-7 h-7 rounded-full bg-primary/15 text-dark flex items-center justify-center">
+                              <button onClick={() => updateQuantity(`${item.product.slug}|${item.modality ?? ''}`, item.quantity + 1)} className="w-7 h-7 rounded-full bg-primary/15 text-dark flex items-center justify-center">
                                 <FaPlus className="text-[10px]" />
                               </button>
                             </div>
@@ -231,7 +231,7 @@ export default function CartDrawer() {
                 <div className="px-4 pt-4 pb-2">
                   <p className="text-xs font-bold text-deep uppercase tracking-wider mb-2">Resumen del pedido</p>
                   {items.map(i => (
-                    <div key={i.product.slug} className="flex justify-between text-sm text-deep/80 mb-1">
+                    <div key={`${i.product.slug}|${i.modality ?? ''}`} className="flex justify-between text-sm text-deep/80 mb-1">
                       <span className="truncate pr-2">{i.product.title}</span>
                       <span className="font-semibold flex-shrink-0">S/.{(i.price * i.quantity).toFixed(2)}</span>
                     </div>
