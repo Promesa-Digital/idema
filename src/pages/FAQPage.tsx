@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaChevronDown, FaSearch } from 'react-icons/fa'
+import ContactLink from '../components/ui/ContactLink'
 
 interface FAQItem {
   id: string
@@ -250,7 +251,7 @@ export default function FAQPage() {
               Contáctanos directamente. Nuestro equipo está listo para ayudarte con cualquier pregunta.
             </p>
 
-            <a href="/#contacto">
+            <ContactLink>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -258,7 +259,7 @@ export default function FAQPage() {
               >
                 Contactar Ahora
               </motion.button>
-            </a>
+            </ContactLink>
           </motion.div>
         </div>
       </div>

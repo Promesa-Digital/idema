@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaArrowRight, FaCheckCircle, FaLink } from 'react-icons/fa'
+import ContactLink from '../components/ui/ContactLink'
 import { Link } from 'react-router-dom'
 import { carreras } from '../data/programs/carreras'
 
@@ -331,7 +332,7 @@ export default function OrientacionVocacionalPage() {
                 >
                   <h4 className="text-2xl font-bold mb-3">¿Listo para comenzar?</h4>
                   <p className="mb-6">Contáctanos para más información sobre tu carrera recomendada</p>
-                  <a href="/#contacto">
+                  <ContactLink>
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -339,7 +340,7 @@ export default function OrientacionVocacionalPage() {
                     >
                       Solicitar Información
                     </motion.button>
-                  </a>
+                  </ContactLink>
                 </motion.div>
 
                 {/* Reset Button */}

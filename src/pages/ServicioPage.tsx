@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { FaCheckCircle, FaArrowRight, FaWhatsapp, FaEnvelope } from 'react-icons/fa'
+import ContactLink from '../components/ui/ContactLink'
 
 interface Service {
   title: string
@@ -267,7 +268,7 @@ export default function ServicioPage() {
                 </motion.button>
               </a>
 
-              <a href="/#contacto">
+              <ContactLink>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -276,7 +277,7 @@ export default function ServicioPage() {
                   <FaEnvelope className="text-xl" />
                   Solicitar Información
                 </motion.button>
-              </a>
+              </ContactLink>
             </div>
           </motion.div>
         </div>
