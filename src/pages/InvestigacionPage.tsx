@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { FaMicroscope, FaBook, FaLightbulb, FaUsers, FaFileAlt, FaAward } from 'react-icons/fa'
+import ContactLink from '../components/ui/ContactLink'
 
 export default function InvestigacionPage() {
   const researchLines = [
@@ -211,7 +212,7 @@ export default function InvestigacionPage() {
               Puedes acceder a publicaciones, reportes y datos de investigación. Contáctanos para conocer más sobre nuestro trabajo académico.
             </p>
 
-            <a href="/#contacto">
+            <ContactLink>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -219,7 +220,7 @@ export default function InvestigacionPage() {
               >
                 Solicitar Información
               </motion.button>
-            </a>
+            </ContactLink>
           </motion.div>
         </div>
       </div>

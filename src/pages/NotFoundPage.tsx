@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { FaHome, FaSearch, FaArrowRight } from 'react-icons/fa'
+import ContactLink from '../components/ui/ContactLink'
 
 export default function NotFoundPage() {
   const suggestedLinks = [
@@ -119,15 +120,16 @@ export default function NotFoundPage() {
               </motion.button>
             </Link>
 
-            <a href="/#contacto">
+            <ContactLink>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-4 backdrop-blur-md bg-white/10 border border-white/30 text-white font-bold rounded-full hover:bg-white/20 transition-all duration-300"
               >
                 Contactar Soporte
+                <FaArrowRight />
               </motion.button>
-            </a>
+            </ContactLink>
           </motion.div>
 
           {/* Additional Help Text */}
@@ -139,9 +141,9 @@ export default function NotFoundPage() {
           >
             <p className="text-deep/70 text-sm">
               ¿Aún necesitas ayuda?
-              <a href="/#contacto" className="text-primary hover:text-primary font-semibold ml-1">
+              <ContactLink className="text-primary hover:text-primary font-semibold ml-1">
                 Contacta con nuestro equipo
-              </a>
+              </ContactLink>
             </p>
           </motion.div>
         </motion.div>
