@@ -14,8 +14,9 @@ export interface CartContextType {
   totalItems: number
   totalPrice: number
   addItem: (product: Carrera, price: number, modality?: string) => void
-  removeItem: (slug: string) => void
-  updateQuantity: (slug: string, quantity: number) => void
+  // The identifier can be a composite key 'slug|modality' to target a specific variant
+  removeItem: (identifier: string) => void
+  updateQuantity: (identifier: string, quantity: number) => void
   clearCart: () => void
   toggleCart: () => void
   closeCart: () => void
