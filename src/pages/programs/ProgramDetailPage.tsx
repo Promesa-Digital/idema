@@ -8,6 +8,7 @@ import { especializaciones } from '../../data/programs/especializaciones'
 import { useCart } from '../../context/CartContext'
 import { getAssignedWhatsAppRep, getWhatsAppUrl } from '../../data/whatsapp'
 import type { Carrera } from '../../types'
+import ContactLink from '../../components/ui/ContactLink'
 
 interface CategoryConfig {
   data: Carrera[]
@@ -348,12 +349,12 @@ export default function ProgramDetailPage() {
                   <FaWhatsapp className="text-xl" /> Contactar por WhatsApp
                 </motion.button>
               </a>
-              <a href="/#contacto">
+              <ContactLink>
                 <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                   className="px-8 py-4 bg-white/20 border-2 border-white text-white font-bold rounded-full flex items-center gap-2 justify-center hover:bg-white/30 transition-all duration-300 w-full sm:w-auto">
                   <FaEnvelope className="text-xl" /> Solicitar Información
                 </motion.button>
-              </a>
+              </ContactLink>
             </div>
           </motion.div>
         </div>

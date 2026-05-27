@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { FaCheckCircle, FaLightbulb, FaUsers, FaChartBar, FaHandshake, FaPhone } from 'react-icons/fa'
+import ContactLink from '../components/ui/ContactLink'
 
 export default function FranquiciatePage() {
   const benefits = [
@@ -187,7 +188,7 @@ export default function FranquiciatePage() {
                 </motion.button>
               </a>
 
-              <a href="/#contacto">
+              <ContactLink>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -195,7 +196,7 @@ export default function FranquiciatePage() {
                 >
                   Solicitar Propuesta
                 </motion.button>
-              </a>
+              </ContactLink>
             </div>
           </motion.div>
         </div>
