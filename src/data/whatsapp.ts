@@ -2,10 +2,9 @@ import type { WhatsAppRep } from '../types'
 
 export const whatsappReps: WhatsAppRep[] = [
   { name: 'ADRIAN', phone: '51991317346', probability: 0.40 },
-  { name: 'GERALDINE', phone: '51961768262', probability: 0.15 },
-  { name: 'RODOLFO', phone: '51969360623', probability: 0.15 },
-  { name: 'MERY', phone: '51997185822', probability: 0.15 },
-  { name: 'TATIANA', phone: '51986035468', probability: 0.15 },
+  { name: 'GERALDINE', phone: '51961768262', probability: 0.20 },
+  { name: 'RODOLFO', phone: '51969360623', probability: 0.20 },
+  { name: 'MERY', phone: '51997185822', probability: 0.20 },
 ]
 
 const ASSIGNED_REP_STORAGE_KEY = 'idema_assigned_whatsapp_rep'
