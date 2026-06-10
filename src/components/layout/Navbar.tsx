@@ -15,6 +15,7 @@ import {
   FaBriefcase,
   FaUsers,
   FaUserPlus,
+  FaCertificate,
   FaRobot,
   FaShoppingCart,
 } from 'react-icons/fa'
@@ -34,6 +35,7 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   FaBriefcase,
   FaUsers,
   FaUserPlus,
+  FaCertificate,
   FaRobot,
 }
 
