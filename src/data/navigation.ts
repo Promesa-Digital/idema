@@ -21,6 +21,7 @@ export const accederDropdown: DropdownItem[] = [
   { label: 'Biblioteca Virtual', href: 'https://books.instituto-idema.org/', icon: 'FaBook', external: true },
   { label: 'Bolsa de Trabajo', href: 'https://jobs.instituto-idema.org/', icon: 'FaBriefcase', external: true },
   { label: 'Intranet', href: 'https://apps.instituto-idema.org/', icon: 'FaUsers', external: true },
+  { label: 'Certificaciones', href: 'https://certificaciones.idema.edu.pe', icon: 'FaCertificate', external: true },
   { label: 'Inscríbete', href: 'https://www.aprende.instituto-idema.org/main/auth/inscription.php', icon: 'FaUserPlus', external: true },
 ]
 
@@ -54,6 +55,7 @@ export const footerLinks = {
   ],
   news: [
     { label: 'Orientación Vocacional', href: '/orientacion-vocacional' },
+    { label: 'Certificaciones', href: 'https://certificaciones.idema.edu.pe', external: true },
     { label: 'Biblioteca Virtual', href: 'https://books.instituto-idema.org', external: true },
     { label: 'Bolsa de Trabajo', href: 'https://jobs.instituto-idema.org', external: true },
     { label: 'Medios de Pago', href: '/servicios/medios-pago' },
