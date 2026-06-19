@@ -40,6 +40,7 @@ export const cursos: Carrera[] = [
     description: 'Curso técnico sobre inseminación artificial en ganado. Aprende las técnicas modernas de reproducción asistida, manejo de semen, detección de celo y mejora genética del hato ganadero.',
     image: '/assets/img/portfolio/agropecuaria.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=6259924c-ebd3-4aa6-8391-59402ed224df',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -69,6 +70,7 @@ export const cursos: Carrera[] = [
     description: 'El curso virtual de Asistencia al Usuario Oncológico es una valiosa oportunidad para aquellos interesados en brindar un apoyo comprensivo y empático a individuos y sus familias que enfrentan el diagnóstico y tratamiento del cáncer. Este curso proporciona conocimientos esenciales y habilidades prácticas para ofrecer una atención de calidad.',
     image: '/assets/img/portfolio/curso-oncologico.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=756f8e3c-4f61-4ed3-bad8-007ddc4b0b18',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico activo', 'Interés en el cuidado de pacientes oncológicos'],
     features: [
@@ -163,6 +165,7 @@ export const cursos: Carrera[] = [
     description: 'Fundamentos de fisioterapia, técnicas de rehabilitación física y terapias manuales para la recuperación del paciente.',
     image: '/assets/img/portfolio/fisioterapia.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=1a33f9c2-d603-4d89-9b72-332035d11f35',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -226,6 +229,7 @@ export const cursos: Carrera[] = [
     description: 'Fundamentos de odontología preventiva, higiene dental, asistencia odontológica y promoción de la salud bucal.',
     image: '/assets/img/portfolio/enfermeria.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=217cf78c-91dc-4a31-ac38-f069315b4dc4',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -247,6 +251,7 @@ export const cursos: Carrera[] = [
     description: 'Aprende el manejo técnico de la producción avícola: instalaciones, alimentación, sanidad y comercialización de aves de corral. Ideal para quienes desean emprender o mejorar su rendimiento en el sector avícola.',
     image: '/assets/images/Agropecuaria-Produccion-de-aves.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=3d42b94e-81bc-4dc5-96af-ab9ba0ce6886',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -272,6 +277,7 @@ export const cursos: Carrera[] = [
     description: 'Domina las técnicas de establecimiento, manejo y conservación de pasturas y forrajes para la alimentación del ganado. Conoce las variedades más productivas adaptadas al clima peruano.',
     image: '/assets/images/Agropecuaria-Produccion-de-pastos.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=b4751c5d-1594-4c06-b211-181dc8f1f629',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -297,6 +303,7 @@ export const cursos: Carrera[] = [
     description: 'Fundamentos de biología aplicados al sector agropecuario: célula, genética, microbiología y ecología. Base científica esencial para comprender los procesos vitales en plantas y animales de producción.',
     image: '/assets/images/Agropecuaria-Biologia.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=a9256459-077a-4b2c-8f77-d239b8846531',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -322,6 +329,7 @@ export const cursos: Carrera[] = [
     description: 'Aprende el manejo integral de la crianza de cuyes: instalaciones, alimentación, sanidad y comercialización. Una de las actividades pecuarias más rentables en la sierra peruana.',
     image: '/assets/images/Agropecuaria-Produccion-de-cuyes.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=570159bd-9dd5-497d-a74b-4d324388d930',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -347,6 +355,7 @@ export const cursos: Carrera[] = [
     description: 'Principios de nutrición animal, formulación de raciones balanceadas y evaluación de insumos alimenticios para diferentes especies de producción pecuaria.',
     image: '/assets/images/Agropecuaria-Alimentacion-y-nutricion-animal.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=22898561-e083-4e60-9177-6174559641c1',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -372,6 +381,7 @@ export const cursos: Carrera[] = [
     description: 'Manejo agronómico de cultivos de cereales (trigo, maíz, cebada) y leguminosas (frijol, soja, arveja) desde la preparación del terreno hasta la cosecha y poscosecha.',
     image: '/assets/images/Agropecuaria-Produccion-de-cereales-y-leguminosas.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=edd2dd8c-8ba3-47be-a0c0-f08a43b4c69e',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -397,6 +407,7 @@ export const cursos: Carrera[] = [
     description: 'Estudio de la anatomía y fisiología de los principales animales de producción: bovinos, ovinos, caprinos y aves. Conocimiento esencial para el manejo sanitario y productivo del ganado.',
     image: '/assets/images/Agropecuaria-Anatomia-y-fisiologia-animal.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=27a1bc76-b142-4d94-bd81-f3ef07df10a1',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -422,6 +433,7 @@ export const cursos: Carrera[] = [
     description: 'Técnicas de producción de cultivos tuberosos como papa, camote, oca y olluco. Manejo agronómico, control fitosanitario y buenas prácticas para maximizar el rendimiento.',
     image: '/assets/images/Agropecuaria-cursos-Produccion-de-tuberosas.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=bf06209c-e66e-4717-aba7-38fde86b033e',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -447,6 +459,7 @@ export const cursos: Carrera[] = [
     description: 'Estudio de la estructura, clasificación y procesos fisiológicos de las plantas. Base científica para comprender el crecimiento, desarrollo y producción de los cultivos agrícolas.',
     image: '/assets/images/Agropecuaria-Botanica-y-Fisiologia-vegetal.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=965bf94b-3bc1-448e-bf54-b68ddd3da78f',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -472,6 +485,7 @@ export const cursos: Carrera[] = [
     description: 'Aprende las técnicas modernas de preparación y acondicionamiento de suelos agrícolas: análisis de suelo, labranza, enmiendas y buenas prácticas para optimizar la productividad de tus cultivos.',
     image: '/assets/images/Agropecuaria-Preparacion-de-terrenos-ed.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=e41b1f4b-13f7-49e6-956a-9949fa75e234',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -497,6 +511,7 @@ export const cursos: Carrera[] = [
     description: 'Fundamentos de salud pública, epidemiología y estrategias de intervención comunitaria. Aprende a identificar determinantes de salud, diseñar programas preventivos y articular acciones con el sistema de salud peruano.',
     image: '/assets/images/salud_publica.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=33335254-3b1e-410c-bc7e-dd3a460f4928',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -522,6 +537,7 @@ export const cursos: Carrera[] = [
     description: 'Domina el lenguaje médico y de ciencias de la salud: raíces, prefijos, sufijos y términos clínicos usados en hospitales, clínicas y documentación sanitaria. Imprescindible para auxiliares y técnicos de salud.',
     image: '/assets/images/terminologiaen_salud.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=74027073-75ab-40b9-9ce9-cceccd8815c1',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -547,6 +563,7 @@ export const cursos: Carrera[] = [
     description: 'Aprende las técnicas esenciales de primeros auxilios: RCP, manejo de heridas, fracturas, quemaduras y situaciones de emergencia. Curso práctico y certificado, válido para cualquier entorno laboral o familiar.',
     image: '/assets/images/primeros_auxilios.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=3161e5c2-b050-4094-bf36-fab9289fa83d',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -572,6 +589,8 @@ export const cursos: Carrera[] = [
     description: 'Normas, protocolos y equipos de protección personal para el trabajo seguro en entornos de salud. Aprende a prevenir infecciones, manejar residuos biocontaminados y cumplir con las normativas del MINSA.',
     image: '/assets/images/bioseguridad.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=6f431aa6-47ac-454e-8867-4074ffd15894',
+
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -597,6 +616,8 @@ export const cursos: Carrera[] = [
     description: 'Gestión y elaboración de documentos clínicos: historias clínicas, formatos MINSA, reportes y registros de atención. Formación esencial para auxiliares administrativos y técnicos en establecimientos de salud.',
     image: '/assets/images/documentacion_salud.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=7abc1444-2bef-4617-ac6a-bf1a2bc1cf4b',
+
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -622,6 +643,7 @@ export const cursos: Carrera[] = [
     description: 'Técnicas y metodologías para la promoción de la salud y educación a comunidades. Aprende a diseñar sesiones educativas, materiales didácticos y estrategias de comunicación en salud dirigidas a la población.',
     image: '/assets/images/educacion_parasalud.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=5524d862-50a3-4833-95c5-f3c025d0a7e9',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -647,6 +669,7 @@ export const cursos: Carrera[] = [
     description: 'Principios fundamentales de biología celular, molecular y de organismos aplicados a las ciencias de la salud. Base científica necesaria para comprender procesos fisiológicos, patológicos y farmacológicos.',
     image: '/assets/images/biologia_general.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=a69e8f96-49ee-4153-b4e7-dfffd13468c8',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -672,6 +695,8 @@ export const cursos: Carrera[] = [
     description: 'Manejo del programa de inmunizaciones del MINSA: cadena de frío, administración de vacunas, registro y seguimiento. Formación especializada para el personal técnico de salud en establecimientos del primer nivel de atención.',
     image: '/assets/images/asistenciaen_inmunizaciones.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=d3698c26-8e6f-471a-8a61-9f268456a1d3',
+
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -697,6 +722,7 @@ export const cursos: Carrera[] = [
     description: 'Estudio de la anatomía humana con enfoque funcional y clínico. Conoce los sistemas del cuerpo humano, su estructura y relación con la función, orientado a técnicos y auxiliares de salud.',
     image: '/assets/images/anatomia_funcional.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=e0a9231b-fb09-401b-96c7-0c1604d1df90',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -722,6 +748,8 @@ export const cursos: Carrera[] = [
     description: 'Planificación y ejecución de actividades preventivo-promocionales en la comunidad: campañas de salud, tamizajes, control de presión arterial y glucosa. Formación práctica para el trabajo extramural en establecimientos de primer nivel.',
     image: '/assets/images/actividades_saludcomunitaria.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=445572b5-981a-4d67-a943-a0b501c30deb',
+
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
