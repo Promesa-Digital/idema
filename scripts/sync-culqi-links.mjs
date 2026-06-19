@@ -1,9 +1,8 @@
 /**
  * sync-culqi-links.mjs
  *
- * Consulta la API de Culqi para obtener todos los planes de suscripción,
- * los muestra en pantalla y actualiza automáticamente el campo `culqiLink`
- * en src/data/programs/cursos.ts.
+ * Consulta la API de Culqi para obtener los UUID de suscripción de cada plan
+ * y actualiza el campo `culqiLink` en src/data/programs/cursos.ts.
  *
  * Uso:
  *   node scripts/sync-culqi-links.mjs
@@ -42,13 +41,57 @@ const SECRET_KEY = env.CULQI_SECRET_KEY
 
 if (!SECRET_KEY) {
   console.error('\n❌  Falta CULQI_SECRET_KEY en .env')
-  console.error('   Agrega: CULQI_SECRET_KEY=sk_live_xxxx\n')
   process.exit(1)
 }
 
+// ── Mapeo manual: slug del curso → fragmento único del nombre del plan en Culqi ──
+// null = no tiene plan en Culqi o es ambiguo (no se toca)
+const SLUG_TO_PLAN_FRAGMENT = {
+  // Agropecuaria (AG)
+  'biologia-agropecuaria':           '001AG',
+  'botanica-fisiologia-vegetal':     '002AG',
+  'anatomia-fisiologia-animal':      '003AG',
+  'preparacion-de-terrenos':         '004AG',
+  'produccion-de-pastos':            '005AG',
+  'alimentacion-nutricion-animal':   '006AG',
+  'produccion-cereales-leguminosas': '007AG',
+  'produccion-de-tuberosas':         '008AG',
+  'produccion-de-aves':              '009AG',
+  'produccion-de-cuyes':             '010AG',
+  'inseminacion-artificial':         '029AG',
+
+  // Enfermería (ENF)
+  'biologia-general':                '001ENF',
+  'anatomia-funcional':              '002ENF',
+  'primeros-auxilios':               '003ENF',
+  'terminologia-en-salud':           '004ENF',
+  'educacion-para-la-salud':         '005ENF',
+  'salud-publica':                   '006ENF',
+  'actividades-salud-comunitaria':   '007ENF',
+  'asistencia-en-inmunizaciones':    '008ENF',
+  'documentacion-en-salud':          '009ENF',
+  'bioseguridad':                    '010ENF',
+  'asistencia-al-usuario-oncologico':'025ENF',
+  'fisioterapia-y-rehabilitacion':   '028ENF',
+  'salud-bucal':                     '029ENF',
+
+  // Sin plan en Culqi o ambiguo — no se modifican
+  'clasificacion-de-medicamentos':    null,
+  'atencion-cliente-centros-veterinarios': null,
+  'certificados-y-firmas-digitales':  null,
+  'facturacion-electronica-sunat':    null,
+  'mecanizacion-agricola':            null,
+  'planeacion-y-organizacion':        null,
+  'document-controller':              null,
+}
+
+// ── Normalizar texto para comparación ─────────────────────────────────────
+function norm(str) {
+  return str.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+}
+
 // ── Llamar API de Culqi ────────────────────────────────────────────────────
-async function culqiGet(path, base = 'https://api.culqi.com/v2') {
-  const url = `${base}${path}`
+async function culqiFetch(url) {
   const res = await fetch(url, {
     headers: {
       Authorization: `Bearer ${SECRET_KEY}`,
@@ -56,224 +99,147 @@ async function culqiGet(path, base = 'https://api.culqi.com/v2') {
     },
   })
   const body = await res.text()
-  if (!res.ok) {
-    throw new Error(`${res.status} @ ${url}\n   ${body}`)
-  }
+  if (!res.ok) throw new Error(`${res.status} @ ${url}\n   ${body.slice(0, 300)}`)
   return JSON.parse(body)
 }
 
-// ── Construir el link usando el campo "slug" (uuidV4) del plan ─────────────
-// Culqi lo llama "slug" en la doc pero puede venir con otro nombre
-function buildLink(plan) {
-  const uuid = plan.slug ?? plan.uuid ?? plan.plan_uuid ?? plan.link_id ?? null
-  if (!uuid || uuid === 'undefined') return null
-  return `https://subscriptions.culqi.com/onboarding?id=${uuid}`
-}
-
-// ── Normalizar texto para comparación fuzzy ────────────────────────────────
-function normalize(str) {
-  return str
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '') // quitar tildes
-    .replace(/[^a-z0-9\s]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-}
-
-// ── Score de similitud simple (palabras en común) ──────────────────────────
-function similarity(a, b) {
-  const wordsA = new Set(normalize(a).split(' ').filter(w => w.length > 3))
-  const wordsB = new Set(normalize(b).split(' ').filter(w => w.length > 3))
-  let matches = 0
-  for (const w of wordsA) if (wordsB.has(w)) matches++
-  return matches / Math.max(wordsA.size, wordsB.size, 1)
-}
-
-// ── Leer slugs y títulos de cursos.ts ─────────────────────────────────────
-function parseCourses(fileContent) {
-  const courses = []
-  const slugRe = /slug:\s*'([^']+)'/g
-  const titleRe = /title:\s*'([^']+)'/g
-  let slugMatch, titleMatch
-  const slugs = [], titles = []
-  while ((slugMatch = slugRe.exec(fileContent))) slugs.push(slugMatch[1])
-  while ((titleMatch = titleRe.exec(fileContent))) titles.push(titleMatch[1])
-  for (let i = 0; i < slugs.length; i++) {
-    courses.push({ slug: slugs[i], title: titles[i] || slugs[i] })
-  }
-  return courses
-}
-
-// ── Insertar o actualizar culqiLink en el bloque de un curso ──────────────
+// ── Actualizar culqiLink dentro del bloque de UN curso ─────────────────────
+// Extrae el bloque del objeto, opera solo dentro de él, y lo devuelve.
 function setCulqiLink(fileContent, slug, link) {
-  // Si ya tiene culqiLink para este slug, actualizarlo
-  const existingRe = new RegExp(
-    `(slug:\\s*'${slug}'[\\s\\S]*?culqiLink:\\s*')[^']*(')`
-  )
-  if (existingRe.test(fileContent)) {
-    return fileContent.replace(existingRe, `$1${link}$2`)
+  // Encontrar la posición del slug en el archivo
+  const slugStr = `slug: '${slug}'`
+  const slugIdx = fileContent.indexOf(slugStr)
+  if (slugIdx === -1) {
+    console.warn(`   ⚠️  slug '${slug}' no encontrado en cursos.ts`)
+    return fileContent
   }
 
-  // Si no tiene culqiLink, insertar después del campo price (o del slug si no hay price)
-  const insertAfterRe = new RegExp(
-    `(slug:\\s*'${slug}'[\\s\\S]*?price:\\s*'[^']*')(,?)(\n)`
-  )
-  if (insertAfterRe.test(fileContent)) {
-    return fileContent.replace(
-      insertAfterRe,
-      `$1$2$3    culqiLink: '${link}',\n`
-    )
+  // Encontrar el inicio del objeto contenedor (buscar hacia atrás: `  {\n`)
+  const blockStart = fileContent.lastIndexOf('  {\n', slugIdx)
+  // Encontrar el fin del objeto contenedor (buscar hacia adelante: `\n  },`)
+  const blockEndMarker = fileContent.indexOf('\n  },', slugIdx)
+  if (blockStart === -1 || blockEndMarker === -1) {
+    console.warn(`   ⚠️  No se pudo delimitar el bloque para '${slug}'`)
+    return fileContent
+  }
+  const blockEnd = blockEndMarker + 5 // incluir `\n  },`
+
+  let block = fileContent.slice(blockStart, blockEnd)
+
+  // Si ya existe culqiLink en este bloque, actualizarlo
+  if (block.includes('culqiLink:')) {
+    block = block.replace(/culqiLink:\s*'[^']*'/, `culqiLink: '${link}'`)
+  } else {
+    // Insertar después del campo `price`
+    const priceRe = /(    price:\s*'[^']*')(,?)(\n)/
+    if (priceRe.test(block)) {
+      block = block.replace(priceRe, `$1$2$3    culqiLink: '${link}',\n`)
+    } else {
+      // Fallback: insertar después del campo `slug`
+      const slugLineRe = new RegExp(`(    slug:\\s*'${slug}')(,?)(\\n)`)
+      block = block.replace(slugLineRe, `$1$2$3    culqiLink: '${link}',\n`)
+    }
   }
 
-  // Fallback: insertar después del slug
-  const fallbackRe = new RegExp(`(slug:\\s*'${slug}')(,?)(\n)`)
-  return fileContent.replace(
-    fallbackRe,
-    `$1$2$3    culqiLink: '${link}',\n`
-  )
+  return fileContent.slice(0, blockStart) + block + fileContent.slice(blockEnd)
 }
 
-// ── MAIN ──────────────────────────────────────────────────────────────────
+// ── MAIN ───────────────────────────────────────────────────────────────────
 const masked = SECRET_KEY.slice(0, 10) + '...' + SECRET_KEY.slice(-4)
 console.log(`\n🔑  Usando key: ${masked}`)
-console.log(`   Tipo detectado: ${SECRET_KEY.startsWith('sk_live') ? 'LIVE secret ✅' : SECRET_KEY.startsWith('sk_test') ? 'TEST secret ✅' : SECRET_KEY.startsWith('pk_') ? 'PUBLIC key ⚠️  (necesitas la SECRET key)' : 'desconocido ⚠️'}`)
-console.log('\n🔍  Consultando planes de suscripción en Culqi...\n')
+console.log(`   Tipo: ${SECRET_KEY.startsWith('sk_live') ? 'LIVE ✅' : SECRET_KEY.startsWith('sk_test') ? 'TEST ✅' : 'desconocido ⚠️'}`)
+console.log('\n🔍  Cargando todos los planes de Culqi...\n')
 
-// Endpoint correcto según la doc de Culqi: /v2/recurrent/plans
-// El campo "slug" del plan es el uuidV4 que va en el link de suscripción
-const from = 1000000000  // año 2001 — cubre todos los planes
-const to   = 9999999999  // año 2286
-
+// Paginar /v2/recurrent/plans para obtener todos los planes
+const from = 1000000000
+const to   = 9999999999
 let plans = []
 let nextUrl = `https://api.culqi.com/v2/recurrent/plans?creation_date_from=${from}&creation_date_to=${to}&limit=100`
 
-console.log('   Paginando planes desde /v2/recurrent/plans...')
-
 while (nextUrl) {
-  const res = await fetch(nextUrl, {
-    headers: {
-      Authorization:  `Bearer ${SECRET_KEY}`,
-      'Content-Type': 'application/json',
-    },
-  })
-  const body = await res.text()
-
-  if (!res.ok) {
-    console.error(`\n❌  Error ${res.status}: ${body.slice(0, 400)}`)
-    process.exit(1)
-  }
-
-  const json = JSON.parse(body)
+  const json = await culqiFetch(nextUrl)
   const page = Array.isArray(json.data) ? json.data
              : Array.isArray(json)      ? json
              : json.data ? [json.data]  : []
-
   plans.push(...page)
+  console.log(`   Página: +${page.length} (total: ${plans.length})`)
 
-  const remaining = json.remaining_items ?? '?'
+  const pagingNext  = json.paging?.next ?? null
   const cursorAfter = json.cursors?.after ?? null
-  const pagingNext  = json.paging?.next   ?? null
 
-  console.log(`   Página: +${page.length} (total: ${plans.length}, restantes: ${remaining}, cursor: ${cursorAfter ?? 'null'})`)
-
-  // Mostrar campos del primer plan de la primera página para debug
-  if (plans.length === page.length && page.length > 0) {
-    console.log('\n   Campos del objeto plan:', Object.keys(page[0]).join(', '))
-    console.log('   Primer plan:', JSON.stringify(page[0], null, 2).slice(0, 600))
-  }
-
-  // Usar paging.next si existe, si no construir con cursor
-  if (pagingNext) {
-    nextUrl = pagingNext
-  } else if (cursorAfter) {
-    nextUrl = `https://api.culqi.com/v2/recurrent/plans?creation_date_from=${from}&creation_date_to=${to}&limit=100&after=${cursorAfter}`
-  } else {
-    nextUrl = null
-  }
+  if (pagingNext) nextUrl = pagingNext
+  else if (cursorAfter) nextUrl = `https://api.culqi.com/v2/recurrent/plans?creation_date_from=${from}&creation_date_to=${to}&limit=100&after=${cursorAfter}`
+  else nextUrl = null
 
   if (plans.length >= 500) break
 }
 
-console.log(`\n✅  ${plans.length} planes cargados desde la API.`)
+console.log(`\n✅  ${plans.length} planes cargados.\n`)
 
-if (plans.length === 0) {
-  console.log('⚠️  No se encontraron planes en la cuenta de Culqi.')
-  console.log('   Crea los planes de suscripción en el dashboard primero.\n')
-  process.exit(0)
-}
-
-console.log(`✅  ${plans.length} plan(es) encontrado(s) en Culqi:\n`)
-console.log('   ID                                    │ Nombre')
-console.log('   ' + '─'.repeat(70))
+// Construir índice: nombre normalizado → plan
+const planIndex = {}
 for (const p of plans) {
-  console.log(`   ${String(p.id).padEnd(38)} │ ${p.name ?? p.short_name ?? '–'}`)
+  const key = norm(p.name ?? p.short_name ?? '')
+  planIndex[key] = p
 }
 
 // Leer cursos.ts
 const cursosPath = resolve(ROOT, 'src/data/programs/cursos.ts')
 let cursosContent = readFileSync(cursosPath, 'utf-8')
-const courses = parseCourses(cursosContent)
 
-console.log(`\n🔗  Intentando emparejar con ${courses.length} cursos en cursos.ts...\n`)
+console.log('🔗  Emparejando cursos con planes y obteniendo UUIDs...\n')
 
-const THRESHOLD = 0.4
-const matched = []
-const unmatched = []
+let updated = 0
+let skipped = 0
+let notFound = 0
 
-for (const plan of plans) {
-  const planName = plan.name ?? plan.short_name ?? ''
-  let best = null
-  let bestScore = 0
-
-  for (const course of courses) {
-    const score = Math.max(
-      similarity(planName, course.title),
-      similarity(planName, course.slug.replace(/-/g, ' '))
-    )
-    if (score > bestScore) {
-      bestScore = score
-      best = course
-    }
+for (const [courseSlug, fragment] of Object.entries(SLUG_TO_PLAN_FRAGMENT)) {
+  if (fragment === null) {
+    skipped++
+    continue
   }
 
-  const link = buildLink(plan)
-  if (best && bestScore >= THRESHOLD) {
-    matched.push({ plan: planName, course: best, link, score: bestScore })
-  } else {
-    unmatched.push({ plan: planName, id: plan.id, link: link ?? '(sin uuid)' })
+  // Buscar el plan cuyo nombre contenga el fragmento
+  const normFrag = norm(fragment)
+  let plan = null
+  for (const [key, p] of Object.entries(planIndex)) {
+    if (key.includes(normFrag)) { plan = p; break }
   }
-}
 
-if (matched.length > 0) {
-  console.log('✅  Emparejados automáticamente:')
-  for (const m of matched) {
-    const pct = Math.round(m.score * 100)
-    console.log(`   [${pct}%] "${m.plan}"  →  ${m.course.slug}`)
+  if (!plan) {
+    console.log(`   ⚠️  ${courseSlug.padEnd(42)} sin plan para "${fragment}"`)
+    notFound++
+    continue
   }
-}
 
-if (unmatched.length > 0) {
-  console.log('\n⚠️  Sin emparejar (slug incorrecto o nombre muy diferente):')
-  for (const u of unmatched) {
-    console.log(`   "${u.plan}"  (id: ${u.id})`)
-    console.log(`       link: ${u.link}`)
+  // Obtener el UUID (slug) del plan via endpoint individual
+  let uuid = null
+  try {
+    const detail = await culqiFetch(`https://api.culqi.com/v2/recurrent/plans/${plan.id}`)
+    uuid = detail.slug ?? null
+  } catch (e) {
+    console.error(`   ❌  ${courseSlug}: error al obtener plan — ${e.message}`)
+    notFound++
+    continue
   }
-  console.log('\n   Para asignarlos manualmente, agrega la línea en cursos.ts:')
-  console.log("   culqiLink: 'https://subscriptions.culqi.com/onboarding?id=...',")
-}
 
-if (matched.length === 0) {
-  console.log('\n❌  No se pudo emparejar ningún plan. Revisa los nombres en el dashboard de Culqi.')
-  process.exit(0)
-}
+  if (!uuid || uuid === 'undefined') {
+    console.log(`   ⚠️  ${courseSlug.padEnd(42)} plan "${plan.name}" sin slug UUID`)
+    notFound++
+    continue
+  }
 
-// Aplicar cambios — solo si el link tiene UUID válido
-const validMatches = matched.filter(m => m.link)
-for (const m of validMatches) {
-  cursosContent = setCulqiLink(cursosContent, m.course.slug, m.link)
+  const link = `https://subscriptions.culqi.com/onboarding?id=${uuid}`
+  console.log(`   ✅  ${courseSlug.padEnd(42)} ${plan.name} → ${uuid}`)
+  cursosContent = setCulqiLink(cursosContent, courseSlug, link)
+  updated++
 }
 
 writeFileSync(cursosPath, cursosContent, 'utf-8')
 
-console.log(`\n✅  cursos.ts actualizado con ${matched.length} link(s).\n`)
+console.log(`
+✅  cursos.ts actualizado.
+   Actualizados: ${updated}
+   Sin plan:     ${skipped}
+   No encontrados: ${notFound}
+`)
