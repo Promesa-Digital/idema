@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sync-culqi": "node scripts/sync-culqi-links.mjs",
+    "import-culqi-csv": "node scripts/import-culqi-csv.mjs"
   },
   "dependencies": {
     "@tsparticles/react": "^3.0.0",

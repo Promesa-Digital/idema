@@ -297,6 +297,7 @@ export const cursos: Carrera[] = [
     description: 'Fundamentos de biología aplicados al sector agropecuario: célula, genética, microbiología y ecología. Base científica esencial para comprender los procesos vitales en plantas y animales de producción.',
     image: '/assets/images/Agropecuaria-Biologia.webp',
     price: 'S/.150',
+    culqiLink: 'https://subscriptions.culqi.com/onboarding?id=a9256459-077a-4b2c-8f77-d239b8846531',
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -572,6 +573,7 @@ export const cursos: Carrera[] = [
     description: 'Normas, protocolos y equipos de protección personal para el trabajo seguro en entornos de salud. Aprende a prevenir infecciones, manejar residuos biocontaminados y cumplir con las normativas del MINSA.',
     image: '/assets/images/bioseguridad.webp',
     price: 'S/.150',
+
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -597,6 +599,7 @@ export const cursos: Carrera[] = [
     description: 'Gestión y elaboración de documentos clínicos: historias clínicas, formatos MINSA, reportes y registros de atención. Formación esencial para auxiliares administrativos y técnicos en establecimientos de salud.',
     image: '/assets/images/documentacion_salud.webp',
     price: 'S/.150',
+
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -672,6 +675,7 @@ export const cursos: Carrera[] = [
     description: 'Manejo del programa de inmunizaciones del MINSA: cadena de frío, administración de vacunas, registro y seguimiento. Formación especializada para el personal técnico de salud en establecimientos del primer nivel de atención.',
     image: '/assets/images/asistenciaen_inmunizaciones.webp',
     price: 'S/.150',
+
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
@@ -722,6 +726,7 @@ export const cursos: Carrera[] = [
     description: 'Planificación y ejecución de actividades preventivo-promocionales en la comunidad: campañas de salud, tamizajes, control de presión arterial y glucosa. Formación práctica para el trabajo extramural en establecimientos de primer nivel.',
     image: '/assets/images/actividades_saludcomunitaria.webp',
     price: 'S/.150',
+
     certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
