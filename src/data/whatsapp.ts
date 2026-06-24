@@ -1,10 +1,10 @@
 import type { WhatsAppRep } from '../types'
 
 export const whatsappReps: WhatsAppRep[] = [
-  { name: 'ADRIAN', phone: '51991317346', probability: 0.40 },
-  { name: 'GERALDINE', phone: '51961768262', probability: 0.20 },
-  { name: 'RODOLFO', phone: '51969360623', probability: 0.20 },
-  { name: 'MERY', phone: '51997185822', probability: 0.20 },
+  { name: 'GERALDINE', phone: '51961768262', probability: 0.25 },
+  { name: 'GIMENA', phone: '51997185822', probability: 0.25 },
+  { name: 'RODOLFO', phone: '51969360623', probability: 0.25 },
+  { name: 'TATIANA', phone: '51991317346', probability: 0.25 },
 ]
 
 const ASSIGNED_REP_STORAGE_KEY = 'idema_assigned_whatsapp_rep'
@@ -20,23 +20,30 @@ export function selectWhatsAppRep(): WhatsAppRep {
   return whatsappReps[whatsappReps.length - 1]
 }
 
+function getNextWhatsAppRep(previousPhone?: string | null): WhatsAppRep {
+  if (!previousPhone) {
+    return selectWhatsAppRep()
+  }
+
+  const currentIndex = whatsappReps.findIndex(rep => rep.phone === previousPhone)
+  if (currentIndex === -1) {
+    return selectWhatsAppRep()
+  }
+
+  return whatsappReps[(currentIndex + 1) % whatsappReps.length]
+}
+
 export function getAssignedWhatsAppRep(): WhatsAppRep {
   if (assignedRep) return assignedRep
 
   if (typeof window !== 'undefined') {
     const savedPhone = window.sessionStorage.getItem(ASSIGNED_REP_STORAGE_KEY)
-    const savedRep = whatsappReps.find(rep => rep.phone === savedPhone)
-    if (savedRep) {
-      assignedRep = savedRep
-      return assignedRep
-    }
+    assignedRep = getNextWhatsAppRep(savedPhone)
+    window.sessionStorage.setItem(ASSIGNED_REP_STORAGE_KEY, assignedRep.phone)
+    return assignedRep
   }
 
   assignedRep = selectWhatsAppRep()
-
-  if (typeof window !== 'undefined') {
-    window.sessionStorage.setItem(ASSIGNED_REP_STORAGE_KEY, assignedRep.phone)
-  }
 
   return assignedRep
 }
