@@ -4,18 +4,17 @@ import { FaWhatsapp, FaTimes } from 'react-icons/fa'
 import { getAssignedWhatsAppRep, getWhatsAppUrl } from '../../data/whatsapp'
 
 const repImages: Record<string, string> = {
-  MERY: '/assets/img/vendedoras/mery.jpeg',
   RODOLFO: '/assets/img/vendedoras/rodolfo.jpeg',
-  TATIANA: '/assets/img/vendedoras/tatiana.jpeg',
   GERALDINE: '/assets/img/vendedoras/geraldine.jpeg',
-  ADRIAN: '/assets/img/vendedoras/adrian.jpeg',
+  GIMENA: '/assets/img/idemaNEWLOGO2026.png',
+  TATIANA: '/assets/img/vendedoras/tatiana.png',
 }
 
 export default function WhatsAppButton() {
   const [showMenu, setShowMenu] = useState(false)
   const [isFooterInView, setIsFooterInView] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
-  // Asesor asignado al cargar la página: se mantiene durante toda la sesión.
+  // Asesor rotativo al cargar la página: avanza en cada recarga.
   const [assignedRep] = useState(() => getAssignedWhatsAppRep())
 
   useEffect(() => {
