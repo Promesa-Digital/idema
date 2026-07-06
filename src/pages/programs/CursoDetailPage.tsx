@@ -205,10 +205,12 @@ export default function CursoDetailPage() {
                           onClick={handlePaymentClick}
                           className="w-full py-4 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl flex items-center justify-center gap-3 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300">
                           <FaCreditCard className="text-lg" />
-                          Medios de Pago
-                          <motion.span animate={{ rotate: showPaymentMethods ? 0 : 180 }} transition={{ duration: 0.2 }}>
-                            <FaChevronUp className="text-sm" />
-                          </motion.span>
+                          {curso.culqiLink ? 'Pagar con Culqi' : 'Medios de Pago'}
+                          {!curso.culqiLink && (
+                            <motion.span animate={{ rotate: showPaymentMethods ? 0 : 180 }} transition={{ duration: 0.2 }}>
+                              <FaChevronUp className="text-sm" />
+                            </motion.span>
+                          )}
                         </motion.button>
 
                         <AnimatePresence>
