@@ -39,14 +39,14 @@ export const programCategories: ProgramCategory[] = [
     badge: 'AUXILIARES',
     titulo: 'Auxiliares',
     descripcion:
-      'Formación corta e intensiva de 10 meses, ideal para insertarte rápidamente al mercado laboral. Certificado reconocido por MINEDU con modalidad 100% virtual y horarios completamente flexibles.',
+      'Formación corta e intensiva de 10 meses, ideal para insertarte rápidamente al mercado laboral. Certificado Auxiliar con modalidad 100% virtual y horarios completamente flexibles.',
     imagen: '/assets/img/programs/auxiliares.webp',
     ruta: '/carreras?categoria=auxiliar',
     cantidad: auxiliares.length,
     imagenIzquierda: false,
     duracion: '10 meses',
     modalidad: 'Virtual',
-    certificaciones: ['Certificado Nacional reconocido por MINEDU', 'Certificación Internacional ISO 21001'],
+    certificaciones: ['Certificado Auxiliar', 'Certificación Internacional ISO 21001'],
   },
   {
     key: 'especializaciones',
@@ -60,7 +60,7 @@ export const programCategories: ProgramCategory[] = [
     imagenIzquierda: true,
     duracion: '10 meses',
     modalidad: '100% Virtual',
-    certificaciones: ['Diplomado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certificaciones: ['Certificación de Especialización', 'Certificación Internacional ISO 21001'],
   },
   {
     key: 'cursos',
@@ -74,6 +74,6 @@ export const programCategories: ProgramCategory[] = [
     imagenIzquierda: false,
     duracion: '4 semanas',
     modalidad: '100% Virtual',
-    certificaciones: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certificaciones: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
   },
 ]
