@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaTimes, FaTrash, FaMinus, FaPlus, FaShoppingCart, FaWhatsapp, FaCheckCircle } from 'react-icons/fa'
+import { FaTimes, FaTrash, FaMinus, FaPlus, FaShoppingCart, FaWhatsapp, FaCheckCircle, FaCreditCard } from 'react-icons/fa'
 import { MdArrowBack, MdSend } from 'react-icons/md'
 import { useCart } from '../../context/CartContext'
 
@@ -178,6 +178,16 @@ export default function CartDrawer() {
                             </div>
                             <span className="font-bold text-deep">S/.{(item.price * item.quantity).toFixed(2)}</span>
                           </div>
+                          {item.product.culqiLink && (
+                            <motion.button
+                              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                              onClick={() => window.open(item.product.culqiLink, '_blank', 'noopener,noreferrer')}
+                              className="w-full mt-3 py-2.5 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300"
+                            >
+                              <FaCreditCard className="text-sm" />
+                              Pagar con Culqi
+                            </motion.button>
+                          )}
                         </motion.div>
                       ))}
                     </div>

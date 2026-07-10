@@ -11,7 +11,7 @@ export const cursos: Carrera[] = [
     description: 'El curso de Clasificación de Medicamentos ofrece a estudiantes y profesionales de la salud la oportunidad de adentrarse en el mundo de la farmacología. Comprenderás cómo los medicamentos se agrupan y organizan según su origen y fabricante, conocimiento esencial para la práctica clínica y farmacéutica.',
     image: '/assets/img/portfolio/curso-clasificacion-medicamentos.webp',
     price: 'S/.150',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico activo', 'Interés en farmacología'],
     features: [
       'Introducción a la clasificación farmacéutica',
@@ -41,7 +41,7 @@ export const cursos: Carrera[] = [
     image: '/assets/img/portfolio/agropecuaria.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=6259924c-ebd3-4aa6-8391-59402ed224df',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Anatomía reproductiva',
@@ -71,7 +71,7 @@ export const cursos: Carrera[] = [
     image: '/assets/img/portfolio/curso-oncologico.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=756f8e3c-4f61-4ed3-bad8-007ddc4b0b18',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico activo', 'Interés en el cuidado de pacientes oncológicos'],
     features: [
       'Visión general de tipos de cáncer',
@@ -102,7 +102,7 @@ export const cursos: Carrera[] = [
     description: 'Aprende técnicas de atención al cliente especializada para clínicas y establecimientos veterinarios. Ideal para quienes trabajan o desean trabajar en centros veterinarios.',
     image: '/assets/img/portfolio/curso-atencion-veterinario.webp',
     price: 'S/.150',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Comunicación efectiva con dueños de mascotas',
@@ -123,7 +123,7 @@ export const cursos: Carrera[] = [
     description: 'Domina el uso de certificados digitales, firmas electrónicas y documentos digitales con validez legal en el Perú. Ideal para profesionales que necesitan firmas digitales.',
     image: '/assets/img/portfolio/facturacion.webp',
     price: 'S/.150',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Certificados digitales en el Perú',
@@ -144,7 +144,7 @@ export const cursos: Carrera[] = [
     description: 'Capacita a los participantes en el conocimiento y manejo básico de la facturación electrónica en Perú. Es un curso teórico-práctico que incluye el uso de un software de facturación en la nube para cumplir con las normativas de la SUNAT.',
     image: '/assets/img/portfolio/facturacion.webp',
     price: 'S/.150',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Sistema de facturación electrónica SUNAT',
@@ -166,7 +166,7 @@ export const cursos: Carrera[] = [
     image: '/assets/img/portfolio/fisioterapia.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=1a33f9c2-d603-4d89-9b72-332035d11f35',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Técnicas de rehabilitación física',
@@ -187,7 +187,7 @@ export const cursos: Carrera[] = [
     description: 'Manejo y mantenimiento de maquinaria agrícola, implementos de labranza y tecnología aplicada al campo.',
     image: '/assets/img/portfolio/curso-mecanizacion.webp',
     price: 'S/.150',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Maquinaria agrícola moderna',
@@ -208,7 +208,7 @@ export const cursos: Carrera[] = [
     description: 'Herramientas y metodologías de planificación estratégica, organización empresarial y gestión del tiempo.',
     image: '/assets/img/portfolio/administracion.webp',
     price: 'S/.150',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Planificación estratégica',
@@ -230,7 +230,7 @@ export const cursos: Carrera[] = [
     image: '/assets/img/portfolio/enfermeria.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=217cf78c-91dc-4a31-ac38-f069315b4dc4',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Odontología preventiva',
@@ -252,7 +252,7 @@ export const cursos: Carrera[] = [
     image: '/assets/images/Agropecuaria-Produccion-de-aves.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=3d42b94e-81bc-4dc5-96af-ab9ba0ce6886',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Tipos y razas de aves de producción',
@@ -278,7 +278,7 @@ export const cursos: Carrera[] = [
     image: '/assets/images/Agropecuaria-Produccion-de-pastos.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=b4751c5d-1594-4c06-b211-181dc8f1f629',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Tipos de pasturas y forrajes',
@@ -304,7 +304,7 @@ export const cursos: Carrera[] = [
     image: '/assets/images/Agropecuaria-Biologia.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=a9256459-077a-4b2c-8f77-d239b8846531',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Célula y organización de los seres vivos',
@@ -330,7 +330,7 @@ export const cursos: Carrera[] = [
     image: '/assets/images/Agropecuaria-Produccion-de-cuyes.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=570159bd-9dd5-497d-a74b-4d324388d930',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Razas de cuyes y selección',
@@ -356,7 +356,7 @@ export const cursos: Carrera[] = [
     image: '/assets/images/Agropecuaria-Alimentacion-y-nutricion-animal.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=22898561-e083-4e60-9177-6174559641c1',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Nutrientes esenciales y sus funciones',
@@ -382,7 +382,7 @@ export const cursos: Carrera[] = [
     image: '/assets/images/Agropecuaria-Produccion-de-cereales-y-leguminosas.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=edd2dd8c-8ba3-47be-a0c0-f08a43b4c69e',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Variedades de cereales y leguminosas',
@@ -408,7 +408,7 @@ export const cursos: Carrera[] = [
     image: '/assets/images/Agropecuaria-Anatomia-y-fisiologia-animal.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=27a1bc76-b142-4d94-bd81-f3ef07df10a1',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Sistemas y aparatos del cuerpo animal',
@@ -434,7 +434,7 @@ export const cursos: Carrera[] = [
     image: '/assets/images/Agropecuaria-cursos-Produccion-de-tuberosas.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=bf06209c-e66e-4717-aba7-38fde86b033e',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Variedades nativas y mejoradas',
@@ -460,7 +460,7 @@ export const cursos: Carrera[] = [
     image: '/assets/images/Agropecuaria-Botanica-y-Fisiologia-vegetal.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=965bf94b-3bc1-448e-bf54-b68ddd3da78f',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Morfología y anatomía vegetal',
@@ -486,7 +486,7 @@ export const cursos: Carrera[] = [
     image: '/assets/images/Agropecuaria-Preparacion-de-terrenos-ed.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=e41b1f4b-13f7-49e6-956a-9949fa75e234',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Tipos y propiedades del suelo',
@@ -512,7 +512,7 @@ export const cursos: Carrera[] = [
     image: '/assets/images/salud_publica.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=33335254-3b1e-410c-bc7e-dd3a460f4928',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Conceptos y determinantes de salud',
@@ -538,7 +538,7 @@ export const cursos: Carrera[] = [
     image: '/assets/images/terminologiaen_salud.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=74027073-75ab-40b9-9ce9-cceccd8815c1',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Raíces griegas y latinas en medicina',
@@ -564,7 +564,7 @@ export const cursos: Carrera[] = [
     image: '/assets/images/primeros_auxilios.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=3161e5c2-b050-4094-bf36-fab9289fa83d',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Evaluación inicial del accidentado',
@@ -591,7 +591,7 @@ export const cursos: Carrera[] = [
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=6f431aa6-47ac-454e-8867-4074ffd15894',
 
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Principios y niveles de bioseguridad',
@@ -618,7 +618,7 @@ export const cursos: Carrera[] = [
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=7abc1444-2bef-4617-ac6a-bf1a2bc1cf4b',
 
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Historia clínica y sus componentes',
@@ -644,7 +644,7 @@ export const cursos: Carrera[] = [
     image: '/assets/images/educacion_parasalud.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=5524d862-50a3-4833-95c5-f3c025d0a7e9',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Fundamentos de promoción de la salud',
@@ -670,7 +670,7 @@ export const cursos: Carrera[] = [
     image: '/assets/images/biologia_general.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=a69e8f96-49ee-4153-b4e7-dfffd13468c8',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Célula eucariota y procariota',
@@ -697,7 +697,7 @@ export const cursos: Carrera[] = [
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=d3698c26-8e6f-471a-8a61-9f268456a1d3',
 
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Esquema nacional de vacunación',
@@ -723,7 +723,7 @@ export const cursos: Carrera[] = [
     image: '/assets/images/anatomia_funcional.webp',
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=e0a9231b-fb09-401b-96c7-0c1604d1df90',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Sistema osteomuscular y articulaciones',
@@ -750,7 +750,7 @@ export const cursos: Carrera[] = [
     price: 'S/.150',
     culqiLink: 'https://subscriptions.culqi.com/onboarding?id=445572b5-981a-4d67-a943-a0b501c30deb',
 
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'Diagnóstico comunitario en salud',
@@ -777,7 +777,7 @@ export const cursos: Carrera[] = [
     image: '/assets/images/Document-controller-imagen.webp',
     price: 'S/.800',
     matricula: 'S/.100',
-    certification: ['Certificado reconocido por MINEDU a nivel nacional', 'Certificación Internacional ISO 21001:2018'],
+    certification: ['Certificado de aprobación o participación', 'Certificación Internacional ISO 21001:2018'],
     requirements: ['Copia de DNI', 'Correo electrónico'],
     features: [
       'M1: Introducción a Proyectos Mineros',

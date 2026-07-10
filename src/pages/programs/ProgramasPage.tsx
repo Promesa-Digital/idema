@@ -43,13 +43,13 @@ const learningPath = [
     icon: FaCertificate,
     color: 'bg-accent',
     title: 'Programas Auxiliares',
-    description: 'Formación rápida de 10 meses con certificado MINEDU',
+    description: 'Formación rápida de 10 meses con certificado auxiliar',
   },
   {
     icon: FaBook,
     color: 'bg-cta',
     title: 'Especializaciones',
-    description: 'Diplomados de 10 meses para profesionales con experiencia',
+    description: 'Certificaciones de especialización de 10 meses para profesionales con experiencia',
   },
   {
     icon: FaLaptop,
