@@ -6,7 +6,7 @@ import { carreras } from '../../data/programs/carreras'
 import { auxiliares } from '../../data/programs/auxiliares'
 import { especializaciones } from '../../data/programs/especializaciones'
 import { useCart } from '../../context/CartContext'
-import { getAssignedWhatsAppRep, getWhatsAppUrl } from '../../data/whatsapp'
+import { getWhatsAppRepForProgram, getWhatsAppUrl } from '../../data/whatsapp'
 import type { Carrera } from '../../types'
 import ContactLink from '../../components/ui/ContactLink'
 
@@ -79,6 +79,15 @@ function getCategoryFromPath(pathname: string): string {
   return segment || ''
 }
 
+function highlightTerm(text: string, term: string) {
+  if (!term) return text
+  const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const parts = text.split(new RegExp(`(${escaped})`, 'gi'))
+  return parts.map((part, i) =>
+    part.toLowerCase() === term.toLowerCase() ? <strong key={i}>{part}</strong> : part
+  )
+}
+
 export default function ProgramDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const { pathname } = useLocation()
@@ -133,7 +142,18 @@ export default function ProgramDetailPage() {
     addItem(program, numPrice, modality)
   }
 
-  const assignedRep = getAssignedWhatsAppRep()
+  const matriculaNum = program.matricula ? parseInt(program.matricula.replace(/[^0-9]/g, ''), 10) : 0
+  const virtualNum = program.priceVirtual ? parseInt(program.priceVirtual.replace(/[^0-9]/g, ''), 10) : 0
+
+  const handleStartMatricula = () => {
+    if (!program.matricula) return
+    addItem(program, matriculaNum, 'Matrícula')
+    if (program.priceVirtual) {
+      addItem(program, virtualNum, 'Virtual')
+    }
+  }
+
+  const assignedRep = getWhatsAppRepForProgram(category, program.slug)
   const isCarrera = category === 'carreras'
 
   return (
@@ -195,8 +215,16 @@ export default function ProgramDetailPage() {
           {/* Description */}
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-16">
             <h2 className="text-3xl font-bold mb-6 gradient-text">Descripción del Programa</h2>
-            <p className="text-lg text-deep leading-relaxed">{program.description}</p>
+            <p className="text-lg text-deep leading-relaxed">{highlightTerm(program.description, program.title)}</p>
           </motion.div>
+
+          {/* A quién va dirigido */}
+          {program.dirigidoA && (
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-16">
+              <h2 className="text-3xl font-bold mb-6 gradient-text">¿A quién va dirigido?</h2>
+              <p className="text-lg text-deep leading-relaxed">{highlightTerm(program.dirigidoA, program.title)}</p>
+            </motion.div>
+          )}
 
           {/* Prices & Add to Cart */}
           {prices.length > 0 && (
@@ -206,25 +234,52 @@ export default function ProgramDetailPage() {
                 {config.priceTitle}
               </h2>
               {program.matricula && (
-                <p className="text-deep/80 mb-6">Matrícula: <span className="font-bold text-primary">{program.matricula}</span></p>
+                <motion.div whileHover={{ scale: 1.01 }} className="mb-8 bg-gradient-to-br from-primary to-dark rounded-2xl p-6 md:p-8 text-white">
+                  <p className="text-white/70 uppercase text-xs font-bold tracking-wider mb-4">Inicia tu matrícula</p>
+                  <div className="flex flex-wrap items-end gap-x-8 gap-y-4 mb-6">
+                    <div>
+                      <p className="text-white/70 text-sm">Matrícula</p>
+                      <p className="text-2xl font-bold">{program.matricula}</p>
+                    </div>
+                    {program.priceVirtual && (
+                      <div>
+                        <p className="text-white/70 text-sm">Modalidad Virtual</p>
+                        <p className="text-2xl font-bold">{program.priceVirtual}<span className="text-sm font-normal text-white/70">/mes</span></p>
+                      </div>
+                    )}
+                    {program.priceVirtual && (
+                      <div className="ml-auto text-right">
+                        <p className="text-white/70 text-sm">Total inicial</p>
+                        <p className="text-3xl font-extrabold">S/ {matriculaNum + virtualNum}</p>
+                      </div>
+                    )}
+                  </div>
+                  <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                    onClick={handleStartMatricula}
+                    className="w-full py-5 bg-white text-primary font-bold text-lg rounded-full flex items-center justify-center gap-3 hover:shadow-xl transition-all duration-300">
+                    <FaShoppingCart className="text-2xl" /> Iniciar Matrícula
+                  </motion.button>
+                </motion.div>
               )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {prices.map(p => (
-                  <motion.div key={p.label} whileHover={{ translateY: -5 }}
-                    className="bg-gradient-to-br from-surface to-white rounded-xl p-6 border-2 border-deep/10 hover:border-primary/40 transition-all text-center">
-                    <p className="text-sm text-deep/70 uppercase tracking-wider font-semibold mb-2">{p.label}</p>
-                    <p className="text-3xl font-bold text-deep mb-4">
-                      {p.price}
-                      {config.showPriceSuffix && <span className="text-base text-deep/70 font-normal">/mes</span>}
-                    </p>
-                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                      onClick={() => handleAddToCart(p.label, p.price)}
-                      className="w-full py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-full flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300">
-                      <FaShoppingCart /> Agregar al Carrito
-                    </motion.button>
-                  </motion.div>
-                ))}
-              </div>
+              {!(program.matricula && prices.length === 1 && prices[0].label === 'Virtual') && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {prices.map(p => (
+                    <motion.div key={p.label} whileHover={{ translateY: -5 }}
+                      className="bg-gradient-to-br from-surface to-white rounded-xl p-6 border-2 border-deep/10 hover:border-primary/40 transition-all text-center">
+                      <p className="text-sm text-deep/70 uppercase tracking-wider font-semibold mb-2">{p.label}</p>
+                      <p className="text-3xl font-bold text-deep mb-4">
+                        {p.price}
+                        {config.showPriceSuffix && <span className="text-base text-deep/70 font-normal">/mes</span>}
+                      </p>
+                      <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                        onClick={() => handleAddToCart(p.label, p.price)}
+                        className="w-full py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-full flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300">
+                        <FaShoppingCart /> Agregar al Carrito
+                      </motion.button>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
             </motion.div>
           )}
 
