@@ -72,7 +72,7 @@ export const footerLinks = {
     addresses: [
       { label: 'INSTITUTO', value: 'Urb. Las Malvinas U-1 Pedregal - Majes, Arequipa', phone: '51 951 361 224 / 949221720' },
       { label: 'Oficina Majes', value: 'Calle Municipal Mz. I Lote 9 El Pedregal - Arequipa', phone: '51 987 066 652' },
-      { label: 'Oficina Arequipa', value: 'Calle Manuel Ugarteche 207, Selva Alegre', phone: '054-209978' },
+      { label: 'Oficina Arequipa', value: 'Calle Manuel Ugarteche 207, Selva Alegre', phone: '054-209978 / 987155725' },
     ],
     email: 'info@idema.edu.pe',
   },
