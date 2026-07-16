@@ -294,9 +294,9 @@ export default function ProgramDetailPage() {
                       <span className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent text-white text-sm flex items-center justify-center">{yi + 1}</span>
                       {period.year}
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="md:columns-2 gap-3">
                       {period.courses.map((course, ci) => (
-                        <div key={ci} className="flex items-start gap-3 p-3 rounded-lg bg-surface hover:bg-primary/10 transition-colors">
+                        <div key={ci} className="flex items-start gap-3 p-3 rounded-lg bg-surface hover:bg-primary/10 transition-colors break-inside-avoid mb-3">
                           <FaCheck className="text-primary mt-1 flex-shrink-0" />
                           <span className="text-deep text-sm">{course}</span>
                         </div>
