@@ -15,6 +15,7 @@ export interface Carrera {
   duration: string
   modality: string
   description: string
+  dirigidoA?: string
   image: string
   category: 'carrera' | 'auxiliar' | 'especializacion' | 'curso'
   features?: string[]

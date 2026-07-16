@@ -1,7 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaWhatsapp, FaTimes } from 'react-icons/fa'
-import { getAssignedWhatsAppRep, getWhatsAppUrl } from '../../data/whatsapp'
+import { getAssignedWhatsAppRep, getWhatsAppRepForProgram, getWhatsAppUrl } from '../../data/whatsapp'
+
+const PROGRAM_CATEGORIES = ['auxiliares', 'especializaciones', 'carreras']
 
 const repImages: Record<string, string> = {
   RODOLFO: '/assets/img/vendedoras/rodolfo.jpeg',
@@ -14,8 +17,18 @@ export default function WhatsAppButton() {
   const [showMenu, setShowMenu] = useState(false)
   const [isFooterInView, setIsFooterInView] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
-  // Asesor rotativo al cargar la página: avanza en cada recarga.
-  const [assignedRep] = useState(() => getAssignedWhatsAppRep())
+  const location = useLocation()
+
+  // En páginas de programa usa el mismo asesor que el CTA "Contactar por WhatsApp" de la página,
+  // así el botón flotante y el CTA nunca muestran vendedores distintos en una misma página.
+  // Fuera de páginas de programa, mantiene el asesor rotativo por sesión.
+  const assignedRep = useMemo(() => {
+    const [, category, slug] = location.pathname.split('/')
+    if (slug && PROGRAM_CATEGORIES.includes(category)) {
+      return getWhatsAppRepForProgram(category, slug)
+    }
+    return getAssignedWhatsAppRep()
+  }, [location.pathname])
 
   useEffect(() => {
     const footer = document.querySelector('footer')
