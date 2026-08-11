@@ -8,6 +8,7 @@ const Home = lazy(() => import('./pages/home/Home'))
 const ProgramDetailPage = lazy(() => import('./pages/programs/ProgramDetailPage'))
 const CursoDetailPage = lazy(() => import('./pages/programs/CursoDetailPage'))
 const NosotrosPage = lazy(() => import('./pages/NosotrosPage'))
+const BienestarPage = lazy(() => import('./pages/BienestarPage'))
 const FAQPage = lazy(() => import('./pages/FAQPage'))
 const FranquiciatePage = lazy(() => import('./pages/FranquiciatePage'))
 const InvestigacionPage = lazy(() => import('./pages/InvestigacionPage'))
@@ -39,6 +40,7 @@ function App() {
           <Route path="servicios/:slug" element={<ServicioPage />} />
           {/* Institucional */}
           <Route path="nosotros" element={<NosotrosPage />} />
+          <Route path="bienestar" element={<BienestarPage />} />
           <Route path="cursos-gratis" element={<CursosGratisPage />} />
           <Route path="idema-educa" element={<Navigate to="/carreras" replace />} />
           <Route path="orientacion-vocacional" element={<OrientacionVocacionalPage />} />

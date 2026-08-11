@@ -12,6 +12,7 @@ export const mainNavLinks: NavLink[] = [
   { label: 'Inicio', href: '/' },
   { label: 'Carreras', href: '/carreras' },
   { label: 'Sobre Nosotros', href: '/nosotros' },
+  { label: 'Bienestar Estudiantil', href: '/bienestar' },
 ]
 
 export const accederDropdown: DropdownItem[] = [
@@ -46,12 +47,10 @@ export const footerLinks = {
     { label: 'Sobre Nosotros', href: '/nosotros' },
     { label: 'Contacto', href: '/#contacto' },
   ],
-  careers: [
-    { label: 'Técnico en Enfermería', href: '/carreras/enfermeria' },
-    { label: 'Técnico en Contabilidad', href: '/carreras/contabilidad' },
-    { label: 'Técnico en Agropecuaria', href: '/carreras/agropecuaria' },
-    { label: 'Técnico en Admin. Bancaria', href: '/carreras/administracion-bancaria' },
-    { label: 'Técnico en Admin. Empresas', href: '/carreras/administracion' },
+  bienestar: [
+    { label: 'Servicio Médico (Tópico)', href: '/bienestar#servicio-medico' },
+    { label: 'Servicio Social', href: '/bienestar#servicio-social' },
+    { label: 'Servicio Psicopedagógico', href: '/bienestar#servicio-psicopedagogico' },
   ],
   news: [
     { label: 'Orientación Vocacional', href: '/orientacion-vocacional' },
