@@ -48,9 +48,9 @@ export const footerLinks = {
     { label: 'Contacto', href: '/#contacto' },
   ],
   bienestar: [
-    { label: 'Servicio Médico (Tópico)', href: '/bienestar#servicio-medico' },
-    { label: 'Servicio Social', href: '/bienestar#servicio-social' },
-    { label: 'Servicio Psicopedagógico', href: '/bienestar#servicio-psicopedagogico' },
+    { label: 'Servicio Médico (Tópico)', href: '/bienestar/medico' },
+    { label: 'Servicio Social', href: '/bienestar/social' },
+    { label: 'Servicio Psicopedagógico', href: '/bienestar/psicopedagogico' },
   ],
   news: [
     { label: 'Orientación Vocacional', href: '/orientacion-vocacional' },
