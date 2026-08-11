@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Link, useLocation, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { FaMapMarkerAlt, FaClock, FaLaptopHouse } from 'react-icons/fa'
@@ -10,6 +10,7 @@ import { serviciosBienestar, UBICACION_BIENESTAR, HORARIO_BIENESTAR } from '../d
 
 export default function BienestarPage() {
   const location = useLocation()
+  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 
   useEffect(() => {
@@ -33,8 +34,9 @@ export default function BienestarPage() {
 
       {/* Hero Section */}
       <div className="relative h-96 md:h-[500px] overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.jpeg')" }} />
-        <div className="absolute inset-0 bg-gradient-to-r from-dark/85 via-dark/60 to-transparent" />
+        <div className="hidden md:block absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/assets/img/bienestar/desktop/BIENESTAR_1.webp')" }} />
+        <div className="block md:hidden absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/assets/img/bienestar/mobile/BIENESTAR_2.webp')" }} />
+        <div className="absolute inset-0 bg-gradient-to-r from-dark/70 via-dark/40 to-transparent" />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -75,7 +77,16 @@ export default function BienestarPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 whileHover={{ translateY: -6 }}
-                className="flex flex-col bg-gradient-to-br from-surface to-white p-7 sm:p-8 rounded-2xl border border-deep/10 hover:border-primary/30 hover:shadow-xl transition-all duration-300"
+                role="link"
+                tabIndex={0}
+                onClick={() => navigate(`/bienestar/${servicio.slug}`)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    navigate(`/bienestar/${servicio.slug}`)
+                  }
+                }}
+                className="group flex flex-col bg-gradient-to-br from-surface to-white p-7 sm:p-8 rounded-2xl border border-deep/10 hover:border-primary/30 hover:shadow-xl transition-all duration-300 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-dark flex items-center justify-center mb-5">
                   <servicio.icon className="text-2xl text-white" aria-hidden="true" />
@@ -97,18 +108,16 @@ export default function BienestarPage() {
 
                 <div className="mt-auto flex flex-col gap-2">
                   <Link
-                    to={`/bienestar?servicio=${servicio.slug}#formulario`}
+                    to={`/bienestar/${servicio.slug}#formulario`}
+                    onClick={e => e.stopPropagation()}
                     className="inline-flex items-center justify-center gap-2 px-5 py-2.5 min-h-[44px] bg-primary text-white font-semibold rounded-full hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-1"
                   >
                     Solicitar cita
                   </Link>
-                  <Link
-                    to={`/bienestar/${servicio.slug}`}
-                    className="group inline-flex items-center justify-center gap-1 px-5 py-2 text-sm font-semibold text-primary hover:gap-2 transition-all"
-                  >
+                  <div className="inline-flex items-center justify-center gap-1 px-5 py-2 text-sm font-semibold text-primary group-hover:gap-2 transition-all">
                     Ver detalle del servicio
                     <MdArrowForward className="text-base" />
-                  </Link>
+                  </div>
                 </div>
               </motion.div>
             ))}

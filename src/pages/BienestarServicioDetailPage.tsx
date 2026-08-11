@@ -46,8 +46,9 @@ export default function BienestarServicioDetailPage() {
 
       {/* Hero Section */}
       <div className="relative h-96 md:h-[500px] overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.jpeg')" }} />
-        <div className="absolute inset-0 bg-gradient-to-r from-dark/85 via-dark/60 to-transparent" />
+        <div className="hidden md:block absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/assets/img/bienestar/desktop/BIENESTAR_1.webp')" }} />
+        <div className="block md:hidden absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/assets/img/bienestar/mobile/BIENESTAR_2.webp')" }} />
+        <div className="absolute inset-0 bg-gradient-to-r from-dark/70 via-dark/40 to-transparent" />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -140,11 +141,7 @@ export default function BienestarServicioDetailPage() {
             transition={{ duration: 0.6 }}
             className="scroll-mt-28 rounded-2xl overflow-hidden bg-gradient-to-br from-accent to-deep p-6 sm:p-10"
           >
-            <CitaForm
-              servicios={[{ slug: servicio.slug, title: servicio.title }]}
-              title="Solicita tu cita"
-              subtitle={`Completa el formulario y te contactaremos para coordinar tu atención de ${servicio.title.toLowerCase()}.`}
-            />
+            <CitaForm servicios={[{ slug: servicio.slug, title: servicio.title }]} />
           </motion.div>
         </div>
       </div>
