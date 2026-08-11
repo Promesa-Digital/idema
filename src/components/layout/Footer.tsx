@@ -105,17 +105,17 @@ export default function Footer() {
             </ul>
           </motion.div>
 
-          {/* Careers */}
+          {/* Bienestar Estudiantil */}
           <motion.div variants={itemVariants}>
-            <h3 className="text-lg font-bold mb-6">Carreras</h3>
+            <h3 className="text-lg font-bold mb-6">Bienestar Estudiantil</h3>
             <ul className="space-y-3">
-              {footerLinks.careers.map(career => (
-                <li key={career.href}>
+              {footerLinks.bienestar.map(item => (
+                <li key={item.href}>
                   <Link
-                    to={career.href}
+                    to={item.href}
                     className="text-white/80 hover:text-primary transition-colors text-sm"
                   >
-                    {career.label}
+                    {item.label}
                   </Link>
                 </li>
               ))}
