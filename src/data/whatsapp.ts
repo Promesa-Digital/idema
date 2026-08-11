@@ -48,6 +48,30 @@ export function getAssignedWhatsAppRep(): WhatsAppRep {
   return assignedRep
 }
 
+// Orden explícito de rotación para auxiliares/especializaciones: cada programa consecutivo
+// recibe un vendedor distinto (solo se repite al dar la vuelta cada 4 programas).
+const PROGRAM_ROTATION_ORDER = [
+  'auxiliares-veterinaria',
+  'auxiliares-farmacia',
+  'auxiliares-agronomia',
+  'especializaciones-veterinaria',
+  'especializaciones-farmacia',
+  'especializaciones-agronomia',
+  'especializaciones-psicologia',
+]
+
+export function getWhatsAppRepForProgram(category: string, slug: string): WhatsAppRep {
+  const key = `${category}-${slug}`
+  const index = PROGRAM_ROTATION_ORDER.indexOf(key)
+  if (index !== -1) return whatsappReps[index % whatsappReps.length]
+
+  let hash = 0
+  for (let i = 0; i < key.length; i++) {
+    hash = (hash * 31 + key.charCodeAt(i)) >>> 0
+  }
+  return whatsappReps[hash % whatsappReps.length]
+}
+
 export function getWhatsAppUrl(phone: string, message: string): string {
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
 }
