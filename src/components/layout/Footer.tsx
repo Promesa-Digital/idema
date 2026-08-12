@@ -111,12 +111,20 @@ export default function Footer() {
             <ul className="space-y-3">
               {footerLinks.bienestar.map(item => (
                 <li key={item.href}>
-                  <Link
-                    to={item.href}
-                    className="text-white/80 hover:text-primary transition-colors text-sm"
-                  >
-                    {item.label}
-                  </Link>
+                  {item.external ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-white/80 hover:text-primary transition-colors text-sm"
+                    >
+                      {item.label}
+                    </a>
+                  ) : (
+                    <Link to={item.href} className="text-white/80 hover:text-primary transition-colors text-sm">
+                      {item.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

@@ -12,7 +12,7 @@ export const mainNavLinks: NavLink[] = [
   { label: 'Inicio', href: '/' },
   { label: 'Carreras', href: '/carreras' },
   { label: 'Sobre Nosotros', href: '/nosotros' },
-  { label: 'Bienestar Estudiantil', href: '/bienestar' },
+  { label: 'Bienestar Estudiantil', href: 'https://bienestar.idema.edu.pe', external: true },
 ]
 
 export const accederDropdown: DropdownItem[] = [
@@ -48,9 +48,9 @@ export const footerLinks = {
     { label: 'Contacto', href: '/#contacto' },
   ],
   bienestar: [
-    { label: 'Servicio Médico (Tópico)', href: '/bienestar/medico' },
-    { label: 'Servicio Social', href: '/bienestar/social' },
-    { label: 'Servicio Psicopedagógico', href: '/bienestar/psicopedagogico' },
+    { label: 'Servicio Médico', href: 'https://bienestar.idema.edu.pe/medico', external: true },
+    { label: 'Servicio Social', href: 'https://bienestar.idema.edu.pe/social', external: true },
+    { label: 'Servicio Psicopedagógico', href: 'https://bienestar.idema.edu.pe/psicopedagogico', external: true },
   ],
   news: [
     { label: 'Orientación Vocacional', href: '/orientacion-vocacional' },
