@@ -91,7 +91,7 @@ function CategoriaCard({ titulo, descripcion, imagen, ruta, cantidad, duracion, 
 export default function ProgramasSection() {
   const { ref, inView } = useInView({ triggerOnce: true })
   const { data: cursosApi } = useCursosDestacados()
-  const cursos = cursosApi ?? cursosEstaticos
+  const cursos = Array.isArray(cursosApi) ? cursosApi : cursosEstaticos
 
   return (
     <section
