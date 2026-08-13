@@ -12,7 +12,7 @@ export default function LoginPage() {
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Iniciar sesión</h1>
-            <p className="text-white/80">Ingresa con tu cuenta de alumno o staff.</p>
+            <p className="text-white/80">Ingresa con tus credenciales.</p>
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm shadow-2xl p-6 sm:p-8">
