@@ -24,6 +24,13 @@ function readUserFromToken(): AuthUser | null {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(() => readUserFromToken())
 
+  const login = useCallback((accessToken: string, refreshToken: string) => {
+    tokenStorage.setTokens(accessToken, refreshToken)
+    const nextUser = readUserFromToken()
+    setUser(nextUser)
+    return nextUser
+  }, [])
+
   const logout = useCallback(() => {
     tokenStorage.clearTokens()
     setUser(null)
@@ -36,8 +43,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const value = useMemo(
-    () => ({ user, isAuthenticated: user !== null, logout }),
-    [user, logout],
+    () => ({ user, isAuthenticated: user !== null, login, logout }),
+    [user, login, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
