@@ -12,8 +12,10 @@
     "import-culqi-csv": "node scripts/import-culqi-csv.mjs"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.101.4",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.9.1",
+    "axios": "^1.19.0",
     "framer-motion": "^12.36.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
