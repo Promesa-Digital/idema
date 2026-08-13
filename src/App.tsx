@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import Layout from './components/Layout'
 import LoadingSpinner from './components/ui/LoadingSpinner'
+import PrivateRoute from './components/auth/PrivateRoute'
 
 // Lazy load pages for code splitting
 const Home = lazy(() => import('./pages/home/Home'))
@@ -22,6 +23,10 @@ const OrientacionVocacionalPage = lazy(() => import('./pages/OrientacionVocacion
 const NoticiasPage = lazy(() => import('./pages/NoticiasPage'))
 const ProgramasPage = lazy(() => import('./pages/programs/ProgramasPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
+const LoginPage = lazy(() => import('./pages/LoginPage'))
+const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'))
+const PortalPage = lazy(() => import('./pages/PortalPage'))
+const AdminPage = lazy(() => import('./pages/AdminPage'))
 
 function App() {
   return (
@@ -56,6 +61,16 @@ function App() {
           <Route path="terminos-y-condiciones" element={<LegalPage />} />
           <Route path="libro-reclamaciones" element={<LibroReclamacionesPage />} />
           <Route path="eliminar-cuenta" element={<EliminarCuentaPage />} />
+          {/* Auth */}
+          <Route path="login" element={<LoginPage />} />
+          <Route path="unauthorized" element={<UnauthorizedPage />} />
+          {/* Rutas protegidas */}
+          <Route element={<PrivateRoute allowedRoles={['alumno', 'staff']} />}>
+            <Route path="portal" element={<PortalPage />} />
+          </Route>
+          <Route element={<PrivateRoute allowedRoles={['staff']} />}>
+            <Route path="admin" element={<AdminPage />} />
+          </Route>
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
         </Route>
