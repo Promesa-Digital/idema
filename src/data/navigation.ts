@@ -51,7 +51,7 @@ export const footerLinks = {
     { label: 'Servicio Médico', href: '/bienestar/medico' },
     { label: 'Servicio Social', href: '/bienestar/social' },
     { label: 'Servicio Psicopedagógico', href: '/bienestar/psicopedagogico' },
-    { label: 'Acceso Staff', href: 'https://bienestar.idema.edu.pe', external: true },
+    { label: 'Acceso al panel', href: 'https://bienestar.idema.edu.pe', external: true },
   ],
   news: [
     { label: 'Orientación Vocacional', href: '/orientacion-vocacional' },
