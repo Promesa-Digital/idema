@@ -143,6 +143,19 @@ export default function BienestarServicioDetailPage() {
           >
             <CitaForm servicios={[{ slug: servicio.slug, title: servicio.title }]} />
           </motion.div>
+
+          {/* Acceso staff */}
+          <p className="mt-6 text-center text-sm text-deep/60">
+            ¿Sos parte del equipo de Bienestar Estudiantil?{' '}
+            <a
+              href="https://bienestar.idema.edu.pe"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary font-semibold hover:underline"
+            >
+              Accedé al panel de solicitudes
+            </a>
+          </p>
         </div>
       </div>
     </>
