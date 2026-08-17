@@ -301,7 +301,7 @@ export default function Navbar() {
                 isScrolled ? 'opacity-100' : 'opacity-90'
               }`}
             >
-              Instituto Santiago<br />Ramón y Cajal
+              IES Idema
             </span>
           </Link>
 

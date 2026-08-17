@@ -10,15 +10,7 @@ const slides = [
     titulo:    'Instituto IDEMA',
     subtitulo: 'Más de 30 años transformando la educación técnica en el Perú',
     cta:       'Conoce nuestros programas',
-    ctaLink:   '/carreras',
-  },
-  {
-    desktop: '/assets/img/hero/desktop/ADMI_EMPRESAS_1.webp',
-    mobile:  '/assets/img/hero/mobile/ADMI_EMPRESAS_2.webp',
-    titulo:    'Administración de Empresas',
-    subtitulo: 'Lidera el mundo empresarial con formación de calidad',
-    cta:       'Ver carrera',
-    ctaLink:   '/carreras/administracion',
+    ctaLink:   '/programas-de-estudio',
   },
   {
     desktop: '/assets/img/hero/desktop/AGROPECUARIA_1.webp',
@@ -26,7 +18,7 @@ const slides = [
     titulo:    'Agropecuaria',
     subtitulo: 'Impulsa el desarrollo agrícola con tecnología moderna',
     cta:       'Ver carrera',
-    ctaLink:   '/carreras/agropecuaria',
+    ctaLink:   '/programas-de-estudio/agropecuaria',
   },
   {
     desktop: '/assets/img/hero/desktop/CONTABILIDAD_1.webp',
@@ -34,7 +26,7 @@ const slides = [
     titulo:    'Contabilidad',
     subtitulo: 'Domina las finanzas y la gestión contable profesional',
     cta:       'Ver carrera',
-    ctaLink:   '/carreras/contabilidad',
+    ctaLink:   '/programas-de-estudio/contabilidad',
   },
   {
     desktop: '/assets/img/hero/desktop/ENFERMERIA_1.webp',
@@ -42,7 +34,7 @@ const slides = [
     titulo:    'Enfermería Técnica',
     subtitulo: 'Forma parte del equipo de salud que el Perú necesita',
     cta:       'Ver carrera',
-    ctaLink:   '/carreras/enfermeria',
+    ctaLink:   '/programas-de-estudio/enfermeria',
   },
 ]
 

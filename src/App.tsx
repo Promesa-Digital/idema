@@ -1,13 +1,19 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import Layout from './components/Layout'
 import LoadingSpinner from './components/ui/LoadingSpinner'
+
+function RedirectToProgramaSlug() {
+  const { slug } = useParams<{ slug: string }>()
+  return <Navigate to={`/programas-de-estudio/${slug}`} replace />
+}
 
 // Lazy load pages for code splitting
 const Home = lazy(() => import('./pages/home/Home'))
 const ProgramDetailPage = lazy(() => import('./pages/programs/ProgramDetailPage'))
 const CursoDetailPage = lazy(() => import('./pages/programs/CursoDetailPage'))
 const NosotrosPage = lazy(() => import('./pages/NosotrosPage'))
+const TransparenciaPage = lazy(() => import('./pages/legal/TransparenciaPage'))
 const BienestarPage = lazy(() => import('./pages/BienestarPage'))
 const BienestarServicioDetailPage = lazy(() => import('./pages/BienestarServicioDetailPage'))
 const FAQPage = lazy(() => import('./pages/FAQPage'))
@@ -30,10 +36,12 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           {/* Oferta educativa */}
-          <Route path="carreras" element={<ProgramasPage />} />
-          <Route path="programas" element={<Navigate to="/carreras" replace />} />
+          <Route path="programas-de-estudio" element={<ProgramasPage />} />
+          <Route path="carreras" element={<Navigate to="/programas-de-estudio" replace />} />
+          <Route path="programas" element={<Navigate to="/programas-de-estudio" replace />} />
           {/* Detalle de programas */}
-          <Route path="carreras/:slug" element={<ProgramDetailPage />} />
+          <Route path="programas-de-estudio/:slug" element={<ProgramDetailPage />} />
+          <Route path="carreras/:slug" element={<RedirectToProgramaSlug />} />
           <Route path="auxiliares/:slug" element={<ProgramDetailPage />} />
           <Route path="especializaciones/:slug" element={<ProgramDetailPage />} />
           <Route path="cursos/:slug" element={<CursoDetailPage />} />
@@ -41,10 +49,11 @@ function App() {
           <Route path="servicios/:slug" element={<ServicioPage />} />
           {/* Institucional */}
           <Route path="nosotros" element={<NosotrosPage />} />
+          <Route path="transparencia" element={<TransparenciaPage />} />
           <Route path="bienestar" element={<BienestarPage />} />
           <Route path="bienestar/:slug" element={<BienestarServicioDetailPage />} />
           <Route path="cursos-gratis" element={<CursosGratisPage />} />
-          <Route path="idema-educa" element={<Navigate to="/carreras" replace />} />
+          <Route path="idema-educa" element={<Navigate to="/programas-de-estudio" replace />} />
           <Route path="orientacion-vocacional" element={<OrientacionVocacionalPage />} />
           {/* Info pages */}
           <Route path="faq" element={<FAQPage />} />

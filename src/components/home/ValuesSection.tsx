@@ -1,31 +1,37 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-import { MdSchool, MdLightbulb, MdPublic, MdTrendingUp } from 'react-icons/md'
+import { MdVolunteerActivism, MdVerifiedUser, MdGavel, MdLightbulb, MdBalance } from 'react-icons/md'
 
 const values = [
   {
-    icon: MdSchool,
-    title: 'Excelencia Educativa',
-    description: 'Compromiso con la más alta calidad en formación técnica profesional',
+    icon: MdVolunteerActivism,
+    title: 'Respeto',
+    description: 'Reconocimiento de la dignidad de cada persona, promoviendo un trato inclusivo y sin discriminación.',
     color: 'from-primary to-dark',
+  },
+  {
+    icon: MdVerifiedUser,
+    title: 'Responsabilidad',
+    description: 'Actuación comprometida y ética, asumiendo las consecuencias de las decisiones académicas y profesionales.',
+    color: 'from-dark to-deep',
+  },
+  {
+    icon: MdGavel,
+    title: 'Disciplina',
+    description: 'Cumplimiento de las normas y reglamentos institucionales para garantizar orden y excelencia.',
+    color: 'from-accent to-deep',
   },
   {
     icon: MdLightbulb,
     title: 'Innovación',
-    description: 'Incorporamos tecnología y metodologías modernas en la enseñanza',
-    color: 'from-dark to-deep',
-  },
-  {
-    icon: MdPublic,
-    title: 'Compromiso Social',
-    description: 'Educación accesible e inclusiva para el desarrollo de la comunidad',
-    color: 'from-accent to-deep',
-  },
-  {
-    icon: MdTrendingUp,
-    title: 'Crecimiento',
-    description: 'Formamos profesionales íntegros preparados para los retos del futuro',
+    description: 'Generación de ideas y soluciones que fortalezcan la mejora continua institucional.',
     color: 'from-cta to-accent',
+  },
+  {
+    icon: MdBalance,
+    title: 'Ética',
+    description: 'Orientación permanente del comportamiento responsable y transparente de la comunidad educativa.',
+    color: 'from-primary to-accent',
   },
 ]
 
@@ -73,7 +79,7 @@ export default function ValuesSection() {
           variants={containerVariants}
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 sm:gap-8"
         >
           {values.map((value, index) => {
             const Icon = value.icon

@@ -19,7 +19,7 @@ const categories = [
 ] as const
 
 const categoryBasePath: Record<string, string> = {
-  carrera: '/carreras',
+  carrera: '/programas-de-estudio',
   auxiliar: '/auxiliares',
   especializacion: '/especializaciones',
   curso: '/cursos',
@@ -133,7 +133,7 @@ export default function ProgramasPage() {
                   key={cat.key}
                   onClick={() => {
                     setActiveFilter(cat.key)
-                    navigate(`/carreras?categoria=${cat.key}`)
+                    navigate(`/programas-de-estudio?categoria=${cat.key}`)
                   }}
                   className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
                     activeFilter === cat.key
@@ -168,7 +168,7 @@ export default function ProgramasPage() {
             <div className="text-center py-20">
               <p className="text-deep/60 text-lg">No se encontraron programas con esos criterios.</p>
               <button
-                onClick={() => { setActiveFilter('todos'); navigate('/carreras'); setSearch('') }}
+                onClick={() => { setActiveFilter('todos'); navigate('/programas-de-estudio'); setSearch('') }}
                 className="mt-4 text-primary font-semibold hover:underline"
               >
                 Limpiar filtros

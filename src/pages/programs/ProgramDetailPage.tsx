@@ -27,10 +27,10 @@ interface CategoryConfig {
 }
 
 const categoryMap: Record<string, CategoryConfig> = {
-  carreras: {
+  'programas-de-estudio': {
     data: carreras,
-    breadcrumbLabel: 'Carreras',
-    breadcrumbLink: '/carreras?categoria=carrera',
+    breadcrumbLabel: 'Programas de Estudio',
+    breadcrumbLink: '/programas-de-estudio?categoria=carrera',
     curriculumTitle: 'Malla Curricular',
     featuresTitle: 'Beneficios Institucionales',
     priceTitle: 'Inversión Mensual',
@@ -45,7 +45,7 @@ const categoryMap: Record<string, CategoryConfig> = {
   auxiliares: {
     data: auxiliares,
     breadcrumbLabel: 'Programas Auxiliares',
-    breadcrumbLink: '/carreras?categoria=auxiliar',
+    breadcrumbLink: '/programas-de-estudio?categoria=auxiliar',
     curriculumTitle: 'Plan de Estudios',
     featuresTitle: 'Beneficios Institucionales',
     priceTitle: 'Inversión',
@@ -60,7 +60,7 @@ const categoryMap: Record<string, CategoryConfig> = {
   especializaciones: {
     data: especializaciones,
     breadcrumbLabel: 'Especializaciones',
-    breadcrumbLink: '/carreras?categoria=especializacion',
+    breadcrumbLink: '/programas-de-estudio?categoria=especializacion',
     curriculumTitle: 'Plan de Estudios',
     featuresTitle: 'Beneficios Institucionales',
     priceTitle: 'Inversión',
@@ -102,9 +102,9 @@ export default function ProgramDetailPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
           <h1 className="text-5xl font-bold text-white mb-4">404</h1>
           <p className="text-xl text-white/50 mb-8">Programa no encontrado</p>
-          <Link to="/carreras">
+          <Link to="/programas-de-estudio">
             <button className="px-8 py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-full hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 hover:scale-105">
-              Ver Carreras
+              Ver Programas
             </button>
           </Link>
         </motion.div>
@@ -120,9 +120,9 @@ export default function ProgramDetailPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
           <h1 className="text-5xl font-bold text-white mb-4">404</h1>
           <p className="text-xl text-white/50 mb-8">{config.notFoundLabel}</p>
-          <Link to="/carreras">
+          <Link to="/programas-de-estudio">
             <button className="px-8 py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-full hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 hover:scale-105">
-              Ver Carreras
+              Ver Programas
             </button>
           </Link>
         </motion.div>
@@ -154,7 +154,7 @@ export default function ProgramDetailPage() {
   }
 
   const assignedRep = getWhatsAppRepForProgram(category, program.slug)
-  const isCarrera = category === 'carreras'
+  const isCarrera = category === 'programas-de-estudio'
 
   return (
     <>

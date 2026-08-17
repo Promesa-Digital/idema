@@ -10,13 +10,13 @@ export interface DropdownItem extends NavLink {
 
 export const mainNavLinks: NavLink[] = [
   { label: 'Inicio', href: '/' },
-  { label: 'Carreras', href: '/carreras' },
+  { label: 'Programas de Estudio', href: '/programas-de-estudio' },
   { label: 'Sobre Nosotros', href: '/nosotros' },
   { label: 'Bienestar Estudiantil', href: '/bienestar' },
 ]
 
 export const accederDropdown: DropdownItem[] = [
-  { label: 'Oferta Educativa', href: '/carreras', icon: 'FaSitemap' },
+  { label: 'Oferta Educativa', href: '/programas-de-estudio', icon: 'FaSitemap' },
   { label: 'Noticias IDEMA', href: 'https://website.instituto-idema.org/', icon: 'FaNewspaper', external: true },
   { label: 'Campus Virtual', href: 'https://aprende.instituto-idema.org/', icon: 'FaGraduationCap', external: true },
   { label: 'Biblioteca Virtual', href: 'https://books.instituto-idema.org/', icon: 'FaBook', external: true },
@@ -42,7 +42,7 @@ export const countryCodes = [
 export const footerLinks = {
   quickLinks: [
     { label: 'Inicio', href: '/' },
-    { label: 'Oferta Educativa', href: '/carreras' },
+    { label: 'Oferta Educativa', href: '/programas-de-estudio' },
     { label: 'Campus Virtual', href: 'https://aprende.instituto-idema.org', external: true },
     { label: 'Sobre Nosotros', href: '/nosotros' },
     { label: 'Contacto', href: '/#contacto' },

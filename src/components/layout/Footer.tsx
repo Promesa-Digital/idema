@@ -53,7 +53,7 @@ export default function Footer() {
           <motion.div variants={itemVariants} className="lg:col-span-1">
             <img src="/assets/img/idema-white.png" alt="IDEMA" className="h-12 w-auto mb-4" />
             <p className="text-white text-xs mb-1">
-              Instituto Santiago Ramón y Cajal
+              IES Idema
             </p>
             <p className="text-white/80 text-sm leading-relaxed mb-6">
               Formando profesionales de excelencia en educación técnica y superior desde 1994.
@@ -220,7 +220,7 @@ export default function Footer() {
           className="border-t border-white/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4"
         >
           <p className="text-white/70 text-sm">
-            &copy; {new Date().getFullYear()} Instituto Santiago Ramón y Cajal — IDEMA. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} IES Idema. Todos los derechos reservados.
           </p>
           <div className="flex flex-wrap gap-4 md:gap-6 text-white/70 text-sm">
             <Link to="/politica-privacidad" className="hover:text-primary transition-colors">
@@ -234,6 +234,9 @@ export default function Footer() {
             </Link>
             <Link to="/eliminar-cuenta" className="hover:text-primary transition-colors">
               Eliminar Cuenta
+            </Link>
+            <Link to="/transparencia" className="hover:text-primary transition-colors">
+              Transparencia
             </Link>
           </div>
         </motion.div>
