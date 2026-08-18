@@ -44,9 +44,9 @@ httpClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as RetriableRequestConfig | undefined
-    const isRefreshCall = originalRequest?.url?.includes('/auth/refresh')
+    const isPublicAuthCall = originalRequest?.url?.includes('/auth/refresh') || originalRequest?.url?.includes('/auth/login')
 
-    if (error.response?.status !== 401 || !originalRequest || originalRequest._retry || isRefreshCall) {
+    if (error.response?.status !== 401 || !originalRequest || originalRequest._retry || isPublicAuthCall) {
       return Promise.reject(error)
     }
 
