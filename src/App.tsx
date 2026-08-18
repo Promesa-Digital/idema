@@ -27,6 +27,9 @@ const LoginPage = lazy(() => import('./pages/LoginPage'))
 const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'))
 const PortalPage = lazy(() => import('./pages/PortalPage'))
 const AdminPage = lazy(() => import('./pages/AdminPage'))
+const ProgramasAdminPage = lazy(() => import('./pages/admin/ProgramasAdminPage'))
+const ProgramaNuevoPage = lazy(() => import('./pages/admin/ProgramaNuevoPage'))
+const ProgramaEditarPage = lazy(() => import('./pages/admin/ProgramaEditarPage'))
 
 function App() {
   return (
@@ -70,6 +73,11 @@ function App() {
           </Route>
           <Route element={<PrivateRoute allowedRoles={['staff']} />}>
             <Route path="admin" element={<AdminPage />} />
+          </Route>
+          <Route element={<PrivateRoute allowedRoles={['staff', 'academico']} />}>
+            <Route path="admin/programas" element={<ProgramasAdminPage />} />
+            <Route path="admin/programas/nuevo" element={<ProgramaNuevoPage />} />
+            <Route path="admin/programas/:id/editar" element={<ProgramaEditarPage />} />
           </Route>
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
