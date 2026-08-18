@@ -21,8 +21,8 @@ export interface ProgramCategory {
 export const programCategories: ProgramCategory[] = [
   {
     key: 'carreras',
-    badge: 'CARRERAS TÉCNICAS',
-    titulo: 'Carreras Técnicas',
+    badge: 'PROGRAMAS DE ESTUDIO',
+    titulo: 'Programas de Estudio',
     descripcion:
       'Formación profesional de 3 años con título oficial reconocido por el MINEDU. Áreas de agropecuaria, salud y ciencias empresariales. Modalidades presencial, semipresencial y virtual para que estudies a tu ritmo.',
     imagen: '/assets/img/programs/carreras.webp',

@@ -5,7 +5,7 @@ import { FaBullseye, FaLightbulb, FaAward, FaGraduationCap, FaBuilding, FaMapMar
 export default function NosotrosPage() {
   const stats = [
     { icon: FaAward, label: 'Años de Experiencia', value: '+30' },
-    { icon: FaBuilding, label: 'Carreras Técnicas', value: '3' },
+    { icon: FaBuilding, label: 'Programas de Estudio', value: '3' },
     { icon: FaBookOpen, label: 'Cursos Online', value: '+250' },
   ]
 

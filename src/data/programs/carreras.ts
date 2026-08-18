@@ -3,7 +3,7 @@ import type { Carrera } from '../../types'
 export const carreras: Carrera[] = [
   {
     slug: 'agropecuaria',
-    title: 'Carrera Técnica en Agropecuaria',
+    title: 'Programa de Desarrollo Agropecuario',
     shortTitle: 'Agropecuaria',
     subtitle: 'Formación integral en agricultura y ganadería sostenibles',
     duration: '3 años (6 semestres)',
@@ -60,11 +60,11 @@ export const carreras: Carrera[] = [
       'Asesoramiento técnico independiente',
     ],
     convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
-    whatsappMessage: 'Hola! Me interesa la Carrera Técnica en Agropecuaria en IDEMA.',
+    whatsappMessage: 'Hola! Me interesa el Programa de Desarrollo Agropecuario en IDEMA.',
   },
   {
     slug: 'enfermeria',
-    title: 'Carrera Técnica en Enfermería',
+    title: 'Programa de Enfermería',
     shortTitle: 'Enfermería',
     subtitle: 'Formación integral para profesionales de la salud',
     duration: '3 años (6 semestres)',
@@ -123,11 +123,11 @@ export const carreras: Carrera[] = [
       'Servicios de salud ocupacional y medicina del trabajo',
     ],
     convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
-    whatsappMessage: 'Hola! Me interesa la Carrera Técnica en Enfermería en IDEMA.',
+    whatsappMessage: 'Hola! Me interesa el Programa de Enfermería en IDEMA.',
   },
   {
     slug: 'contabilidad',
-    title: 'Carrera Técnica en Contabilidad',
+    title: 'Programa de Contabilidad',
     shortTitle: 'Contabilidad',
     subtitle: 'Formación integral en ciencias contables y administrativas',
     duration: '3 años (6 semestres)',
@@ -186,6 +186,6 @@ export const carreras: Carrera[] = [
       'Asesoramiento contable y financiero independiente',
     ],
     convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
-    whatsappMessage: 'Hola! Me interesa la Carrera Técnica en Contabilidad en IDEMA.',
+    whatsappMessage: 'Hola! Me interesa el Programa de Contabilidad en IDEMA.',
   },
 ]

@@ -33,7 +33,7 @@ const services: Record<string, Service> = {
   'certificacion-tecnica': {
     title: 'Certificación Técnica',
     description: 'Diplomas técnicos reconocidos por el MINEDU',
-    fullDescription: 'Certificación técnica oficial del Ministerio de Educación que valida la formación completa en carreras técnicas. Nuestros egresados reciben diplomas autorizados que les permiten ejercer profesionalmente en todo el Perú.',
+    fullDescription: 'Certificación técnica oficial del Ministerio de Educación que valida la formación completa en los programas de estudio. Nuestros egresados reciben diplomas autorizados que les permiten ejercer profesionalmente en todo el Perú.',
     benefits: [
       'Diploma oficial del MINEDU',
       'Validez legal para ejercer profesión',
@@ -67,7 +67,7 @@ const services: Record<string, Service> = {
   'diploma-especializacion': {
     title: 'Diploma de Especialización',
     description: 'Formación avanzada para profesionales en áreas específicas',
-    fullDescription: 'Programas de especialización para profesionales que desean profundizar en áreas específicas de su formación. Dirigido a egresados de carreras técnicas y profesionales con experiencia laboral.',
+    fullDescription: 'Programas de especialización para profesionales que desean profundizar en áreas específicas de su formación. Dirigido a egresados de programas de estudio y profesionales con experiencia laboral.',
     benefits: [
       'Actualización de competencias profesionales',
       'Enfoque en áreas especializadas',

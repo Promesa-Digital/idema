@@ -12,7 +12,7 @@ import type { Carrera } from '../../types'
 
 const categories = [
   { key: 'todos', label: 'Todos' },
-  { key: 'carrera', label: 'Carreras Técnicas' },
+  { key: 'carrera', label: 'Programas de Estudio' },
   { key: 'auxiliar', label: 'Programas Auxiliares' },
   { key: 'especializacion', label: 'Especializaciones' },
   { key: 'curso', label: 'Cursos Cortos' },
@@ -37,7 +37,7 @@ const learningPath = [
     icon: FaGraduationCap,
     color: 'bg-accent',
     title: 'Formación Técnica Base',
-    description: 'Carreras técnicas de 3 años con título a nombre de la nación',
+    description: 'Programas de estudio de 3 años con título a nombre de la nación',
   },
   {
     icon: FaCertificate,
@@ -87,7 +87,7 @@ export default function ProgramasPage() {
     <>
       <Helmet>
         <title>Oferta Educativa - Instituto IDEMA</title>
-        <meta name="description" content="Explora todas las carreras técnicas, programas auxiliares, especializaciones y cursos cortos del Instituto IDEMA." />
+        <meta name="description" content="Explora todos los programas de estudio, programas auxiliares, especializaciones y cursos cortos del Instituto IDEMA." />
       </Helmet>
 
       {/* Header */}

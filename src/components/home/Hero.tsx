@@ -17,7 +17,7 @@ const slides = [
     mobile:  '/assets/img/hero/mobile/AGROPECUARIA_2.webp',
     titulo:    'Agropecuaria',
     subtitulo: 'Impulsa el desarrollo agrícola con tecnología moderna',
-    cta:       'Ver carrera',
+    cta:       'Ver programa',
     ctaLink:   '/programas-de-estudio/agropecuaria',
   },
   {
@@ -25,7 +25,7 @@ const slides = [
     mobile:  '/assets/img/hero/mobile/CONTABILIDAD_2.webp',
     titulo:    'Contabilidad',
     subtitulo: 'Domina las finanzas y la gestión contable profesional',
-    cta:       'Ver carrera',
+    cta:       'Ver programa',
     ctaLink:   '/programas-de-estudio/contabilidad',
   },
   {
@@ -33,7 +33,7 @@ const slides = [
     mobile:  '/assets/img/hero/mobile/ENFERMERIA_2.webp',
     titulo:    'Enfermería Técnica',
     subtitulo: 'Forma parte del equipo de salud que el Perú necesita',
-    cta:       'Ver carrera',
+    cta:       'Ver programa',
     ctaLink:   '/programas-de-estudio/enfermeria',
   },
 ]
