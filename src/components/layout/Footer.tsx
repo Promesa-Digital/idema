@@ -8,6 +8,7 @@ import {
   FaPhone,
   FaEnvelope,
   FaMapMarkerAlt,
+  FaGooglePlay,
 } from 'react-icons/fa'
 import { footerLinks } from '../../data/navigation'
 
@@ -75,6 +76,16 @@ export default function Footer() {
                 )
               })}
             </div>
+            {/* Google Play */}
+            <a
+              href={footerLinks.googlePlay}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/10 hover:bg-primary px-4 py-2 transition-colors text-sm"
+            >
+              <FaGooglePlay className="w-4 h-4" />
+              Descarga la App
+            </a>
           </motion.div>
 
           {/* Quick Links */}

@@ -40,6 +40,7 @@ export const countryCodes = [
 ]
 
 export const footerLinks = {
+  googlePlay: 'https://play.google.com/store/apps/details?id=pe.edu.idema.app',
   quickLinks: [
     { label: 'Inicio', href: '/' },
     { label: 'Oferta Educativa', href: '/programas-de-estudio' },
