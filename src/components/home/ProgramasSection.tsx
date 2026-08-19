@@ -5,7 +5,8 @@ import { MdArrowForward } from 'react-icons/md'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay, Pagination, Navigation } from 'swiper/modules'
 import { programCategories, type ProgramCategory } from '../../data/programs/categories'
-import { cursos } from '../../data/programs/cursos'
+import { cursos as cursosEstaticos } from '../../data/programs/cursos'
+import { useCursosDestacados } from '../../hooks/useCursosDestacados'
 
 import 'swiper/swiper-bundle.css'
 
@@ -89,6 +90,8 @@ function CategoriaCard({ titulo, descripcion, imagen, ruta, cantidad, duracion, 
 
 export default function ProgramasSection() {
   const { ref, inView } = useInView({ triggerOnce: true })
+  const { data: cursosApi } = useCursosDestacados()
+  const cursos = Array.isArray(cursosApi) ? cursosApi : cursosEstaticos
 
   return (
     <section
