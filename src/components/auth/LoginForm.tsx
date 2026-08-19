@@ -10,6 +10,7 @@ const DASHBOARD_BY_ROLE: Record<UserRole, string> = {
   alumno: '/portal',
   staff: '/admin',
   academico: '/admin/programas',
+  director_marketing: '/admin/popups',
 }
 
 interface LoginFormData {

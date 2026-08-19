@@ -13,12 +13,20 @@ export default function AdminPage() {
           <h1 className="text-3xl font-bold text-white mb-4">Panel de administración</h1>
           <p className="text-white/60 mb-8">Sección exclusiva para staff.</p>
 
-          <Link
-            to="/admin/programas"
-            className="inline-flex items-center gap-2 px-6 py-3 text-white font-bold rounded-lg bg-gradient-to-r from-cta to-accent hover:shadow-[0_8px_24px_rgba(253,61,181,0.45)] transition-all duration-300"
-          >
-            Gestionar programas
-          </Link>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <Link
+              to="/admin/programas"
+              className="inline-flex items-center gap-2 px-6 py-3 text-white font-bold rounded-lg bg-gradient-to-r from-cta to-accent hover:shadow-[0_8px_24px_rgba(253,61,181,0.45)] transition-all duration-300"
+            >
+              Gestionar programas
+            </Link>
+            <Link
+              to="/admin/popups"
+              className="inline-flex items-center gap-2 px-6 py-3 text-white font-bold rounded-lg bg-gradient-to-r from-cta to-accent hover:shadow-[0_8px_24px_rgba(253,61,181,0.45)] transition-all duration-300"
+            >
+              Gestionar popups
+            </Link>
+          </div>
         </div>
       </div>
     </>

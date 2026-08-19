@@ -30,6 +30,9 @@ const AdminPage = lazy(() => import('./pages/AdminPage'))
 const ProgramasAdminPage = lazy(() => import('./pages/admin/ProgramasAdminPage'))
 const ProgramaNuevoPage = lazy(() => import('./pages/admin/ProgramaNuevoPage'))
 const ProgramaEditarPage = lazy(() => import('./pages/admin/ProgramaEditarPage'))
+const PopupsAdminPage = lazy(() => import('./pages/admin/PopupsAdminPage'))
+const PopupNuevoPage = lazy(() => import('./pages/admin/PopupNuevoPage'))
+const PopupEditarPage = lazy(() => import('./pages/admin/PopupEditarPage'))
 
 function App() {
   return (
@@ -78,6 +81,11 @@ function App() {
             <Route path="admin/programas" element={<ProgramasAdminPage />} />
             <Route path="admin/programas/nuevo" element={<ProgramaNuevoPage />} />
             <Route path="admin/programas/:id/editar" element={<ProgramaEditarPage />} />
+          </Route>
+          <Route element={<PrivateRoute allowedRoles={['staff', 'director_marketing']} />}>
+            <Route path="admin/popups" element={<PopupsAdminPage />} />
+            <Route path="admin/popups/nuevo" element={<PopupNuevoPage />} />
+            <Route path="admin/popups/:id/editar" element={<PopupEditarPage />} />
           </Route>
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
