@@ -45,7 +45,7 @@ async function sendToFormsubmit(email: string, data: ReclamacionForm): Promise<b
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({
         _subject: `Nueva reclamación/queja (Libro de Reclamaciones) — ${data.tipoReclamo}`,
-        'Tipo': data.tipoReclamo === 'queja' ? 'Queja' : 'Reclamo',
+        // 1. Datos del Consumidor (mismo orden que el formulario de la página)
         'Tipo de documento': data.tipoDocumento,
         'Número de documento': data.numDocumento,
         'Nombres': data.nombre,
@@ -53,7 +53,9 @@ async function sendToFormsubmit(email: string, data: ReclamacionForm): Promise<b
         'Correo electrónico': data.email,
         'Teléfono': data.telefono,
         'Dirección': data.direccion,
-        'Bien o servicio contratado': data.descripcionBien,
+        // 2. Detalle de la Reclamación
+        'Tipo': data.tipoReclamo === 'queja' ? 'Queja' : 'Reclamo',
+        'Descripción del bien o servicio contratado': data.descripcionBien,
         'Detalle de la reclamación': data.detalleReclamo,
         'Pedido del consumidor': data.pedido,
       }),
