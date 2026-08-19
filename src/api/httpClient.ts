@@ -9,8 +9,9 @@ interface RetriableRequestConfig extends InternalAxiosRequestConfig {
 }
 
 interface RefreshResponse {
-  accessToken: string
-  refreshToken: string
+  accessToken?: string
+  refreshToken?: string
+  access_token?: string
 }
 
 export const httpClient = axios.create({ baseURL })
@@ -71,10 +72,16 @@ httpClient.interceptors.response.use(
 
     isRefreshing = true
     try {
-      const { data } = await refreshClient.post<RefreshResponse>('/auth/refresh', { refreshToken })
-      tokenStorage.setTokens(data.accessToken, data.refreshToken)
-      settleSubscribers(null, data.accessToken)
-      originalRequest.headers.set('Authorization', `Bearer ${data.accessToken}`)
+      const { data } = await refreshClient.post<RefreshResponse>('/auth/refresh', {
+        refresh_token: refreshToken,
+      })
+      const nextAccessToken = data.accessToken ?? data.access_token
+      if (!nextAccessToken) {
+        throw new Error('Token de refresco inválido')
+      }
+      tokenStorage.setTokens(nextAccessToken, data.refreshToken ?? nextAccessToken)
+      settleSubscribers(null, nextAccessToken)
+      originalRequest.headers.set('Authorization', `Bearer ${nextAccessToken}`)
       return httpClient(originalRequest)
     } catch (refreshError) {
       settleSubscribers(refreshError)

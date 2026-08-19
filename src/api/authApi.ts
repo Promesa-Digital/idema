@@ -7,6 +7,9 @@ interface LoginResponse {
 }
 
 export async function login(credentials: LoginFormValues): Promise<LoginResponse> {
-  const { data } = await httpClient.post<LoginResponse>('/auth/login', credentials)
-  return data
+  const { data } = await httpClient.post<{ access_token: string }>('/auth/login', {
+    correo: credentials.email,
+    password: credentials.password,
+  })
+  return { accessToken: data.access_token, refreshToken: data.access_token }
 }

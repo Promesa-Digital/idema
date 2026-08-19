@@ -9,6 +9,22 @@ import type { AuthUser, UserRole } from '../types/auth'
 interface AccessTokenPayload {
   sub: string
   role: UserRole
+  rol?: string
+}
+
+const STAFF_ROLE_MAP: Record<string, UserRole> = {
+  marketing: 'staff',
+  ventas: 'staff',
+  administracion: 'staff',
+  admin_sistema: 'staff',
+  academico: 'academico',
+  director_marketing: 'director_marketing',
+}
+
+function normalizeRole(raw?: string): UserRole | null {
+  if (!raw) return null
+  if (raw === 'alumno') return 'alumno'
+  return STAFF_ROLE_MAP[raw] ?? null
 }
 
 function readUserFromToken(): AuthUser | null {
@@ -16,9 +32,10 @@ function readUserFromToken(): AuthUser | null {
   if (!accessToken) return null
 
   const payload = decodeJwtPayload<AccessTokenPayload>(accessToken)
-  if (!payload?.role) return null
+  const role = normalizeRole(payload?.role ?? payload?.rol)
+  if (!payload?.sub || !role) return null
 
-  return { id: payload.sub, role: payload.role }
+  return { id: payload.sub, role }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
