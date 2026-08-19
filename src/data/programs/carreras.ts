@@ -3,7 +3,7 @@ import type { Carrera } from '../../types'
 export const carreras: Carrera[] = [
   {
     slug: 'agropecuaria',
-    title: 'Programa de Desarrollo Agropecuario',
+    title: 'Programa de Producción Agropecuaria',
     shortTitle: 'Agropecuaria',
     subtitle: 'Formación integral en agricultura y ganadería sostenibles',
     duration: '3 años (6 semestres)',
@@ -60,7 +60,7 @@ export const carreras: Carrera[] = [
       'Asesoramiento técnico independiente',
     ],
     convenio: { name: 'IDEMA', logo: '/assets/img/logos/idema-logo.webp' },
-    whatsappMessage: 'Hola! Me interesa el Programa de Desarrollo Agropecuario en IDEMA.',
+    whatsappMessage: 'Hola! Me interesa el Programa de Producción Agropecuaria en IDEMA.',
   },
   {
     slug: 'enfermeria',

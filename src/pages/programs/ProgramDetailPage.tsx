@@ -184,7 +184,7 @@ export default function ProgramDetailPage() {
           transition={{ duration: 0.6 }}
           className="relative h-full flex flex-col justify-end p-6 md:p-12 text-white"
         >
-          {program.convenio && (
+          {program.convenio && program.convenio.name !== 'IDEMA' && (
             <div className="flex items-center gap-2 mb-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-3 py-2 w-fit max-w-full">
               <img src={program.convenio.logo} alt={program.convenio.name} className="h-5 w-auto object-contain flex-shrink-0" />
               <span className="text-white/90 text-xs sm:text-sm font-medium truncate">En convenio con {program.convenio.name}</span>
