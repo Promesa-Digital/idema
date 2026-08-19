@@ -34,7 +34,9 @@ const initialForm: ReclamacionForm = {
   aceptaPoliticas: false,
 }
 
-const NOTIFY_EMAILS = ['bienestar.estudiantil@idema.edu.pe', 'rherrera@instituto-idema.org', 'milagrosc@idema.edu.pe']
+// TEMP: molinajose040@gmail.com agregado para probar que las notificaciones
+// llegan de verdad — quitar una vez confirmado.
+const NOTIFY_EMAILS = ['bienestar.estudiantil@idema.edu.pe', 'rherrera@instituto-idema.org', 'milagrosc@idema.edu.pe', 'molinajose040@gmail.com']
 
 async function sendToFormsubmit(email: string, data: ReclamacionForm): Promise<boolean> {
   try {
