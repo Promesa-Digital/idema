@@ -34,10 +34,42 @@ const initialForm: ReclamacionForm = {
   aceptaPoliticas: false,
 }
 
+const NOTIFY_EMAILS = ['bienestar.estudiantil@idema.edu.pe', 'rherrera@instituto-idema.org', 'milagrosc@idema.edu.pe']
+
+async function sendToFormsubmit(email: string, data: ReclamacionForm): Promise<boolean> {
+  try {
+    const res = await fetch(`https://formsubmit.co/ajax/${email}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        _subject: `Nueva reclamación/queja (Libro de Reclamaciones) — ${data.tipoReclamo}`,
+        'Tipo': data.tipoReclamo === 'queja' ? 'Queja' : 'Reclamo',
+        'Tipo de documento': data.tipoDocumento,
+        'Número de documento': data.numDocumento,
+        'Nombres': data.nombre,
+        'Apellidos': data.apellido,
+        'Correo electrónico': data.email,
+        'Teléfono': data.telefono,
+        'Dirección': data.direccion,
+        'Bien o servicio contratado': data.descripcionBien,
+        'Detalle de la reclamación': data.detalleReclamo,
+        'Pedido del consumidor': data.pedido,
+      }),
+      signal: AbortSignal.timeout(8000),
+    })
+    if (!res.ok) return false
+    const body = await res.json().catch(() => null)
+    return body?.success === true || body?.success === 'true'
+  } catch {
+    return false
+  }
+}
+
 export default function LibroReclamacionesPage() {
   const [formData, setFormData] = useState<ReclamacionForm>(initialForm)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitted, setSubmitted] = useState(false)
+  const [sending, setSending] = useState(false)
   const { addToast } = useToast()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -64,15 +96,23 @@ export default function LibroReclamacionesPage() {
     return Object.keys(errs).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validate()) return
 
-    // In production, this should POST to your backend
-    console.log('Reclamación enviada:', formData)
-    addToast('success', '¡Reclamación enviada!', 'Hemos recibido tu reclamación. Te responderemos en un máximo de 30 días calendario.')
-    setSubmitted(true)
-    setFormData(initialForm)
+    setSending(true)
+    try {
+      const results = await Promise.all(NOTIFY_EMAILS.map(email => sendToFormsubmit(email, formData)))
+      if (!results.some(Boolean)) {
+        addToast('error', 'No se pudo enviar', 'Ocurrió un error al enviar tu reclamación. Intenta nuevamente o contáctanos por WhatsApp.')
+        return
+      }
+      addToast('success', '¡Reclamación enviada!', 'Hemos recibido tu reclamación. Te responderemos en un máximo de 30 días calendario.')
+      setSubmitted(true)
+      setFormData(initialForm)
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -258,11 +298,12 @@ export default function LibroReclamacionesPage() {
 
                   <motion.button
                     type="submit"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full py-4 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 text-lg"
+                    disabled={sending}
+                    whileHover={{ scale: sending ? 1 : 1.02 }}
+                    whileTap={{ scale: sending ? 1 : 0.98 }}
+                    className="w-full py-4 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 text-lg disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    Enviar Reclamación
+                    {sending ? 'Enviando...' : 'Enviar Reclamación'}
                   </motion.button>
 
                   <p className="text-xs text-deep/50 text-center">
