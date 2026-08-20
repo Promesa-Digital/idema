@@ -34,6 +34,10 @@ const ProgramaEditarPage = lazy(() => import('./pages/admin/ProgramaEditarPage')
 const PopupsAdminPage = lazy(() => import('./pages/admin/PopupsAdminPage'))
 const PopupNuevoPage = lazy(() => import('./pages/admin/PopupNuevoPage'))
 const PopupEditarPage = lazy(() => import('./pages/admin/PopupEditarPage'))
+const OrdenesAdminPage = lazy(() => import('./pages/admin/OrdenesAdminPage'))
+const ConceptosCobroAdminPage = lazy(() => import('./pages/admin/ConceptosCobroAdminPage'))
+const ConceptoCobroNuevoPage = lazy(() => import('./pages/admin/ConceptoCobroNuevoPage'))
+const ConceptoCobroEditarPage = lazy(() => import('./pages/admin/ConceptoCobroEditarPage'))
 
 function App() {
   return (
@@ -90,6 +94,12 @@ function App() {
             <Route path="admin/popups" element={<PopupsAdminPage />} />
             <Route path="admin/popups/nuevo" element={<PopupNuevoPage />} />
             <Route path="admin/popups/:id/editar" element={<PopupEditarPage />} />
+          </Route>
+          <Route element={<PrivateRoute allowedRoles={['staff']} />}>
+            <Route path="admin/ordenes" element={<OrdenesAdminPage />} />
+            <Route path="admin/conceptos-cobro" element={<ConceptosCobroAdminPage />} />
+            <Route path="admin/conceptos-cobro/nuevo" element={<ConceptoCobroNuevoPage />} />
+            <Route path="admin/conceptos-cobro/:id/editar" element={<ConceptoCobroEditarPage />} />
           </Route>
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
