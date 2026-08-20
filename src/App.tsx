@@ -27,6 +27,7 @@ const LoginPage = lazy(() => import('./pages/LoginPage'))
 const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'))
 const PortalPage = lazy(() => import('./pages/PortalPage'))
 const MiCuentaPage = lazy(() => import('./pages/MiCuentaPage'))
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'))
 const AdminPage = lazy(() => import('./pages/AdminPage'))
 const ProgramasAdminPage = lazy(() => import('./pages/admin/ProgramasAdminPage'))
 const ProgramaNuevoPage = lazy(() => import('./pages/admin/ProgramaNuevoPage'))
@@ -77,6 +78,7 @@ function App() {
           </Route>
           <Route element={<PrivateRoute allowedRoles={['alumno']} />}>
             <Route path="portal/mi-cuenta" element={<MiCuentaPage />} />
+            <Route path="portal/checkout" element={<CheckoutPage />} />
           </Route>
           <Route element={<PrivateRoute allowedRoles={['staff']} />}>
             <Route path="admin" element={<AdminPage />} />

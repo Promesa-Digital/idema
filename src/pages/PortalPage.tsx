@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
-import { FiUser } from 'react-icons/fi'
+import { FiCreditCard, FiUser } from 'react-icons/fi'
 import { useAuth } from '../context/AuthContext'
 
 export default function PortalPage() {
@@ -19,12 +19,23 @@ export default function PortalPage() {
             Bienvenido, {user?.role === 'staff' ? 'colaborador' : 'alumno'}.
           </p>
 
-          <Link
-            to="/portal/mi-cuenta"
-            className="inline-flex items-center gap-2 px-6 py-3 text-white font-bold rounded-lg bg-gradient-to-r from-cta to-accent hover:shadow-[0_8px_24px_rgba(253,61,181,0.45)] transition-all duration-300"
-          >
-            <FiUser aria-hidden /> Mi cuenta
-          </Link>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <Link
+              to="/portal/mi-cuenta"
+              className="inline-flex items-center gap-2 px-6 py-3 text-white font-bold rounded-lg bg-gradient-to-r from-cta to-accent hover:shadow-[0_8px_24px_rgba(253,61,181,0.45)] transition-all duration-300"
+            >
+              <FiUser aria-hidden /> Mi cuenta
+            </Link>
+
+            {user?.role === 'alumno' && (
+              <Link
+                to="/portal/checkout"
+                className="inline-flex items-center gap-2 px-6 py-3 text-white font-bold rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 transition-all duration-300"
+              >
+                <FiCreditCard aria-hidden /> Realizar pago
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </>
