@@ -26,6 +26,18 @@ export default function AdminPage() {
             >
               Gestionar popups
             </Link>
+            <Link
+              to="/admin/ordenes"
+              className="inline-flex items-center gap-2 px-6 py-3 text-white font-bold rounded-lg bg-gradient-to-r from-cta to-accent hover:shadow-[0_8px_24px_rgba(253,61,181,0.45)] transition-all duration-300"
+            >
+              Gestionar órdenes
+            </Link>
+            <Link
+              to="/admin/conceptos-cobro"
+              className="inline-flex items-center gap-2 px-6 py-3 text-white font-bold rounded-lg bg-gradient-to-r from-cta to-accent hover:shadow-[0_8px_24px_rgba(253,61,181,0.45)] transition-all duration-300"
+            >
+              Gestionar conceptos de cobro
+            </Link>
           </div>
         </div>
       </div>
