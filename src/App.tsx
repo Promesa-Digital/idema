@@ -130,10 +130,8 @@ function App() {
               <Route path="admin/usuarios" element={<AdminResourcePage />} />
               <Route path="admin/conceptos-cobro" element={<AdminResourcePage />} />
             </Route>
-            <Route element={<PrivateRoute allowedRoles={['ventas', 'marketing']} />}>
+            <Route element={<PrivateRoute allowedRoles={['ventas', 'marketing', 'director_marketing', 'admin_sistema']} />}>
               <Route path="admin/combos" element={<AdminResourcePage />} />
-            </Route>
-            <Route element={<PrivateRoute allowedRoles={['ventas']} />}>
               <Route path="admin/descuentos" element={<AdminResourcePage />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={['ventas', 'marketing', 'director_marketing', 'administracion', 'admin_sistema']} />}>
@@ -146,12 +144,14 @@ function App() {
             </Route>
             <Route element={<PrivateRoute allowedRoles={['administracion']} />}>
               <Route path="admin/matriculas" element={<AdminResourcePage />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={['administracion', 'admin_sistema']} />}>
               <Route path="admin/conciliaciones" element={<AdminResourcePage />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={['academico', 'administracion']} />}>
               <Route path="admin/electivos" element={<AdminResourcePage />} />
             </Route>
-            <Route element={<PrivateRoute allowedRoles={['marketing', 'director_marketing', 'administracion']} />}>
+            <Route element={<PrivateRoute allowedRoles={['marketing', 'director_marketing', 'administracion', 'admin_sistema']} />}>
               <Route path="admin/reportes" element={<AdminReportsPage />} />
             </Route>
           </Route>

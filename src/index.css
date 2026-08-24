@@ -3,6 +3,9 @@
 
 @import "tailwindcss";
 
+/* Design system real de /admin y /portal — escopeado en .idema-admin, no toca el sitio público */
+@import "./styles/design-system.css";
+
 @theme {
   /* ── Colores primarios (para FONDOS) ── */
   --color-primary:  #00AFF0;
