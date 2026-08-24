@@ -2,10 +2,12 @@ import { httpClient } from './httpClient'
 import type { Programa, ProgramaListFilters } from '../types/admin'
 import type { CreateProgramaValues, UpdateProgramaValues } from '../schemas/programa'
 
-const BASE_URL = '/admin/programas'
+// El backend monta el router en /programas (sin prefijo /admin) y el listado
+// completo ya exige rol; el catálogo público vive aparte en /programas/publicos.
+const BASE_URL = '/programas'
 
 export async function fetchProgramas(filters: ProgramaListFilters = {}): Promise<Programa[]> {
-  const { data } = await httpClient.get<Programa[]>(BASE_URL, { params: filters })
+  const { data } = await httpClient.get<Programa[]>(`${BASE_URL}/`, { params: filters })
   return data
 }
 
@@ -15,12 +17,18 @@ export async function fetchPrograma(id: string): Promise<Programa> {
 }
 
 export async function createPrograma(values: CreateProgramaValues): Promise<Programa> {
-  const { data } = await httpClient.post<Programa>(BASE_URL, values)
+  const { data } = await httpClient.post<Programa>(`${BASE_URL}/`, values)
   return data
 }
 
+/**
+ * PATCH, no PUT: el backend expone una actualización parcial.
+ * `codigo` es inmutable — ProgramaUpdate está declarado con extra='forbid',
+ * así que enviarlo hace fallar la petición completa con 422.
+ */
 export async function updatePrograma(id: string, values: UpdateProgramaValues): Promise<Programa> {
-  const { data } = await httpClient.put<Programa>(`${BASE_URL}/${id}`, values)
+  const { codigo: _codigo, ...payload } = values as UpdateProgramaValues & { codigo?: string }
+  const { data } = await httpClient.patch<Programa>(`${BASE_URL}/${id}`, payload)
   return data
 }
 

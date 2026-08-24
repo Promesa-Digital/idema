@@ -1,4 +1,4 @@
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
+import axios, { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
 import { tokenStorage } from './tokenStorage'
 import { emitAuthLogout } from './authEvents'
 
@@ -18,6 +18,29 @@ export const httpClient = axios.create({ baseURL })
 
 /** Plain instance (no interceptors) used only for the refresh call, to avoid recursive 401 handling. */
 const refreshClient = axios.create({ baseURL })
+
+/**
+ * Si VITE_API_BASE_URL apunta al dev server en lugar del backend, Vite responde
+ * el index.html de la SPA con estado 200. Sin esta guarda, axios lo da por bueno
+ * y las pantallas se renderizan vacías sin mostrar ningún error.
+ */
+function rejectNonJsonResponse(response: AxiosResponse): AxiosResponse {
+  const contentType = response.headers?.['content-type']
+  if (response.status !== 204 && !String(contentType ?? '').includes('application/json')) {
+    throw new AxiosError(
+      `La API respondió "${contentType ?? 'sin content-type'}" en lugar de JSON. ` +
+        `Revisa que VITE_API_BASE_URL apunte al backend (actual: ${baseURL}).`,
+      'ERR_NOT_JSON',
+      response.config,
+      response.request,
+      response,
+    )
+  }
+  return response
+}
+
+httpClient.interceptors.response.use(rejectNonJsonResponse)
+refreshClient.interceptors.response.use(rejectNonJsonResponse)
 
 httpClient.interceptors.request.use((config) => {
   const accessToken = tokenStorage.getAccessToken()
