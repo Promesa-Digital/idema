@@ -4,7 +4,7 @@ import { popupSchema, popupTipos } from '../../schemas/popup'
 import type { PopupFormValues } from '../../schemas/popup'
 
 interface PopupFormProps { initialValues?: Partial<PopupFormValues>; onSubmit: (values: PopupFormValues) => Promise<void>; submitLabel: string; submitError?: string | null }
-const defaults: PopupFormValues = { tipo: 'imagen', texto: '', imagen_url: '', video_url: '', enlace: '', paginas: '/', fecha_inicio: '', fecha_fin: '' }
+const defaults: PopupFormValues = { tipo: 'anuncio', texto: '', imagen_url: '', video_url: '', enlace: '', paginas: '/', fecha_inicio: '', fecha_fin: '' }
 export default function PopupForm({ initialValues, onSubmit, submitLabel, submitError }: PopupFormProps) {
   const [values, setValues] = useState<PopupFormValues>({ ...defaults, ...initialValues })
   const [errors, setErrors] = useState<Record<string, string>>({})
