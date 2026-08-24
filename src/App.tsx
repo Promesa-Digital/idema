@@ -38,6 +38,7 @@ const NoticiasPage = lazy(() => import('./pages/NoticiasPage'))
 const ProgramasPage = lazy(() => import('./pages/programs/ProgramasPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
+const RegistroPage = lazy(() => import('./pages/RegistroPage'))
 const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'))
 const DashboardPage = lazy(() => import('./pages/portal/DashboardPage'))
 const MatriculasPage = lazy(() => import('./pages/portal/MatriculasPage'))
@@ -91,6 +92,8 @@ function App() {
           <Route path="eliminar-cuenta" element={<EliminarCuentaPage />} />
           {/* Auth */}
           <Route path="login" element={<LoginPage />} />
+          <Route path="registro" element={<RegistroPage />} />
+          <Route path="portal/login" element={<LoginPage />} />
           <Route path="unauthorized" element={<UnauthorizedPage />} />
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
@@ -133,7 +136,7 @@ function App() {
             <Route element={<PrivateRoute allowedRoles={['ventas']} />}>
               <Route path="admin/descuentos" element={<AdminResourcePage />} />
             </Route>
-            <Route element={<PrivateRoute allowedRoles={['marketing', 'director_marketing', 'administracion', 'admin_sistema']} />}>
+            <Route element={<PrivateRoute allowedRoles={['ventas', 'marketing', 'director_marketing', 'administracion', 'admin_sistema']} />}>
               <Route path="admin/leads" element={<AdminResourcePage />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={['admin_sistema', 'administracion']} />}>
@@ -145,7 +148,7 @@ function App() {
               <Route path="admin/matriculas" element={<AdminResourcePage />} />
               <Route path="admin/conciliaciones" element={<AdminResourcePage />} />
             </Route>
-            <Route element={<PrivateRoute allowedRoles={['academico']} />}>
+            <Route element={<PrivateRoute allowedRoles={['academico', 'administracion']} />}>
               <Route path="admin/electivos" element={<AdminResourcePage />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={['marketing', 'director_marketing', 'administracion']} />}>
