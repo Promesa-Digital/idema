@@ -53,6 +53,8 @@ const ProgramaEditarPage = lazy(() => import('./pages/admin/ProgramaEditarPage')
 const PopupsAdminPage = lazy(() => import('./pages/admin/PopupsAdminPage'))
 const PopupNuevoPage = lazy(() => import('./pages/admin/PopupNuevoPage'))
 const PopupEditarPage = lazy(() => import('./pages/admin/PopupEditarPage'))
+const AdminResourcePage = lazy(() => import('./pages/admin/AdminResourcePage'))
+const AdminReportsPage = lazy(() => import('./pages/admin/AdminReportsPage'))
 
 function App() {
   return (
@@ -120,6 +122,34 @@ function App() {
               <Route path="admin/popups" element={<PopupsAdminPage />} />
               <Route path="admin/popups/nuevo" element={<PopupNuevoPage />} />
               <Route path="admin/popups/:id/editar" element={<PopupEditarPage />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={['admin_sistema']} />}>
+              <Route path="admin/usuarios" element={<AdminResourcePage />} />
+              <Route path="admin/conceptos-cobro" element={<AdminResourcePage />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={['ventas', 'marketing']} />}>
+              <Route path="admin/combos" element={<AdminResourcePage />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={['ventas']} />}>
+              <Route path="admin/descuentos" element={<AdminResourcePage />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={['marketing', 'director_marketing', 'administracion', 'admin_sistema']} />}>
+              <Route path="admin/leads" element={<AdminResourcePage />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={['admin_sistema', 'administracion']} />}>
+              <Route path="admin/cuentas-alumnos" element={<AdminResourcePage />} />
+              <Route path="admin/ordenes" element={<AdminResourcePage />} />
+              <Route path="admin/comprobantes" element={<AdminResourcePage />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={['administracion']} />}>
+              <Route path="admin/matriculas" element={<AdminResourcePage />} />
+              <Route path="admin/conciliaciones" element={<AdminResourcePage />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={['academico']} />}>
+              <Route path="admin/electivos" element={<AdminResourcePage />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={['marketing', 'director_marketing', 'administracion']} />}>
+              <Route path="admin/reportes" element={<AdminReportsPage />} />
             </Route>
           </Route>
         </Route>
