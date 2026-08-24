@@ -38,22 +38,19 @@ const ADMIN_NAV_BY_ROLE: Partial<Record<UserRole, NavItem[]>> = {
   admin_sistema: [
     { label: 'Usuarios', to: '/admin/usuarios', icon: FiUsers },
     { label: 'Conceptos de Cobro', to: '/admin/conceptos-cobro', icon: FiDollarSign },
-    { label: 'Programas', to: '/admin/programas', icon: FiBookOpen },
-    { label: 'Combos', to: '/admin/combos', icon: FiPackage },
-    { label: 'Descuentos', to: '/admin/descuentos', icon: FiPercent },
     { label: 'Popups', to: '/admin/popups', icon: FiImage },
     { label: 'Leads', to: '/admin/leads', icon: FiUserPlus },
     { label: 'Cuentas de Alumnos', to: '/admin/cuentas-alumnos', icon: FiUserCheck },
     { label: 'Órdenes', to: '/admin/ordenes', icon: FiShoppingCart },
     { label: 'Comprobantes', to: '/admin/comprobantes', icon: FiFileText },
-    { label: 'Conciliaciones', to: '/admin/conciliaciones', icon: FiCheckSquare },
-    { label: 'Reportes', to: '/admin/reportes', icon: FiBarChart2 },
   ],
   academico: [
     { label: 'Programas', to: '/admin/programas', icon: FiBookOpen },
   ],
   marketing: [
     { label: 'Popups', to: '/admin/popups', icon: FiImage },
+    { label: 'Combos', to: '/admin/combos', icon: FiPackage },
+    { label: 'Leads', to: '/admin/leads', icon: FiUserPlus },
     { label: 'Reportes', to: '/admin/reportes', icon: FiBarChart2 },
   ],
   ventas: [
@@ -62,9 +59,12 @@ const ADMIN_NAV_BY_ROLE: Partial<Record<UserRole, NavItem[]>> = {
     { label: 'Descuentos', to: '/admin/descuentos', icon: FiPercent },
   ],
   administracion: [
+    { label: 'Cuentas de Alumnos', to: '/admin/cuentas-alumnos', icon: FiUserCheck },
+    { label: 'Matrículas', to: '/admin/matriculas', icon: FiBookOpen },
     { label: 'Órdenes', to: '/admin/ordenes', icon: FiShoppingCart },
     { label: 'Comprobantes', to: '/admin/comprobantes', icon: FiFileText },
     { label: 'Conciliaciones', to: '/admin/conciliaciones', icon: FiCheckSquare },
+    { label: 'Leads', to: '/admin/leads', icon: FiUserPlus },
     { label: 'Reportes', to: '/admin/reportes', icon: FiBarChart2 },
   ],
 }
