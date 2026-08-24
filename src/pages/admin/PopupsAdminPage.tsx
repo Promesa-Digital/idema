@@ -152,7 +152,7 @@ export default function PopupsAdminPage() {
                               </button>
                             )}
 
-                            {popup.estado === 'pendiente_aprobacion' && user?.role === 'director_marketing' && (
+                            {popup.estado === 'pendiente' && user?.role === 'director_marketing' && (
                               <>
                                 <button
                                   type="button"
