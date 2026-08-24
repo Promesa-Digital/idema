@@ -2,10 +2,9 @@ import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaCheck, FaClock, FaBook, FaCertificate, FaCalendar, FaWhatsapp, FaEnvelope, FaCreditCard, FaShieldAlt, FaShoppingCart, FaUniversity, FaChevronUp } from 'react-icons/fa'
+import { FaCheck, FaClock, FaBook, FaCertificate, FaCalendar, FaWhatsapp, FaEnvelope, FaCreditCard, FaShieldAlt, FaUniversity, FaChevronUp } from 'react-icons/fa'
 import { cursos } from '../../data/programs/cursos'
 import { useCulqi } from '../../hooks/useCulqi'
-import { useCart } from '../../context/CartContext'
 
 const paymentMethods = [
   { bank: 'BCP', lines: ['Recaudación: 20430', 'Cuenta: 25105155619028', 'CCI: 00225110515561902870'] },
@@ -19,7 +18,6 @@ export default function CursoDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const curso = cursos.find(c => c.slug === slug)
   useCulqi()
-  const { addItem } = useCart()
   const [showPaymentMethods, setShowPaymentMethods] = useState(false)
 
   if (!curso) {
@@ -239,12 +237,6 @@ export default function CursoDetailPage() {
                         </AnimatePresence>
                       </>
                     )}
-
-                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                      onClick={() => addItem(curso, priceNumber)}
-                      className="w-full py-3 border-2 border-primary/50 text-primary font-bold rounded-xl flex items-center justify-center gap-3 hover:bg-primary/10 transition-all duration-300">
-                      <FaShoppingCart className="text-lg" /> Agregar al Carrito
-                    </motion.button>
 
                     <a href={`https://wa.me/?text=${encodeURIComponent(curso.whatsappMessage || 'Hola, me interesa este curso')}`}
                       target="_blank" rel="noopener noreferrer" className="block">

@@ -8,34 +8,23 @@ import type { AuthUser, UserRole } from '../types/auth'
 
 interface AccessTokenPayload {
   sub: string
-  role: UserRole
-  rol?: string
+  rol: UserRole
+  nombre?: string
 }
 
-const STAFF_ROLE_MAP: Record<string, UserRole> = {
-  marketing: 'staff',
-  ventas: 'staff',
-  administracion: 'staff',
-  admin_sistema: 'staff',
-  academico: 'academico',
-  director_marketing: 'director_marketing',
-}
-
-function normalizeRole(raw?: string): UserRole | null {
-  if (!raw) return null
-  if (raw === 'alumno') return 'alumno'
-  return STAFF_ROLE_MAP[raw] ?? null
-}
-
+/**
+ * El backend siempre firma el claim de rol como `rol` (español) con el valor real
+ * ('ventas', 'admin_sistema', etc.) — antes esto se colapsaba a un 'staff' genérico,
+ * lo que hacía imposible construir un menú de administración específico por rol.
+ */
 function readUserFromToken(): AuthUser | null {
   const accessToken = tokenStorage.getAccessToken()
   if (!accessToken) return null
 
   const payload = decodeJwtPayload<AccessTokenPayload>(accessToken)
-  const role = normalizeRole(payload?.role ?? payload?.rol)
-  if (!payload?.sub || !role) return null
+  if (!payload?.sub || !payload?.rol) return null
 
-  return { id: payload.sub, role }
+  return { id: payload.sub, role: payload.rol, nombre: payload.nombre }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {

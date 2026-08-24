@@ -1,11 +1,10 @@
-import { useParams, useLocation, Link } from 'react-router-dom'
+import { useParams, useLocation, useNavigate, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
-import { FaCheck, FaClock, FaBook, FaCertificate, FaCalendar, FaWhatsapp, FaEnvelope, FaBriefcase, FaShoppingCart, FaMoneyBillWave } from 'react-icons/fa'
+import { FaCheck, FaClock, FaBook, FaCertificate, FaCalendar, FaWhatsapp, FaEnvelope, FaBriefcase, FaArrowRight, FaMoneyBillWave } from 'react-icons/fa'
 import { carreras } from '../../data/programs/carreras'
 import { auxiliares } from '../../data/programs/auxiliares'
 import { especializaciones } from '../../data/programs/especializaciones'
-import { useCart } from '../../context/CartContext'
 import { getWhatsAppRepForProgram, getWhatsAppUrl } from '../../data/whatsapp'
 import type { Carrera } from '../../types'
 import ContactLink from '../../components/ui/ContactLink'
@@ -91,7 +90,7 @@ function highlightTerm(text: string, term: string) {
 export default function ProgramDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const { pathname } = useLocation()
-  const { addItem } = useCart()
+  const navigate = useNavigate()
 
   const category = getCategoryFromPath(pathname)
   const config = categoryMap[category]
@@ -137,21 +136,11 @@ export default function ProgramDetailPage() {
     program.price && !program.pricePresencial && !program.priceVirtual && { label: 'Mensualidad', price: program.price },
   ].filter(Boolean) as { label: string; price: string }[]
 
-  const handleAddToCart = (modality?: string, price?: string) => {
-    const numPrice = price ? parseInt(price.replace(/[^0-9]/g, ''), 10) : 0
-    addItem(program, numPrice, modality)
-  }
-
   const matriculaNum = program.matricula ? parseInt(program.matricula.replace(/[^0-9]/g, ''), 10) : 0
   const virtualNum = program.priceVirtual ? parseInt(program.priceVirtual.replace(/[^0-9]/g, ''), 10) : 0
 
-  const handleStartMatricula = () => {
-    if (!program.matricula) return
-    addItem(program, matriculaNum, 'Matrícula')
-    if (program.priceVirtual) {
-      addItem(program, virtualNum, 'Virtual')
-    }
-  }
+  // Sin carrito: el CTA lleva directo al flujo de matrícula del portal del alumno.
+  const goToMatricula = () => navigate('/portal/matriculas')
 
   const assignedRep = getWhatsAppRepForProgram(category, program.slug)
   const isCarrera = category === 'carreras'
@@ -226,7 +215,7 @@ export default function ProgramDetailPage() {
             </motion.div>
           )}
 
-          {/* Prices & Add to Cart */}
+          {/* Prices & CTA de matrícula */}
           {prices.length > 0 && (
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-16">
               <h2 className="text-3xl font-bold mb-8 gradient-text">
@@ -255,9 +244,9 @@ export default function ProgramDetailPage() {
                     )}
                   </div>
                   <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                    onClick={handleStartMatricula}
+                    onClick={goToMatricula}
                     className="w-full py-5 bg-white text-primary font-bold text-lg rounded-full flex items-center justify-center gap-3 hover:shadow-xl transition-all duration-300">
-                    <FaShoppingCart className="text-2xl" /> Iniciar Matrícula
+                    Iniciar Matrícula <FaArrowRight className="text-xl" />
                   </motion.button>
                 </motion.div>
               )}
@@ -272,9 +261,9 @@ export default function ProgramDetailPage() {
                         {config.showPriceSuffix && <span className="text-base text-deep/70 font-normal">/mes</span>}
                       </p>
                       <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                        onClick={() => handleAddToCart(p.label, p.price)}
+                        onClick={goToMatricula}
                         className="w-full py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-full flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300">
-                        <FaShoppingCart /> Agregar al Carrito
+                        Matricularme <FaArrowRight />
                       </motion.button>
                     </motion.div>
                   ))}
