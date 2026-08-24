@@ -8,9 +8,12 @@ import type { UserRole } from '../../types/auth'
 
 const DASHBOARD_BY_ROLE: Record<UserRole, string> = {
   alumno: '/portal',
-  staff: '/admin',
+  admin_sistema: '/admin',
   academico: '/admin/programas',
+  marketing: '/admin/popups',
   director_marketing: '/admin/popups',
+  ventas: '/admin/leads',
+  administracion: '/admin/ordenes',
 }
 
 interface LoginFormData {
