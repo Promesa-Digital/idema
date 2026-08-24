@@ -1,0 +1,85 @@
+/*
+ * Design tokens del panel Admin / Portal del Alumno, extraídos del Figma "IDEMA WEB".
+ *
+ * Deliberadamente separado de src/index.css: el sitio de marketing público sigue
+ * usando el Manual de Identidad IDEMA (Poppins/Montserrat/Lato, colores oscuros,
+ * definidos en theme.ts / index.css) sin ningún cambio. Estos tokens solo existen
+ * dentro de la clase `.idema-admin`, que envuelve <AdminLayout> y <PortalLayout>,
+ * así que no hay riesgo de que un color o fuente se filtre a una página pública.
+ */
+
+.idema-admin {
+  --admin-color-primary: #00AFF0;
+  --admin-color-primary-hover: #00658D;
+  --admin-color-highlight: #C7E7F8;
+
+  --admin-color-text-primary: #001F2A;
+  --admin-color-text-secondary: #3E4850;
+
+  --admin-color-border: #BDC8D1;
+
+  --admin-color-bg: #F4FAFF;
+  --admin-color-bg-alt: #F5F5F5;
+  --admin-color-surface: #FFFFFF;
+
+  /* Estados semánticos (Badge, alertas) */
+  --admin-color-success: #15803D;
+  --admin-color-success-bg: #DCFCE7;
+  --admin-color-warning: #A16207;
+  --admin-color-warning-bg: #FEF9C3;
+  --admin-color-danger: #B91C1C;
+  --admin-color-danger-bg: #FEE2E2;
+  --admin-color-info: #1D4ED8;
+  --admin-color-info-bg: #DBEAFE;
+  --admin-color-neutral: #4B5563;
+  --admin-color-neutral-bg: #F3F4F6;
+
+  --admin-font-heading: 'Manrope', sans-serif;
+  --admin-font-body: 'Manrope', sans-serif;
+
+  --admin-shadow-sm: 0 1px 2px rgba(0, 31, 42, 0.06);
+  --admin-shadow-md: 0 4px 12px rgba(0, 31, 42, 0.08);
+  --admin-shadow-lg: 0 12px 32px rgba(0, 31, 42, 0.14);
+
+  --admin-radius-sm: 8px;
+  --admin-radius-md: 12px;
+  --admin-radius-lg: 16px;
+
+  font-family: var(--admin-font-body);
+  color: var(--admin-color-text-primary);
+  background: var(--admin-color-bg);
+  min-height: 100vh;
+}
+
+.idema-admin h1,
+.idema-admin h2,
+.idema-admin h3 {
+  font-family: var(--admin-font-heading);
+  font-weight: 700;
+}
+
+.idema-admin h4,
+.idema-admin h5,
+.idema-admin h6 {
+  font-family: var(--admin-font-heading);
+  font-weight: 600;
+}
+
+/* Animación de entrada para ConfirmModal (overlay + panel) */
+@keyframes idema-admin-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes idema-admin-scale-in {
+  from { opacity: 0; transform: scale(0.96) translateY(4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.idema-admin-overlay-in {
+  animation: idema-admin-fade-in 0.15s ease-out;
+}
+
+.idema-admin-modal-in {
+  animation: idema-admin-scale-in 0.18s ease-out;
+}
