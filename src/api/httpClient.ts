@@ -2,7 +2,7 @@ import axios, { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig 
 import { tokenStorage } from './tokenStorage'
 import { emitAuthLogout } from './authEvents'
 
-const baseURL = import.meta.env.VITE_API_BASE_URL ?? '/api'
+const baseURL = import.meta.env.VITE_API_BASE_URL ?? '/api/v1'
 
 interface RetriableRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean

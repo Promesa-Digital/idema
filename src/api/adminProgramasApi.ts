@@ -27,17 +27,13 @@ export async function createPrograma(values: CreateProgramaValues): Promise<Prog
  * así que enviarlo hace fallar la petición completa con 422.
  */
 export async function updatePrograma(id: string, values: UpdateProgramaValues): Promise<Programa> {
-  const { codigo: _codigo, ...payload } = values as UpdateProgramaValues & { codigo?: string }
+  const payload = { ...values } as UpdateProgramaValues & { codigo?: string }
+  delete payload.codigo
   const { data } = await httpClient.patch<Programa>(`${BASE_URL}/${id}`, payload)
   return data
 }
 
 export async function archivarPrograma(id: string): Promise<Programa> {
   const { data } = await httpClient.patch<Programa>(`${BASE_URL}/${id}/archivar`)
-  return data
-}
-
-export async function restaurarPrograma(id: string): Promise<Programa> {
-  const { data } = await httpClient.patch<Programa>(`${BASE_URL}/${id}/restaurar`)
   return data
 }
