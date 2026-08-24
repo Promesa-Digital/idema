@@ -4,6 +4,22 @@ import type { PopupFormValues } from '../schemas/popup'
 
 const BASE_URL = '/popups'
 
+export interface PublicPopup {
+  id: string
+  tipo: 'anuncio' | 'descuento'
+  texto: string
+  imagen_url: string
+  enlace?: string
+  paginas: string
+  fecha_inicio: string
+  fecha_fin: string
+}
+
+export async function fetchPublicPopups(): Promise<PublicPopup[]> {
+  const { data } = await httpClient.get<PublicPopup[]>(`${BASE_URL}/publicos`)
+  return data
+}
+
 interface PopupPayload {
   tipo: PopupFormValues['tipo']
   texto: string
