@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async'
 import LoginForm from '../components/auth/LoginForm'
+import { Link } from 'react-router-dom'
 
 export default function LoginPage() {
   return (
@@ -17,6 +18,12 @@ export default function LoginPage() {
 
           <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm shadow-2xl p-6 sm:p-8">
             <LoginForm />
+            <p className="mt-6 text-center text-sm text-white/70">
+              ¿Aún no tienes cuenta?{' '}
+              <Link to="/registro" className="font-semibold text-primary hover:underline">
+                Regístrate como alumno
+              </Link>
+            </p>
           </div>
         </div>
       </div>

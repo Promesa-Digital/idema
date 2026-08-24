@@ -41,7 +41,7 @@ export const PROGRAMA_ESTADO_LABELS: Record<ProgramaEstado, string> = {
 
 /** Refleja la forma de `Anuncio` (src/types/index.ts) consumida por AnnouncementModal, más el flujo de aprobación. */
 export type PopupFrequency = 'session' | 'day' | 'always'
-export type PopupEstado = 'borrador' | 'pendiente_aprobacion' | 'aprobado' | 'rechazado' | 'publicado' | 'finalizado'
+export type PopupEstado = 'borrador' | 'pendiente' | 'aprobado' | 'rechazado' | 'publicado' | 'finalizado'
 
 export interface PopupCta {
   label: string
@@ -51,7 +51,7 @@ export interface PopupCta {
 
 export interface Popup {
   id: string
-  tipo: 'imagen' | 'video' | 'texto'
+  tipo: 'anuncio' | 'descuento'
   texto: string
   imagen_url: string
   video_url?: string
@@ -82,7 +82,7 @@ export const POPUP_FREQUENCY_LABELS: Record<PopupFrequency, string> = {
 
 export const POPUP_ESTADO_LABELS: Record<PopupEstado, string> = {
   borrador: 'Borrador',
-  pendiente_aprobacion: 'Pendiente de aprobación',
+  pendiente: 'Pendiente de aprobación',
   aprobado: 'Aprobado',
   rechazado: 'Rechazado',
   publicado: 'Publicado',
