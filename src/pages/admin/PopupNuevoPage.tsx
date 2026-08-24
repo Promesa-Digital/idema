@@ -6,6 +6,7 @@ import PopupForm from '../../components/admin/PopupForm'
 import { createPopup } from '../../api/adminPopupsApi'
 import type { PopupFormValues } from '../../schemas/popup'
 import { useToast } from '../../hooks/useToast'
+import PageHeader from '../../components/ui/PageHeader'
 
 export default function PopupNuevoPage() {
   const navigate = useNavigate()
@@ -29,25 +30,25 @@ export default function PopupNuevoPage() {
         <title>Nuevo popup - Panel admin - IDEMA</title>
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-dark via-deep to-dark px-6 py-24">
-        <div className="max-w-2xl mx-auto">
-          <h1 className="text-3xl font-bold text-white mb-1">Nuevo popup</h1>
-          <p className="text-white/80 mb-8">Se guarda como borrador; luego podrás enviarlo a aprobación.</p>
+      <PageHeader title="Nuevo popup" subtitle="Se guarda como borrador; luego podrás enviarlo a aprobación." />
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm shadow-2xl p-6 sm:p-8">
-            <PopupForm
-              submitLabel="Crear popup"
-              submitError={submitError}
-              onSubmit={async (values) => {
-                setSubmitError(null)
-                try {
-                  await mutation.mutateAsync(values)
-                } catch {
-                  // el mensaje ya se fija en onError
-                }
-              }}
-            />
-          </div>
+      <div className="max-w-2xl">
+        <div
+          className="rounded-[var(--admin-radius-md)] border bg-[var(--admin-color-surface)] p-6 shadow-[var(--admin-shadow-sm)] sm:p-8"
+          style={{ borderColor: 'var(--admin-color-border)' }}
+        >
+          <PopupForm
+            submitLabel="Crear popup"
+            submitError={submitError}
+            onSubmit={async (values) => {
+              setSubmitError(null)
+              try {
+                await mutation.mutateAsync(values)
+              } catch {
+                // el mensaje ya se fija en onError
+              }
+            }}
+          />
         </div>
       </div>
     </>

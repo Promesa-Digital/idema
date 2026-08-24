@@ -7,6 +7,7 @@ import { fetchPopup, updatePopup } from '../../api/adminPopupsApi'
 import type { Popup } from '../../types/admin'
 import type { PopupFormValues } from '../../schemas/popup'
 import { useToast } from '../../hooks/useToast'
+import PageHeader from '../../components/ui/PageHeader'
 
 function toFormFields(popup: Popup) {
   return {
@@ -50,41 +51,44 @@ export default function PopupEditarPage() {
         <title>Editar popup - Panel admin - IDEMA</title>
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-dark via-deep to-dark px-6 py-24">
-        <div className="max-w-2xl mx-auto">
-          <h1 className="text-3xl font-bold text-white mb-1">Editar popup</h1>
-          <p className="text-white/80 mb-8">
-            {popup?.estado === 'aprobado'
-              ? 'Este popup ya está aprobado; si lo modificas deberá volver a enviarse a aprobación.'
-              : 'Actualiza la información del popup.'}
-          </p>
+      <PageHeader
+        title="Editar popup"
+        subtitle={
+          popup?.estado === 'aprobado'
+            ? 'Este popup ya está aprobado; si lo modificas deberá volver a enviarse a aprobación.'
+            : 'Actualiza la información del popup.'
+        }
+      />
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm shadow-2xl p-6 sm:p-8">
-            {isLoading && <p className="text-white/60 text-center py-10">Cargando popup...</p>}
+      <div className="max-w-2xl">
+        <div
+          className="rounded-[var(--admin-radius-md)] border bg-[var(--admin-color-surface)] p-6 shadow-[var(--admin-shadow-sm)] sm:p-8"
+          style={{ borderColor: 'var(--admin-color-border)' }}
+        >
+          {isLoading && <p className="py-10 text-center text-sm" style={{ color: 'var(--admin-color-text-secondary)' }}>Cargando popup...</p>}
 
-            {isError && (
-              <div className="text-center py-10">
-                <p className="text-rose-300 mb-4">No se pudo cargar el popup.</p>
-                <Link to="/admin/popups" className="text-primary font-semibold hover:underline">Volver al listado</Link>
-              </div>
-            )}
+          {isError && (
+            <div className="py-10 text-center">
+              <p className="mb-4 text-sm text-red-600">No se pudo cargar el popup.</p>
+              <Link to="/admin/popups" className="font-semibold hover:underline" style={{ color: 'var(--admin-color-primary)' }}>Volver al listado</Link>
+            </div>
+          )}
 
-            {popup && (
-              <PopupForm
-                initialValues={toFormFields(popup)}
-                submitLabel="Guardar cambios"
-                submitError={submitError}
-                onSubmit={async (values) => {
-                  setSubmitError(null)
-                  try {
-                    await mutation.mutateAsync(values)
-                  } catch {
-                    // el mensaje ya se fija en onError
-                  }
-                }}
-              />
-            )}
-          </div>
+          {popup && (
+            <PopupForm
+              initialValues={toFormFields(popup)}
+              submitLabel="Guardar cambios"
+              submitError={submitError}
+              onSubmit={async (values) => {
+                setSubmitError(null)
+                try {
+                  await mutation.mutateAsync(values)
+                } catch {
+                  // el mensaje ya se fija en onError
+                }
+              }}
+            />
+          )}
         </div>
       </div>
     </>
