@@ -54,7 +54,7 @@ export default function ProgramaEditarPage() {
             {programa && (
               <ProgramaForm
                 mode="edit"
-                initialValues={programa}
+                initialValues={{ ...programa, anio: String(programa.anio), num_lecciones: String(programa.num_lecciones ?? 0), tutor: programa.tutor ?? '', publicacion_programada: programa.publicacion_programada ?? '' }}
                 submitLabel="Guardar cambios"
                 submitError={submitError}
                 onSubmit={async (values) => {

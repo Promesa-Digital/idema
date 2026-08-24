@@ -10,15 +10,14 @@ import { useToast } from '../../hooks/useToast'
 
 function toFormFields(popup: Popup) {
   return {
-    image: popup.image,
-    alt: popup.alt,
-    startDate: popup.startDate ?? '',
-    endDate: popup.endDate ?? '',
-    frequency: popup.frequency,
-    pages: popup.pages.join(', '),
-    ctaLabel: popup.cta?.label ?? '',
-    ctaHref: popup.cta?.href ?? '',
-    ctaExternal: popup.cta?.external ?? false,
+    tipo: popup.tipo,
+    texto: popup.texto,
+    imagen_url: popup.imagen_url,
+    video_url: popup.video_url ?? '',
+    enlace: popup.enlace ?? '',
+    paginas: popup.paginas,
+    fecha_inicio: popup.fecha_inicio,
+    fecha_fin: popup.fecha_fin,
   }
 }
 

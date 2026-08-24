@@ -2,19 +2,21 @@ import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { FiPlus, FiEdit2, FiArchive, FiRotateCcw } from 'react-icons/fi'
-import { fetchProgramas, archivarPrograma, restaurarPrograma } from '../../api/adminProgramasApi'
+import { FiPlus, FiEdit2, FiArchive } from 'react-icons/fi'
+import { fetchProgramas, archivarPrograma } from '../../api/adminProgramasApi'
 import { PROGRAMA_CATEGORIA_LABELS, type ProgramaCategoria, type ProgramaEstado, type ProgramaListFilters } from '../../types/admin'
 import { programaCategorias } from '../../schemas/programa'
 import EstadoBadge from '../../components/admin/EstadoBadge'
 import { useToast } from '../../hooks/useToast'
+import ConfirmModal from '../../components/ui/ConfirmModal'
 
 const PROGRAMAS_QUERY_KEY = ['admin', 'programas'] as const
 
 export default function ProgramasAdminPage() {
   const [categoria, setCategoria] = useState<ProgramaCategoria | ''>('')
-  const [estado, setEstado] = useState<ProgramaEstado | ''>('activo')
+  const [estado, setEstado] = useState<ProgramaEstado | ''>('publicado')
   const [search, setSearch] = useState('')
+  const [programaParaArchivar, setProgramaParaArchivar] = useState<string | null>(null)
   const { addToast } = useToast()
   const queryClient = useQueryClient()
 
@@ -33,18 +35,10 @@ export default function ProgramasAdminPage() {
     mutationFn: archivarPrograma,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PROGRAMAS_QUERY_KEY })
+      setProgramaParaArchivar(null)
       addToast('success', 'Programa archivado', 'El programa ya no aparecerá en el catálogo público.')
     },
     onError: () => addToast('error', 'No se pudo archivar', 'Inténtalo nuevamente en unos segundos.'),
-  })
-
-  const restoreMutation = useMutation({
-    mutationFn: restaurarPrograma,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: PROGRAMAS_QUERY_KEY })
-      addToast('success', 'Programa restaurado', 'El programa vuelve a estar activo.')
-    },
-    onError: () => addToast('error', 'No se pudo restaurar', 'Inténtalo nuevamente en unos segundos.'),
   })
 
   return (
@@ -92,7 +86,8 @@ export default function ProgramasAdminPage() {
               className="px-4 py-2.5 rounded-lg bg-white/95 text-deep focus:outline-none focus:ring-2 focus:ring-primary transition"
             >
               <option value="">Todos los estados</option>
-              <option value="activo">Activos</option>
+              <option value="no_publicado">No publicados</option>
+              <option value="publicado">Publicados</option>
               <option value="archivado">Archivados</option>
             </select>
           </div>
@@ -134,25 +129,15 @@ export default function ProgramasAdminPage() {
                             >
                               <FiEdit2 />
                             </Link>
-                            {programa.estado === 'activo' ? (
+                            {programa.estado !== 'archivado' && (
                               <button
                                 type="button"
-                                onClick={() => archiveMutation.mutate(programa.id)}
+                                onClick={() => setProgramaParaArchivar(programa.id)}
                                 disabled={archiveMutation.isPending}
                                 className="p-2 rounded-lg text-white/70 hover:text-rose-300 hover:bg-white/10 transition disabled:opacity-50"
                                 title="Archivar"
                               >
                                 <FiArchive />
-                              </button>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={() => restoreMutation.mutate(programa.id)}
-                                disabled={restoreMutation.isPending}
-                                className="p-2 rounded-lg text-white/70 hover:text-emerald-300 hover:bg-white/10 transition disabled:opacity-50"
-                                title="Restaurar"
-                              >
-                                <FiRotateCcw />
                               </button>
                             )}
                           </div>
@@ -166,6 +151,16 @@ export default function ProgramasAdminPage() {
           </div>
         </div>
       </div>
+      <ConfirmModal
+        isOpen={!!programaParaArchivar}
+        title="Archivar programa"
+        message="El programa dejará de aparecer en el catálogo público. Esta acción conserva su historial."
+        variant="destructive"
+        onCancel={() => setProgramaParaArchivar(null)}
+        onConfirm={() => programaParaArchivar && archiveMutation.mutate(programaParaArchivar)}
+        isConfirming={archiveMutation.isPending}
+        confirmLabel="Archivar"
+      />
     </>
   )
 }

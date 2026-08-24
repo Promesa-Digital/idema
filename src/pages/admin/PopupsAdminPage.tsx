@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { FiPlus, FiEdit2, FiSend, FiCheck, FiX } from 'react-icons/fi'
-import { fetchPopups, enviarAprobacionPopup, aprobarPopup, rechazarPopup } from '../../api/adminPopupsApi'
+import { FiPlus, FiEdit2, FiSend, FiCheck, FiX, FiPlay, FiFlag } from 'react-icons/fi'
+import { fetchPopups, enviarAprobacionPopup, aprobarPopup, rechazarPopup, publicarPopup, finalizarPopup } from '../../api/adminPopupsApi'
 import { POPUP_ESTADO_LABELS, type PopupEstado } from '../../types/admin'
 import PopupEstadoBadge from '../../components/admin/PopupEstadoBadge'
 import { useAuth } from '../../context/AuthContext'
@@ -54,7 +54,10 @@ export default function PopupsAdminPage() {
     onError: () => addToast('error', 'No se pudo rechazar', 'Inténtalo nuevamente en unos segundos.'),
   })
 
-  const isPending = enviarMutation.isPending || aprobarMutation.isPending || rechazarMutation.isPending
+  const publicarMutation = useMutation({ mutationFn: publicarPopup, onSuccess: () => { invalidate(); addToast('success', 'Popup publicado', 'El popup está activo.') } })
+  const finalizarMutation = useMutation({ mutationFn: finalizarPopup, onSuccess: () => { invalidate(); addToast('success', 'Popup finalizado', 'El popup dejó de estar activo.') } })
+
+  const isPending = enviarMutation.isPending || aprobarMutation.isPending || rechazarMutation.isPending || publicarMutation.isPending || finalizarMutation.isPending
 
   return (
     <>
@@ -116,17 +119,15 @@ export default function PopupsAdminPage() {
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
                             <img
-                              src={popup.image}
+                              src={popup.imagen_url}
                               alt=""
                               className="w-12 h-12 rounded-lg object-cover bg-white/10 flex-shrink-0"
                             />
-                            <span className="max-w-xs">{popup.alt}</span>
+                            <span className="max-w-xs">{popup.texto}</span>
                           </div>
                         </td>
                         <td className="px-5 py-4 text-white/70 whitespace-nowrap">
-                          {popup.startDate || popup.endDate
-                            ? `${popup.startDate ?? '—'} → ${popup.endDate ?? '—'}`
-                            : 'Sin límite'}
+                          {`${popup.fecha_inicio} → ${popup.fecha_fin}`}
                         </td>
                         <td className="px-5 py-4"><PopupEstadoBadge estado={popup.estado} /></td>
                         <td className="px-5 py-4">
@@ -173,6 +174,8 @@ export default function PopupsAdminPage() {
                                 </button>
                               </>
                             )}
+                            {popup.estado === 'aprobado' && user?.role === 'director_marketing' && <button type="button" onClick={() => publicarMutation.mutate(popup.id)} disabled={isPending} className="p-2" title="Publicar"><FiPlay /></button>}
+                            {popup.estado === 'publicado' && user?.role === 'director_marketing' && <button type="button" onClick={() => finalizarMutation.mutate(popup.id)} disabled={isPending} className="p-2" title="Finalizar"><FiFlag /></button>}
                           </div>
                         </td>
                       </tr>
