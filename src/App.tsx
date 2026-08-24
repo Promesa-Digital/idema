@@ -39,8 +39,13 @@ const ProgramasPage = lazy(() => import('./pages/programs/ProgramasPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'))
-const PortalPage = lazy(() => import('./pages/PortalPage'))
-const MiCuentaPage = lazy(() => import('./pages/MiCuentaPage'))
+const DashboardPage = lazy(() => import('./pages/portal/DashboardPage'))
+const MatriculasPage = lazy(() => import('./pages/portal/MatriculasPage'))
+const CheckoutPage = lazy(() => import('./pages/portal/CheckoutPage'))
+const ElectivosPage = lazy(() => import('./pages/portal/ElectivosPage'))
+const PagosPage = lazy(() => import('./pages/portal/PagosPage'))
+const ComprobantesPage = lazy(() => import('./pages/portal/ComprobantesPage'))
+const MiCuentaPage = lazy(() => import('./pages/portal/MiCuentaPage'))
 const AdminPage = lazy(() => import('./pages/AdminPage'))
 const ProgramasAdminPage = lazy(() => import('./pages/admin/ProgramasAdminPage'))
 const ProgramaNuevoPage = lazy(() => import('./pages/admin/ProgramaNuevoPage'))
@@ -92,7 +97,12 @@ function App() {
         {/* Portal del alumno: shell propio (PortalLayout), sin navbar/footer público */}
         <Route element={<PrivateRoute allowedRoles={['alumno']} />}>
           <Route element={<PortalLayout />}>
-            <Route path="portal" element={<PortalPage />} />
+            <Route path="portal" element={<DashboardPage />} />
+            <Route path="portal/matriculas" element={<MatriculasPage />} />
+            <Route path="portal/checkout" element={<CheckoutPage />} />
+            <Route path="portal/electivos" element={<ElectivosPage />} />
+            <Route path="portal/pagos" element={<PagosPage />} />
+            <Route path="portal/comprobantes" element={<ComprobantesPage />} />
             <Route path="portal/mi-cuenta" element={<MiCuentaPage />} />
           </Route>
         </Route>

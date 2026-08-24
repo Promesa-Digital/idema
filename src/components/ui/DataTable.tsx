@@ -13,6 +13,7 @@ interface DataTableProps<T> {
   emptyMessage?: string
   pageSize?: number
   getRowKey?: (row: T, index: number) => string | number
+  onRowClick?: (row: T) => void
 }
 
 const DEFAULT_PAGE_SIZE = 10
@@ -24,6 +25,7 @@ export default function DataTable<T>({
   emptyMessage = 'No hay registros para mostrar.',
   pageSize = DEFAULT_PAGE_SIZE,
   getRowKey,
+  onRowClick,
 }: DataTableProps<T>) {
   const [page, setPage] = useState(0)
 
@@ -85,7 +87,8 @@ export default function DataTable<T>({
               pageData.map((row, index) => (
                 <tr
                   key={getRowKey ? getRowKey(row, start + index) : start + index}
-                  className="border-b last:border-0"
+                  onClick={onRowClick ? () => onRowClick(row) : undefined}
+                  className={`border-b last:border-0 ${onRowClick ? 'cursor-pointer hover:bg-[var(--admin-color-bg)]' : ''}`}
                   style={{ borderColor: 'var(--admin-color-border)' }}
                 >
                   {columns.map((col) => (
