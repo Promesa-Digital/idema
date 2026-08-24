@@ -1,17 +1,23 @@
 export type ProgramaCategoria = 'carrera' | 'auxiliar' | 'especializacion' | 'curso'
-export type ProgramaEstado = 'activo' | 'archivado'
+export type ProgramaEstado = 'no_publicado' | 'publicado' | 'archivado'
 
 export interface Programa {
   id: string
   codigo: string
+  abreviatura: string
   nombre: string
+  tipo: ProgramaCategoria
   categoria: ProgramaCategoria
-  modalidad: string
-  duracion: string
+  malla: string
   descripcion: string
+  anio: number
+  num_lecciones: number | null
+  certificado: boolean
+  tutor: string | null
   estado: ProgramaEstado
-  createdAt: string
-  updatedAt: string
+  publicacion_programada: string | null
+  created_at: string
+  updated_at: string
 }
 
 export interface ProgramaListFilters {
@@ -28,13 +34,14 @@ export const PROGRAMA_CATEGORIA_LABELS: Record<ProgramaCategoria, string> = {
 }
 
 export const PROGRAMA_ESTADO_LABELS: Record<ProgramaEstado, string> = {
-  activo: 'Activo',
+  no_publicado: 'No publicado',
+  publicado: 'Publicado',
   archivado: 'Archivado',
 }
 
 /** Refleja la forma de `Anuncio` (src/types/index.ts) consumida por AnnouncementModal, más el flujo de aprobación. */
 export type PopupFrequency = 'session' | 'day' | 'always'
-export type PopupEstado = 'borrador' | 'pendiente_aprobacion' | 'aprobado' | 'rechazado'
+export type PopupEstado = 'borrador' | 'pendiente_aprobacion' | 'aprobado' | 'rechazado' | 'publicado' | 'finalizado'
 
 export interface PopupCta {
   label: string
@@ -44,16 +51,22 @@ export interface PopupCta {
 
 export interface Popup {
   id: string
-  image: string
-  alt: string
-  startDate?: string
-  endDate?: string
-  frequency: PopupFrequency
-  pages: string[]
-  cta?: PopupCta
+  tipo: 'imagen' | 'video' | 'texto'
+  texto: string
+  imagen_url: string
+  video_url?: string
+  enlace?: string
+  paginas: string
+  monto_descuento?: number
+  duracion_temporizador?: number
+  texto_superior?: string
+  fecha_inicio: string
+  fecha_fin: string
   estado: PopupEstado
-  createdAt: string
-  updatedAt: string
+  creado_por: string
+  aprobado_por?: string
+  created_at: string
+  updated_at: string
 }
 
 export interface PopupListFilters {
@@ -72,4 +85,6 @@ export const POPUP_ESTADO_LABELS: Record<PopupEstado, string> = {
   pendiente_aprobacion: 'Pendiente de aprobación',
   aprobado: 'Aprobado',
   rechazado: 'Rechazado',
+  publicado: 'Publicado',
+  finalizado: 'Finalizado',
 }

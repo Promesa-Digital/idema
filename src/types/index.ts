@@ -382,3 +382,29 @@ export interface CuentaAlumnoUpdate {
   telefono?: string
   estado?: CuentaAlumnoEstado
 }
+
+export type LeadOrigen = 'popup' | 'formulario'
+export type LeadEstado = 'nuevo' | 'contactado' | 'pago' | 'descartado'
+export interface Lead {
+  id: string
+  nombre?: string
+  correo?: string
+  telefono?: string
+  origen: LeadOrigen
+  estado: LeadEstado
+  created_at: string
+  updated_at: string
+}
+
+export type ConceptoCobroTipo = 'matricula' | 'mensualidad' | 'certificacion' | 'gratuito'
+export type ConceptoCobroEstado = 'activo' | 'inactivo'
+export interface ConceptoCobro {
+  id: string
+  tipo: ConceptoCobroTipo
+  monto: number
+  descripcion?: string
+  estado: ConceptoCobroEstado
+  programa_id: string
+  created_at: string
+  updated_at: string
+}
