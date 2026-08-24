@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const popupTipos = ['imagen', 'video', 'texto'] as const
+export const popupTipos = ['anuncio', 'descuento'] as const
 
 export const popupSchema = z.object({
   tipo: z.enum(popupTipos),
