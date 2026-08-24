@@ -1,5 +1,34 @@
 import type { UserRole } from './auth'
 
+/**
+ * Catálogo público de programas (GET /programas/publicos, accesible para un alumno).
+ * Ojo: NO es el mismo shape que `Programa` de `types/admin.ts` — ese tipo quedó
+ * desalineado del backend real (le faltan tipo/malla/anio/num_lecciones/certificado/tutor
+ * y tiene campos que el backend no devuelve como modalidad/duracion). Este sí refleja
+ * el ProgramaResponse real de app/schemas/programa.py.
+ */
+export type ProgramaTipo = 'carrera' | 'auxiliar' | 'especializacion' | 'curso'
+export type ProgramaEstadoPublico = 'no_publicado' | 'publicado' | 'archivado'
+
+export interface ProgramaPublico {
+  id: string
+  codigo: string
+  abreviatura: string
+  nombre: string
+  tipo: ProgramaTipo
+  categoria: string
+  malla: string
+  descripcion?: string
+  anio: number
+  num_lecciones: number
+  certificado: boolean
+  tutor?: string
+  estado: ProgramaEstadoPublico
+  publicacion_programada?: string
+  created_at: string
+  updated_at: string
+}
+
 export interface CampoLaboral {
   title: string
   description: string
