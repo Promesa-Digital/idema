@@ -1,0 +1,44 @@
+/*
+ * Design system real de IDEMA para /admin y /portal (Figma "IDEMA WEB").
+ *
+ * Escopeado en `.idema-admin` en vez de `:root`: un `:root` global cascadea a
+ * TODO el documento, incluido el sitio público — y `--color-primary` ya existe
+ * en el tema de Tailwind de `index.css` (mismo nombre, mismo valor #00AFF0 hoy,
+ * pero sería un choque frágil de mantener). `.idema-admin` es la misma clase
+ * que ya envuelve <AdminLayout> y <PortalLayout>, así que el efecto es idéntico
+ * en la práctica sin arriesgar el sitio público.
+ */
+.idema-admin {
+  /* Colores */
+  --color-primary: #00AFF0;
+  --color-primary-dark: #0090C8;
+  --color-secondary: #2E136E;
+  --color-secondary-light: rgba(46, 19, 110, 0.1);
+  --color-tertiary: #FD3DB5;
+  --color-neutral: #10323F;
+  --color-bg-page: #EEF6FF;
+  --color-bg-card: #FFFFFF;
+  --color-border: #D6E8F5;
+  --color-text-main: #10323F;
+  --color-text-secondary: #3E4850;
+  --color-text-tertiary: #6E7881;
+  --color-text-sidebar: #FFFFFF;
+  --color-highlight: #C7E7F8;
+  --color-disabled: #BDC8D1;
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+
+  /* Tipografía */
+  --font-headline: 'Manrope', sans-serif;
+  --font-body: 'Hanken Grotesk', sans-serif;
+
+  /* Sombras */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.15);
+
+  /* Bordes */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
