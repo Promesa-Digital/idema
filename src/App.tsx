@@ -47,7 +47,7 @@ const ElectivosPage = lazy(() => import('./pages/portal/ElectivosPage'))
 const PagosPage = lazy(() => import('./pages/portal/PagosPage'))
 const ComprobantesPage = lazy(() => import('./pages/portal/ComprobantesPage'))
 const MiCuentaPage = lazy(() => import('./pages/portal/MiCuentaPage'))
-const AdminPage = lazy(() => import('./pages/AdminPage'))
+const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'))
 const ProgramasAdminPage = lazy(() => import('./pages/admin/ProgramasAdminPage'))
 const ProgramaNuevoPage = lazy(() => import('./pages/admin/ProgramaNuevoPage'))
 const ProgramaEditarPage = lazy(() => import('./pages/admin/ProgramaEditarPage'))
@@ -115,7 +115,7 @@ function App() {
         {/* Panel admin: shell propio (AdminLayout), sin navbar/footer público */}
         <Route element={<PrivateRoute allowedRoles={ROLES_STAFF} />}>
           <Route element={<AdminLayout />}>
-            <Route path="admin" element={<AdminPage />} />
+            <Route path="admin" element={<AdminDashboardPage />} />
             <Route element={<PrivateRoute allowedRoles={['academico', 'admin_sistema']} />}>
               <Route path="admin/programas" element={<ProgramasAdminPage />} />
               <Route path="admin/programas/nuevo" element={<ProgramaNuevoPage />} />

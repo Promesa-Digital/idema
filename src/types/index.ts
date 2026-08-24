@@ -170,7 +170,8 @@ export type DescuentoEstado = 'activo' | 'inactivo'
 export interface Descuento {
   id: string
   tipo: DescuentoTipo
-  porcentaje: number
+  // El backend serializa Decimal como string (evita redondeo de punto flotante en dinero/porcentajes).
+  porcentaje: string
   descripcion?: string
   estado: DescuentoEstado
   concepto_id: string
@@ -243,7 +244,8 @@ export type OrdenPagoEstado =
 
 export interface OrdenPago {
   id: string
-  monto: number
+  // El backend serializa Decimal como string (evita redondeo de punto flotante en dinero).
+  monto: string
   medio_pago: OrdenPagoMedioPago
   estado: OrdenPagoEstado
   ref_culqi?: string
@@ -306,9 +308,10 @@ export interface Conciliacion {
   id: string
   periodo_inicio: string
   periodo_fin: string
-  monto_esperado: number
-  monto_abonado: number
-  comision: number
+  // El backend serializa Decimal como string (evita redondeo de punto flotante en dinero).
+  monto_esperado: string
+  monto_abonado: string
+  comision: string
   estado: ConciliacionEstado
   fecha_cierre?: string
   created_at: string
@@ -319,7 +322,7 @@ export interface ConciliacionOrden {
   id: string
   orden_id: string
   conciliada: boolean
-  diferencia?: number
+  diferencia?: string
 }
 
 export interface ConciliacionDetalle extends Conciliacion {
@@ -401,7 +404,8 @@ export type ConceptoCobroEstado = 'activo' | 'inactivo'
 export interface ConceptoCobro {
   id: string
   tipo: ConceptoCobroTipo
-  monto: number
+  // El backend serializa Decimal como string (evita redondeo de punto flotante en dinero).
+  monto: string
   descripcion?: string
   estado: ConceptoCobroEstado
   programa_id: string

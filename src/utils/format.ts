@@ -3,6 +3,8 @@ export function formatFecha(iso?: string): string {
   return new Date(iso).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
-export function formatMonto(monto: number): string {
-  return `S/ ${monto.toFixed(2)}`
+/** El backend manda montos como string (Decimal), no number, para no perder precisión. */
+export function formatMonto(monto: number | string): string {
+  const num = typeof monto === 'string' ? Number(monto) : monto
+  return `S/ ${Number.isFinite(num) ? num.toFixed(2) : '0.00'}`
 }
