@@ -1,8 +1,22 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import Layout from './components/Layout'
+import AdminLayout from './components/layout/AdminLayout'
+import PortalLayout from './components/layout/PortalLayout'
 import LoadingSpinner from './components/ui/LoadingSpinner'
 import PrivateRoute from './components/auth/PrivateRoute'
+import type { UserRole } from './types/auth'
+
+/** Cualquier rol no-alumno puede entrar al shell de /admin; qué ve en el sidebar
+ * y a qué secciones concretas tiene acceso ya lo decide cada guard más específico. */
+const ROLES_STAFF: UserRole[] = [
+  'admin_sistema',
+  'academico',
+  'marketing',
+  'director_marketing',
+  'ventas',
+  'administracion',
+]
 
 // Lazy load pages for code splitting
 const Home = lazy(() => import('./pages/home/Home'))
@@ -71,28 +85,33 @@ function App() {
           {/* Auth */}
           <Route path="login" element={<LoginPage />} />
           <Route path="unauthorized" element={<UnauthorizedPage />} />
-          {/* Rutas protegidas */}
-          <Route element={<PrivateRoute allowedRoles={['alumno', 'staff']} />}>
-            <Route path="portal" element={<PortalPage />} />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={['alumno']} />}>
-            <Route path="portal/mi-cuenta" element={<MiCuentaPage />} />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={['staff']} />}>
-            <Route path="admin" element={<AdminPage />} />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={['staff', 'academico']} />}>
-            <Route path="admin/programas" element={<ProgramasAdminPage />} />
-            <Route path="admin/programas/nuevo" element={<ProgramaNuevoPage />} />
-            <Route path="admin/programas/:id/editar" element={<ProgramaEditarPage />} />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={['staff', 'director_marketing']} />}>
-            <Route path="admin/popups" element={<PopupsAdminPage />} />
-            <Route path="admin/popups/nuevo" element={<PopupNuevoPage />} />
-            <Route path="admin/popups/:id/editar" element={<PopupEditarPage />} />
-          </Route>
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
+        </Route>
+
+        {/* Portal del alumno: shell propio (PortalLayout), sin navbar/footer público */}
+        <Route element={<PrivateRoute allowedRoles={['alumno']} />}>
+          <Route element={<PortalLayout />}>
+            <Route path="portal" element={<PortalPage />} />
+            <Route path="portal/mi-cuenta" element={<MiCuentaPage />} />
+          </Route>
+        </Route>
+
+        {/* Panel admin: shell propio (AdminLayout), sin navbar/footer público */}
+        <Route element={<PrivateRoute allowedRoles={ROLES_STAFF} />}>
+          <Route element={<AdminLayout />}>
+            <Route path="admin" element={<AdminPage />} />
+            <Route element={<PrivateRoute allowedRoles={['academico', 'admin_sistema']} />}>
+              <Route path="admin/programas" element={<ProgramasAdminPage />} />
+              <Route path="admin/programas/nuevo" element={<ProgramaNuevoPage />} />
+              <Route path="admin/programas/:id/editar" element={<ProgramaEditarPage />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={['marketing', 'director_marketing', 'admin_sistema']} />}>
+              <Route path="admin/popups" element={<PopupsAdminPage />} />
+              <Route path="admin/popups/nuevo" element={<PopupNuevoPage />} />
+              <Route path="admin/popups/:id/editar" element={<PopupEditarPage />} />
+            </Route>
+          </Route>
         </Route>
       </Routes>
     </Suspense>
