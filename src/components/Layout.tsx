@@ -25,7 +25,6 @@ export default function Layout() {
       </main>
       <Footer />
       <WhatsAppButton />
-      <CartDrawer />
       <AnnouncementModal />
       <ToastContainer />
     </div>
