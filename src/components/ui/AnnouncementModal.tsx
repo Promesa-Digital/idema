@@ -1,9 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { FaTimes } from 'react-icons/fa'
-import { anuncios } from '../../data/anuncios'
-import type { Anuncio } from '../../types'
+import { fetchPublicPopups, type PublicPopup } from '../../api/adminPopupsApi'
+
+interface Anuncio {
+  id: string
+  image: string
+  alt: string
+  startDate: string
+  endDate: string
+  frequency: 'session' | 'day' | 'always'
+  pages: string[]
+  cta?: { label: string; href: string; external?: boolean }
+}
 
 const STORAGE_PREFIX = 'idema:anuncio:'
 
@@ -57,9 +68,23 @@ function markDismissed(a: Anuncio) {
   }
 }
 
-function pickAnuncio(pathname: string): Anuncio | null {
+function mapPopup(popup: PublicPopup): Anuncio {
+  return {
+    id: popup.id,
+    image: popup.imagen_url,
+    alt: popup.texto,
+    startDate: popup.fecha_inicio,
+    endDate: popup.fecha_fin,
+    frequency: 'session',
+    pages: popup.paginas.split(',').map((page) => page.trim()).filter(Boolean),
+    cta: popup.enlace ? { label: 'Ver más', href: popup.enlace } : undefined,
+  }
+}
+
+function pickAnuncio(pathname: string, popups: PublicPopup[]): Anuncio | null {
   const today = new Date()
-  for (const a of anuncios) {
+  for (const popup of popups) {
+    const a = mapPopup(popup)
     const pages = a.pages ?? ['/']
     if (!pages.includes(pathname)) continue
     if (!isWithinRange(a, today)) continue
@@ -71,6 +96,7 @@ function pickAnuncio(pathname: string): Anuncio | null {
 
 export default function AnnouncementModal() {
   const { pathname } = useLocation()
+  const { data: publicPopups = [] } = useQuery({ queryKey: ['public', 'popups'], queryFn: fetchPublicPopups })
   const [anuncio, setAnuncio] = useState<Anuncio | null>(null)
   const [open, setOpen] = useState(false)
   const closeBtnRef = useRef<HTMLButtonElement | null>(null)
@@ -80,7 +106,7 @@ export default function AnnouncementModal() {
 
   // Selección por ruta
   useEffect(() => {
-    const match = pickAnuncio(pathname)
+    const match = pickAnuncio(pathname, publicPopups)
     if (match) {
       setAnuncio(match)
       // pequeño delay para que el resto del layout monte primero
@@ -89,7 +115,7 @@ export default function AnnouncementModal() {
     }
     setAnuncio(null)
     setOpen(false)
-  }, [pathname])
+  }, [pathname, publicPopups])
 
   // Cerrar
   const handleClose = () => {
