@@ -2,21 +2,21 @@ import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { FiPlus, FiEdit2, FiArchive } from 'react-icons/fi'
-import { fetchProgramas, archivarPrograma } from '../../api/adminProgramasApi'
-import { PROGRAMA_CATEGORIA_LABELS, type ProgramaCategoria, type ProgramaEstado, type ProgramaListFilters } from '../../types/admin'
+import { FiPlus, FiEdit2, FiArchive, FiRotateCcw } from 'react-icons/fi'
+import { fetchProgramas, archivarPrograma, restaurarPrograma } from '../../api/adminProgramasApi'
+import { PROGRAMA_CATEGORIA_LABELS, type Programa, type ProgramaCategoria, type ProgramaEstado, type ProgramaListFilters } from '../../types/admin'
 import { programaCategorias } from '../../schemas/programa'
 import Badge from '../../components/ui/Badge'
 import PageHeader from '../../components/ui/PageHeader'
+import DataTable, { type DataTableColumn } from '../../components/ui/DataTable'
+import { VARIANT_CLASSES, iconButtonClasses } from '../../components/ui/buttonVariants'
 import { useToast } from '../../hooks/useToast'
 import ConfirmModal from '../../components/ui/ConfirmModal'
 
 const PROGRAMAS_QUERY_KEY = ['admin', 'programas'] as const
 
 const inputClass =
-  'rounded-lg border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-color-primary)] transition'
-const inputStyle = { borderColor: 'var(--admin-color-border)', color: 'var(--admin-color-text-primary)' }
-const cardBorder = { borderColor: 'var(--admin-color-border)' }
+  'rounded-[var(--radius-sm)] border border-[var(--color-border)] px-4 py-2.5 text-sm text-[var(--color-text-main)] transition focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]'
 
 export default function ProgramasAdminPage() {
   const [categoria, setCategoria] = useState<ProgramaCategoria | ''>('')
@@ -47,6 +47,55 @@ export default function ProgramasAdminPage() {
     onError: () => addToast('error', 'No se pudo archivar', 'Inténtalo nuevamente en unos segundos.'),
   })
 
+  const restoreMutation = useMutation({
+    mutationFn: restaurarPrograma,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: PROGRAMAS_QUERY_KEY })
+      addToast('success', 'Programa restaurado', 'Vuelve a estar disponible como no publicado.')
+    },
+    onError: () => addToast('error', 'No se pudo restaurar', 'Inténtalo nuevamente en unos segundos.'),
+  })
+
+  const columns: DataTableColumn<Programa>[] = [
+    { header: 'Código', accessor: 'codigo', render: (p) => <span className="font-mono">{p.codigo}</span> },
+    { header: 'Nombre', accessor: 'nombre' },
+    { header: 'Categoría', accessor: 'categoria', render: (p) => PROGRAMA_CATEGORIA_LABELS[p.categoria] },
+    { header: 'Estado', accessor: 'estado', render: (p) => <Badge value={p.estado} /> },
+    {
+      header: 'Acciones',
+      accessor: 'id',
+      render: (programa) => (
+        <div className="flex items-center justify-end gap-2">
+          <Link to={`/admin/programas/${programa.id}/editar`} className={iconButtonClasses('ghost')} title="Editar">
+            <FiEdit2 />
+          </Link>
+          {programa.estado !== 'archivado' && (
+            <button
+              type="button"
+              onClick={() => setProgramaParaArchivar(programa.id)}
+              disabled={archiveMutation.isPending}
+              className={iconButtonClasses('destructive')}
+              title="Archivar"
+            >
+              <FiArchive />
+            </button>
+          )}
+          {programa.estado === 'archivado' && (
+            <button
+              type="button"
+              onClick={() => restoreMutation.mutate(programa.id)}
+              disabled={restoreMutation.isPending}
+              className={iconButtonClasses('ghost')}
+              title="Restaurar"
+            >
+              <FiRotateCcw />
+            </button>
+          )}
+        </div>
+      ),
+    },
+  ]
+
   return (
     <>
       <Helmet>
@@ -59,7 +108,7 @@ export default function ProgramasAdminPage() {
         action={
           <Link
             to="/admin/programas/nuevo"
-            className="inline-flex items-center gap-2 rounded-lg bg-[var(--admin-color-primary)] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--admin-color-primary-hover)] whitespace-nowrap"
+            className={`inline-flex items-center gap-2 rounded-[var(--radius-sm)] px-5 py-3 text-sm font-semibold whitespace-nowrap transition-colors ${VARIANT_CLASSES.primary}`}
           >
             <FiPlus /> Nuevo programa
           </Link>
@@ -73,25 +122,14 @@ export default function ProgramasAdminPage() {
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar por nombre o código..."
           className={`flex-1 min-w-[220px] ${inputClass}`}
-          style={inputStyle}
         />
-        <select
-          value={categoria}
-          onChange={(e) => setCategoria(e.target.value as ProgramaCategoria | '')}
-          className={inputClass}
-          style={inputStyle}
-        >
+        <select value={categoria} onChange={(e) => setCategoria(e.target.value as ProgramaCategoria | '')} className={inputClass}>
           <option value="">Todas las categorías</option>
           {programaCategorias.map((key) => (
             <option key={key} value={key}>{PROGRAMA_CATEGORIA_LABELS[key]}</option>
           ))}
         </select>
-        <select
-          value={estado}
-          onChange={(e) => setEstado(e.target.value as ProgramaEstado | '')}
-          className={inputClass}
-          style={inputStyle}
-        >
+        <select value={estado} onChange={(e) => setEstado(e.target.value as ProgramaEstado | '')} className={inputClass}>
           <option value="">Todos los estados</option>
           <option value="no_publicado">No publicados</option>
           <option value="publicado">Publicados</option>
@@ -99,67 +137,17 @@ export default function ProgramasAdminPage() {
         </select>
       </div>
 
-      <div
-        className="overflow-hidden rounded-[var(--admin-radius-md)] border bg-[var(--admin-color-surface)] shadow-[var(--admin-shadow-sm)]"
-        style={cardBorder}
-      >
-        {isLoading && <p className="py-16 text-center text-sm" style={{ color: 'var(--admin-color-text-secondary)' }}>Cargando programas...</p>}
-
-        {isError && <p className="py-16 text-center text-sm text-red-600">No se pudieron cargar los programas. Intenta de nuevo.</p>}
-
-        {!isLoading && !isError && programas.length === 0 && (
-          <p className="py-16 text-center text-sm" style={{ color: 'var(--admin-color-text-secondary)' }}>No hay programas que coincidan con los filtros.</p>
-        )}
-
-        {!isLoading && !isError && programas.length > 0 && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="border-b text-xs font-semibold uppercase tracking-wide" style={{ ...cardBorder, color: 'var(--admin-color-text-secondary)' }}>
-                  <th className="px-5 py-3">Código</th>
-                  <th className="px-5 py-3">Nombre</th>
-                  <th className="px-5 py-3">Categoría</th>
-                  <th className="px-5 py-3">Estado</th>
-                  <th className="px-5 py-3 text-right">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {programas.map((programa) => (
-                  <tr key={programa.id} className="border-b last:border-0" style={cardBorder}>
-                    <td className="px-5 py-4 font-mono" style={{ color: 'var(--admin-color-text-secondary)' }}>{programa.codigo}</td>
-                    <td className="px-5 py-4" style={{ color: 'var(--admin-color-text-primary)' }}>{programa.nombre}</td>
-                    <td className="px-5 py-4" style={{ color: 'var(--admin-color-text-primary)' }}>{PROGRAMA_CATEGORIA_LABELS[programa.categoria]}</td>
-                    <td className="px-5 py-4"><Badge value={programa.estado} /></td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link
-                          to={`/admin/programas/${programa.id}/editar`}
-                          className="rounded-lg p-2 transition-colors hover:bg-[var(--admin-color-bg)]"
-                          style={{ color: 'var(--admin-color-text-secondary)' }}
-                          title="Editar"
-                        >
-                          <FiEdit2 />
-                        </Link>
-                        {programa.estado !== 'archivado' && (
-                          <button
-                            type="button"
-                            onClick={() => setProgramaParaArchivar(programa.id)}
-                            disabled={archiveMutation.isPending}
-                            className="rounded-lg p-2 text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50"
-                            title="Archivar"
-                          >
-                            <FiArchive />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      {isError ? (
+        <p className="py-16 text-center text-sm text-[var(--color-error)]">No se pudieron cargar los programas. Intenta de nuevo.</p>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={programas}
+          isLoading={isLoading}
+          emptyMessage="No hay programas que coincidan con los filtros."
+          getRowKey={(p) => p.id}
+        />
+      )}
 
       <ConfirmModal
         isOpen={!!programaParaArchivar}
@@ -169,7 +157,7 @@ export default function ProgramasAdminPage() {
         onCancel={() => setProgramaParaArchivar(null)}
         onConfirm={() => programaParaArchivar && archiveMutation.mutate(programaParaArchivar)}
         isConfirming={archiveMutation.isPending}
-        confirmLabel="Archivar"
+        confirmText="Archivar"
       />
     </>
   )

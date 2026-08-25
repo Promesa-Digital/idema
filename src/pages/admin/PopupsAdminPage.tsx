@@ -4,14 +4,15 @@ import { Link } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { FiPlus, FiEdit2, FiSend, FiCheck, FiX, FiPlay, FiFlag } from 'react-icons/fi'
 import { fetchPopups, enviarAprobacionPopup, aprobarPopup, rechazarPopup, publicarPopup, finalizarPopup } from '../../api/adminPopupsApi'
-import { POPUP_ESTADO_LABELS, type PopupEstado } from '../../types/admin'
+import { POPUP_ESTADO_LABELS, type Popup, type PopupEstado } from '../../types/admin'
 import Badge from '../../components/ui/Badge'
 import PageHeader from '../../components/ui/PageHeader'
+import DataTable, { type DataTableColumn } from '../../components/ui/DataTable'
+import { VARIANT_CLASSES, iconButtonClasses } from '../../components/ui/buttonVariants'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../hooks/useToast'
 
 const POPUPS_QUERY_KEY = ['admin', 'popups'] as const
-const cardBorder = { borderColor: 'var(--admin-color-border)' }
 
 export default function PopupsAdminPage() {
   const [estado, setEstado] = useState<PopupEstado | ''>('')
@@ -61,6 +62,101 @@ export default function PopupsAdminPage() {
 
   const isPending = enviarMutation.isPending || aprobarMutation.isPending || rechazarMutation.isPending || publicarMutation.isPending || finalizarMutation.isPending
 
+  const columns: DataTableColumn<Popup>[] = [
+    {
+      header: 'Popup',
+      accessor: 'texto',
+      render: (popup) => (
+        <div className="flex items-center gap-3">
+          <img
+            src={popup.imagen_url}
+            alt=""
+            className="h-12 w-12 flex-shrink-0 rounded-[var(--radius-sm)] object-cover bg-[var(--color-bg-page)]"
+          />
+          <span className="max-w-xs text-[var(--color-text-main)]">{popup.texto}</span>
+        </div>
+      ),
+    },
+    {
+      header: 'Vigencia',
+      accessor: 'fecha_inicio',
+      render: (popup) => `${popup.fecha_inicio} → ${popup.fecha_fin}`,
+    },
+    {
+      header: 'Estado',
+      accessor: 'estado',
+      render: (popup) => <Badge value={popup.estado} />,
+    },
+    {
+      header: 'Acciones',
+      accessor: 'id',
+      render: (popup) => (
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <Link to={`/admin/popups/${popup.id}/editar`} className={iconButtonClasses('ghost')} title="Editar">
+            <FiEdit2 />
+          </Link>
+
+          {(popup.estado === 'borrador' || popup.estado === 'rechazado') && (
+            <button
+              type="button"
+              onClick={() => enviarMutation.mutate(popup.id)}
+              disabled={isPending}
+              className={iconButtonClasses('ghost')}
+              title="Enviar a aprobación"
+            >
+              <FiSend />
+            </button>
+          )}
+
+          {popup.estado === 'pendiente' && user?.role === 'director_marketing' && (
+            <>
+              <button
+                type="button"
+                onClick={() => aprobarMutation.mutate(popup.id)}
+                disabled={isPending}
+                className={iconButtonClasses('primary')}
+                title="Aprobar"
+              >
+                <FiCheck />
+              </button>
+              <button
+                type="button"
+                onClick={() => rechazarMutation.mutate(popup.id)}
+                disabled={isPending}
+                className={iconButtonClasses('destructive')}
+                title="Rechazar"
+              >
+                <FiX />
+              </button>
+            </>
+          )}
+          {popup.estado === 'aprobado' && user?.role === 'director_marketing' && (
+            <button
+              type="button"
+              onClick={() => publicarMutation.mutate(popup.id)}
+              disabled={isPending}
+              className={iconButtonClasses('outlined')}
+              title="Publicar"
+            >
+              <FiPlay />
+            </button>
+          )}
+          {popup.estado === 'publicado' && user?.role === 'director_marketing' && (
+            <button
+              type="button"
+              onClick={() => finalizarMutation.mutate(popup.id)}
+              disabled={isPending}
+              className={iconButtonClasses('ghost')}
+              title="Finalizar"
+            >
+              <FiFlag />
+            </button>
+          )}
+        </div>
+      ),
+    },
+  ]
+
   return (
     <>
       <Helmet>
@@ -73,7 +169,7 @@ export default function PopupsAdminPage() {
         action={
           <Link
             to="/admin/popups/nuevo"
-            className="inline-flex items-center gap-2 rounded-lg bg-[var(--admin-color-primary)] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--admin-color-primary-hover)] whitespace-nowrap"
+            className={`inline-flex items-center gap-2 rounded-[var(--radius-sm)] px-5 py-3 text-sm font-semibold whitespace-nowrap transition-colors ${VARIANT_CLASSES.primary}`}
           >
             <FiPlus /> Nuevo popup
           </Link>
@@ -84,8 +180,7 @@ export default function PopupsAdminPage() {
         <select
           value={estado}
           onChange={(e) => setEstado(e.target.value as PopupEstado | '')}
-          className="rounded-lg border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-color-primary)] transition"
-          style={{ borderColor: 'var(--admin-color-border)', color: 'var(--admin-color-text-primary)' }}
+          className="rounded-[var(--radius-sm)] border border-[var(--color-border)] px-4 py-2.5 text-sm text-[var(--color-text-main)] transition focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
         >
           <option value="">Todos los estados</option>
           {(Object.keys(POPUP_ESTADO_LABELS) as PopupEstado[]).map((key) => (
@@ -94,112 +189,17 @@ export default function PopupsAdminPage() {
         </select>
       </div>
 
-      <div
-        className="overflow-hidden rounded-[var(--admin-radius-md)] border bg-[var(--admin-color-surface)] shadow-[var(--admin-shadow-sm)]"
-        style={cardBorder}
-      >
-        {isLoading && <p className="py-16 text-center text-sm" style={{ color: 'var(--admin-color-text-secondary)' }}>Cargando popups...</p>}
-
-        {isError && <p className="py-16 text-center text-sm text-red-600">No se pudieron cargar los popups. Intenta de nuevo.</p>}
-
-        {!isLoading && !isError && popups.length === 0 && (
-          <p className="py-16 text-center text-sm" style={{ color: 'var(--admin-color-text-secondary)' }}>No hay popups que coincidan con los filtros.</p>
-        )}
-
-        {!isLoading && !isError && popups.length > 0 && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="border-b text-xs font-semibold uppercase tracking-wide" style={{ ...cardBorder, color: 'var(--admin-color-text-secondary)' }}>
-                  <th className="px-5 py-3">Popup</th>
-                  <th className="px-5 py-3">Vigencia</th>
-                  <th className="px-5 py-3">Estado</th>
-                  <th className="px-5 py-3 text-right">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {popups.map((popup) => (
-                  <tr key={popup.id} className="border-b align-top last:border-0" style={cardBorder}>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={popup.imagen_url}
-                          alt=""
-                          className="h-12 w-12 flex-shrink-0 rounded-lg object-cover"
-                          style={{ backgroundColor: 'var(--admin-color-bg)' }}
-                        />
-                        <span className="max-w-xs" style={{ color: 'var(--admin-color-text-primary)' }}>{popup.texto}</span>
-                      </div>
-                    </td>
-                    <td className="whitespace-nowrap px-5 py-4" style={{ color: 'var(--admin-color-text-secondary)' }}>
-                      {`${popup.fecha_inicio} → ${popup.fecha_fin}`}
-                    </td>
-                    <td className="px-5 py-4"><Badge value={popup.estado} /></td>
-                    <td className="px-5 py-4">
-                      <div className="flex flex-wrap items-center justify-end gap-2">
-                        <Link
-                          to={`/admin/popups/${popup.id}/editar`}
-                          className="rounded-lg p-2 transition-colors hover:bg-[var(--admin-color-bg)]"
-                          style={{ color: 'var(--admin-color-text-secondary)' }}
-                          title="Editar"
-                        >
-                          <FiEdit2 />
-                        </Link>
-
-                        {(popup.estado === 'borrador' || popup.estado === 'rechazado') && (
-                          <button
-                            type="button"
-                            onClick={() => enviarMutation.mutate(popup.id)}
-                            disabled={isPending}
-                            className="rounded-lg p-2 transition-colors hover:bg-[var(--admin-color-bg)] disabled:opacity-50"
-                            style={{ color: 'var(--admin-color-primary)' }}
-                            title="Enviar a aprobación"
-                          >
-                            <FiSend />
-                          </button>
-                        )}
-
-                        {popup.estado === 'pendiente' && user?.role === 'director_marketing' && (
-                          <>
-                            <button
-                              type="button"
-                              onClick={() => aprobarMutation.mutate(popup.id)}
-                              disabled={isPending}
-                              className="rounded-lg p-2 text-emerald-600 transition-colors hover:bg-emerald-50 disabled:opacity-50"
-                              title="Aprobar"
-                            >
-                              <FiCheck />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => rechazarMutation.mutate(popup.id)}
-                              disabled={isPending}
-                              className="rounded-lg p-2 text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50"
-                              title="Rechazar"
-                            >
-                              <FiX />
-                            </button>
-                          </>
-                        )}
-                        {popup.estado === 'aprobado' && user?.role === 'director_marketing' && (
-                          <button type="button" onClick={() => publicarMutation.mutate(popup.id)} disabled={isPending} className="rounded-lg p-2 transition-colors hover:bg-[var(--admin-color-bg)] disabled:opacity-50" style={{ color: 'var(--admin-color-primary)' }} title="Publicar">
-                            <FiPlay />
-                          </button>
-                        )}
-                        {popup.estado === 'publicado' && user?.role === 'director_marketing' && (
-                          <button type="button" onClick={() => finalizarMutation.mutate(popup.id)} disabled={isPending} className="rounded-lg p-2 transition-colors hover:bg-[var(--admin-color-bg)] disabled:opacity-50" style={{ color: 'var(--admin-color-text-secondary)' }} title="Finalizar">
-                            <FiFlag />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      {isError ? (
+        <p className="py-16 text-center text-sm text-[var(--color-error)]">No se pudieron cargar los popups. Intenta de nuevo.</p>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={popups}
+          isLoading={isLoading}
+          emptyMessage="No hay popups que coincidan con los filtros."
+          getRowKey={(popup) => popup.id}
+        />
+      )}
     </>
   )
 }
