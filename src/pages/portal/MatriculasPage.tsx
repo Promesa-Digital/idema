@@ -339,7 +339,7 @@ export default function MatriculasPage() {
         title="Solicitar anulación de matrícula"
         message="Esta acción anula tu matrícula y no genera reembolso de los pagos ya realizados. ¿Deseas continuar?"
         variant="destructive"
-        confirmLabel="Sí, anular"
+        confirmText="Sí, anular"
         isConfirming={anularMutation.isPending}
         onCancel={() => setAAnular(null)}
         onConfirm={() => aAnular && anularMutation.mutate(aAnular)}

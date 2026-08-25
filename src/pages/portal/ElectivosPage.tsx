@@ -243,7 +243,7 @@ export default function ElectivosPage() {
         isOpen={!!aDesactivar}
         title="Desactivar electivo"
         message="Vas a retirar este curso electivo. Se liberará el cupo del año para activar otro."
-        confirmLabel="Sí, desactivar"
+        confirmText="Sí, desactivar"
         isConfirming={desactivarMutation.isPending}
         onCancel={() => setADesactivar(null)}
         onConfirm={() => aDesactivar && desactivarMutation.mutate(aDesactivar.id)}

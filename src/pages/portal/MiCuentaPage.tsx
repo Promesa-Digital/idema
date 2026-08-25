@@ -1,35 +1,119 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { isAxiosError } from 'axios'
-import { FiLock } from 'react-icons/fi'
-import { fetchMiPerfil, actualizarDatosContacto } from '../../api/alumnoApi'
+import { FiLock, FiMail, FiShield, FiAlertTriangle, FiArrowRight } from 'react-icons/fi'
+import { fetchMiPerfil, actualizarDatosContacto, actualizarPassword } from '../../api/alumnoApi'
 import { darDeBajaCuenta } from '../../api/cuentasAlumno'
-import { datosContactoSchema, type DatosContactoValues } from '../../schemas/miCuenta'
+import { datosContactoSchema, passwordSchema, type DatosContactoValues, type PasswordValues } from '../../schemas/miCuenta'
 import type { AlumnoPerfil } from '../../types/alumno'
 import { useAuth } from '../../context/AuthContext'
-import PageHeader from '../../components/ui/PageHeader'
+import Badge from '../../components/ui/Badge'
+import Button from '../../components/ui/Button'
+import FormInput from '../../components/ui/FormInput'
 import ConfirmModal from '../../components/ui/ConfirmModal'
-import FieldError from '../../components/ui/FieldError'
 import { useToast } from '../../hooks/useToast'
 
 const PERFIL_QUERY_KEY = ['alumno', 'perfil'] as const
 
-const cardClass =
-  'rounded-[var(--admin-radius-md)] border bg-[var(--admin-color-surface)] p-6 shadow-[var(--admin-shadow-sm)]'
-const cardBorder = { borderColor: 'var(--admin-color-border)' }
+const cardClass = 'rounded-[var(--radius-md)] bg-[var(--color-bg-card)] p-6'
 
-const readOnlyClassName =
-  'w-full rounded-lg border px-4 py-3 text-sm cursor-not-allowed bg-[var(--admin-color-bg-alt)]'
-const editableClassName =
-  'w-full rounded-lg border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--admin-color-primary)] transition disabled:opacity-60'
-
-interface ContactoFormProps {
-  perfil: AlumnoPerfil
+function initials(nombres: string, apellidos: string): string {
+  return `${nombres.trim().charAt(0)}${apellidos.trim().charAt(0)}`.toUpperCase()
 }
 
-function ContactoForm({ perfil }: ContactoFormProps) {
+function ReadonlyField({ label, value, icon }: { label: string; value: string; icon?: ReactNode }) {
+  return (
+    <div>
+      <label className="mb-1.5 block text-[13px] font-semibold text-[var(--color-text-secondary)]" style={{ fontFamily: 'var(--font-body)' }}>
+        {label}
+      </label>
+      <div className="relative">
+        {icon && (
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-tertiary)]" aria-hidden>
+            {icon}
+          </span>
+        )}
+        <input
+          value={value}
+          readOnly
+          className={`w-full cursor-default rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-[var(--color-bg-page)] py-[10px] text-sm text-[var(--color-text-main)] outline-none ${icon ? 'pl-9 pr-[14px]' : 'px-[14px]'}`}
+          style={{ fontFamily: 'var(--font-body)' }}
+        />
+      </div>
+    </div>
+  )
+}
+
+function CardTitle({ icon, children }: { icon: ReactNode; children: ReactNode }) {
+  return (
+    <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-[var(--color-text-main)]" style={{ fontFamily: 'var(--font-headline)' }}>
+      <span className="text-[var(--color-primary)]" aria-hidden>{icon}</span>
+      {children}
+    </h2>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Columna izquierda: perfil
+// ---------------------------------------------------------------------------
+function PerfilCard({ perfil }: { perfil: AlumnoPerfil }) {
+  return (
+    <div className={cardClass}>
+      <div className="flex flex-col items-center text-center">
+        <span
+          className="flex h-20 w-20 items-center justify-center rounded-full text-[28px] font-bold text-white"
+          style={{ backgroundColor: 'var(--color-primary)', fontFamily: 'var(--font-headline)' }}
+          aria-hidden
+        >
+          {initials(perfil.nombres, perfil.apellidos)}
+        </span>
+        <p className="mt-3 text-xl font-bold text-[var(--color-text-main)]" style={{ fontFamily: 'var(--font-headline)' }}>
+          {perfil.nombres} {perfil.apellidos}
+        </p>
+        <div className="mt-2">
+          <Badge value="activa" label="Estudiante Activo" />
+        </div>
+      </div>
+
+      <hr className="my-6 border-[var(--color-border)]" />
+
+      <div className="space-y-4">
+        <ReadonlyField label="DNI" value={perfil.dni} icon={<FiLock className="h-4 w-4" />} />
+        <ReadonlyField label="Nombres" value={perfil.nombres} />
+        <ReadonlyField label="Apellidos" value={perfil.apellidos} />
+        <p className="text-xs text-[var(--color-text-tertiary)]">
+          Los datos de identidad provienen de los registros oficiales y no son editables.
+        </p>
+      </div>
+
+      <hr className="my-6 border-[var(--color-border)]" />
+
+      <div>
+        <h3 className="mb-2 text-sm font-semibold text-[var(--color-text-main)]" style={{ fontFamily: 'var(--font-headline)' }}>
+          Privacidad y Consentimiento
+        </h3>
+        <p className="text-xs text-[var(--color-text-tertiary)]">
+          Al utilizar esta plataforma, usted consiente el tratamiento de sus datos personales según nuestra política institucional de privacidad.
+        </p>
+        <a
+          href="/politica-privacidad"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[var(--color-primary)] hover:underline"
+        >
+          Ver Política de Privacidad <FiArrowRight className="h-3 w-3" />
+        </a>
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Columna derecha: datos de contacto
+// ---------------------------------------------------------------------------
+function DatosContactoCard({ perfil }: { perfil: AlumnoPerfil }) {
   const { addToast } = useToast()
   const queryClient = useQueryClient()
 
@@ -57,7 +141,7 @@ function ContactoForm({ perfil }: ContactoFormProps) {
     },
   })
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const result = datosContactoSchema.safeParse({ email, telefono })
     if (!result.success) {
@@ -70,110 +154,151 @@ function ContactoForm({ perfil }: ContactoFormProps) {
       return
     }
     setFormError(null)
-    try {
-      await mutation.mutateAsync(result.data)
-    } catch {
-      // el mensaje ya se fija en onError
-    }
-  }
-
-  const handleChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setter(e.target.value)
-    const field = e.target.name
-    setFieldErrors(prev => {
-      if (!prev[field]) return prev
-      const next = { ...prev }
-      delete next[field]
-      return next
-    })
-    setFormError(null)
+    mutation.mutate(result.data)
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-      {formError && (
-        <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
-          {formError}
-        </div>
-      )}
+    <div className={cardClass}>
+      <CardTitle icon={<FiMail className="h-5 w-5" />}>Datos de Contacto</CardTitle>
 
-      <fieldset className="space-y-5">
-        <legend className="mb-1 flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--admin-color-text-primary)' }}>
-          <FiLock aria-hidden /> Datos de identidad
-        </legend>
+      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+        {formError && <p className="rounded-[var(--radius-sm)] bg-[#FEE2E2] p-3 text-sm text-[var(--color-error)]">{formError}</p>}
 
-        <div>
-          <label htmlFor="mi-cuenta-dni" className="mb-2 block text-sm font-semibold" style={{ color: 'var(--admin-color-text-primary)' }}>DNI</label>
-          <input
-            id="mi-cuenta-dni" name="dni" value={perfil.dni}
-            disabled readOnly aria-readonly className={readOnlyClassName}
-            style={{ borderColor: 'var(--admin-color-border)', color: 'var(--admin-color-text-secondary)' }}
-          />
-          <p className="mt-1.5 ml-1 text-xs" style={{ color: 'var(--admin-color-text-secondary)' }}>Este campo no se puede modificar.</p>
-        </div>
-
-        <div>
-          <label htmlFor="mi-cuenta-nombres" className="mb-2 block text-sm font-semibold" style={{ color: 'var(--admin-color-text-primary)' }}>Nombres</label>
-          <input
-            id="mi-cuenta-nombres" name="nombres" value={perfil.nombres}
-            disabled readOnly aria-readonly className={readOnlyClassName}
-            style={{ borderColor: 'var(--admin-color-border)', color: 'var(--admin-color-text-secondary)' }}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="mi-cuenta-apellidos" className="mb-2 block text-sm font-semibold" style={{ color: 'var(--admin-color-text-primary)' }}>Apellidos</label>
-          <input
-            id="mi-cuenta-apellidos" name="apellidos" value={perfil.apellidos}
-            disabled readOnly aria-readonly className={readOnlyClassName}
-            style={{ borderColor: 'var(--admin-color-border)', color: 'var(--admin-color-text-secondary)' }}
-          />
-          <p className="mt-1.5 ml-1 text-xs" style={{ color: 'var(--admin-color-text-secondary)' }}>Si necesitas corregir tu nombre o DNI, contáctanos.</p>
-        </div>
-      </fieldset>
-
-      <div className="space-y-5 border-t pt-6" style={cardBorder}>
-        <div>
-          <label htmlFor="mi-cuenta-email" className="mb-2 block text-sm font-semibold" style={{ color: 'var(--admin-color-text-primary)' }}>Correo electrónico</label>
-          <input
-            id="mi-cuenta-email" type="email" name="email" value={email}
-            onChange={handleChange(setEmail)} placeholder="tu@email.com" autoComplete="email"
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <FormInput
+            label="Correo Electrónico Personal"
+            type="email"
+            value={email}
+            onChange={(v) => { setEmail(v); setFieldErrors((p) => { const n = { ...p }; delete n.email; return n }) }}
+            error={fieldErrors.email}
             disabled={mutation.isPending}
-            aria-invalid={!!fieldErrors.email}
-            aria-describedby={fieldErrors.email ? 'mi-cuenta-err-email' : undefined}
-            className={editableClassName}
-            style={{ borderColor: fieldErrors.email ? '#EF4444' : 'var(--admin-color-border)', color: 'var(--admin-color-text-primary)' }}
           />
-          <FieldError id="mi-cuenta-err-email" message={fieldErrors.email} />
+          <ReadonlyField label="Correo Institucional" value={email} icon={<FiLock className="h-4 w-4" />} />
+          <div className="sm:col-span-2">
+            <FormInput
+              label="Teléfono Móvil"
+              type="tel"
+              value={telefono}
+              onChange={(v) => { setTelefono(v); setFieldErrors((p) => { const n = { ...p }; delete n.telefono; return n }) }}
+              error={fieldErrors.telefono}
+              disabled={mutation.isPending}
+              hint="9 dígitos, empieza con 9."
+            />
+          </div>
         </div>
 
-        <div>
-          <label htmlFor="mi-cuenta-telefono" className="mb-2 block text-sm font-semibold" style={{ color: 'var(--admin-color-text-primary)' }}>Celular</label>
-          <input
-            id="mi-cuenta-telefono" type="tel" name="telefono" value={telefono}
-            onChange={handleChange(setTelefono)} placeholder="987654321" inputMode="numeric"
-            disabled={mutation.isPending}
-            aria-invalid={!!fieldErrors.telefono}
-            aria-describedby={fieldErrors.telefono ? 'mi-cuenta-err-telefono' : undefined}
-            className={editableClassName}
-            style={{ borderColor: fieldErrors.telefono ? '#EF4444' : 'var(--admin-color-border)', color: 'var(--admin-color-text-primary)' }}
-          />
-          <FieldError id="mi-cuenta-err-telefono" message={fieldErrors.telefono} />
+        <div className="flex justify-end">
+          <Button type="submit" variant="primary" disabled={mutation.isPending}>
+            {mutation.isPending ? 'Guardando...' : 'Guardar Cambios'}
+          </Button>
         </div>
-      </div>
-
-      <button
-        type="submit"
-        disabled={mutation.isPending}
-        className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--admin-color-primary)] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--admin-color-primary-hover)] disabled:opacity-70"
-      >
-        {mutation.isPending ? 'Guardando...' : 'Guardar cambios'}
-      </button>
-    </form>
+      </form>
+    </div>
   )
 }
 
-function ZonaDePeligro({ alumnoId }: { alumnoId: string }) {
+// ---------------------------------------------------------------------------
+// Columna derecha: seguridad
+// ---------------------------------------------------------------------------
+const emptyPasswordForm = { passwordActual: '', passwordNueva: '', passwordConfirmar: '' }
+
+function SeguridadCard() {
+  const { addToast } = useToast()
+  const [values, setValues] = useState(emptyPasswordForm)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [formError, setFormError] = useState<string | null>(null)
+
+  const mutation = useMutation({
+    mutationFn: (values: PasswordValues) => actualizarPassword(values),
+    onSuccess: () => {
+      setValues(emptyPasswordForm)
+      setFieldErrors({})
+      setFormError(null)
+      addToast('success', 'Contraseña actualizada', 'Tu contraseña se actualizó correctamente.')
+    },
+    onError: (error) => {
+      if (isAxiosError(error) && error.response?.status === 401) {
+        setFieldErrors({ passwordActual: 'La contraseña actual no es correcta.' })
+      } else {
+        setFormError('No se pudo actualizar tu contraseña. Intenta nuevamente en unos segundos.')
+      }
+    },
+  })
+
+  const change = (field: keyof typeof values, val: string) => {
+    setValues((v) => ({ ...v, [field]: val }))
+    setFieldErrors((p) => { const n = { ...p }; delete n[field]; return n })
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const result = passwordSchema.safeParse(values)
+    if (!result.success) {
+      const errors: Record<string, string> = {}
+      for (const issue of result.error.issues) {
+        const field = issue.path[0]
+        if (typeof field === 'string' && !errors[field]) errors[field] = issue.message
+      }
+      setFieldErrors(errors)
+      return
+    }
+    setFormError(null)
+    mutation.mutate(result.data)
+  }
+
+  return (
+    <div className={cardClass}>
+      <CardTitle icon={<FiShield className="h-5 w-5" />}>Seguridad</CardTitle>
+
+      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+        {formError && <p className="rounded-[var(--radius-sm)] bg-[#FEE2E2] p-3 text-sm text-[var(--color-error)]">{formError}</p>}
+
+        <FormInput
+          label="Contraseña Actual"
+          type="password"
+          value={values.passwordActual}
+          onChange={(v) => change('passwordActual', v)}
+          error={fieldErrors.passwordActual}
+          disabled={mutation.isPending}
+        />
+
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <FormInput
+            label="Nueva Contraseña"
+            type="password"
+            value={values.passwordNueva}
+            onChange={(v) => change('passwordNueva', v)}
+            error={fieldErrors.passwordNueva}
+            disabled={mutation.isPending}
+          />
+          <FormInput
+            label="Confirmar Contraseña"
+            type="password"
+            value={values.passwordConfirmar}
+            onChange={(v) => change('passwordConfirmar', v)}
+            error={fieldErrors.passwordConfirmar}
+            disabled={mutation.isPending}
+          />
+        </div>
+
+        <p className="text-xs text-[var(--color-text-tertiary)]">
+          La contraseña debe tener al menos 8 caracteres, incluir un número y un símbolo.
+        </p>
+
+        <div className="flex justify-end">
+          <Button type="submit" variant="outlined" disabled={mutation.isPending}>
+            {mutation.isPending ? 'Actualizando...' : 'Actualizar Contraseña'}
+          </Button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Columna derecha: zona de peligro
+// ---------------------------------------------------------------------------
+function ZonaDePeligroCard({ alumnoId }: { alumnoId: string }) {
   const { logout } = useAuth()
   const navigate = useNavigate()
   const { addToast } = useToast()
@@ -193,25 +318,25 @@ function ZonaDePeligro({ alumnoId }: { alumnoId: string }) {
   })
 
   return (
-    <div className={`${cardClass} mt-6 border-red-200`}>
-      <h2 className="text-base font-bold text-red-700">Zona de peligro</h2>
-      <p className="mt-1 text-sm" style={{ color: 'var(--admin-color-text-secondary)' }}>
-        Solicitar la baja de tu cuenta es un proceso irreversible: eliminará tu acceso a la plataforma académica.
+    <div className="rounded-[var(--radius-md)] border border-[#FECACA] bg-[#FFF1F1] p-6">
+      <h2 className="mb-2 flex items-center gap-2 text-base font-semibold text-[var(--color-error)]" style={{ fontFamily: 'var(--font-headline)' }}>
+        <FiAlertTriangle className="h-5 w-5" aria-hidden /> Zona de Peligro
+      </h2>
+      <p className="text-sm text-[var(--color-text-secondary)]">
+        Solicitar la baja de la cuenta es un proceso irreversible que eliminará el acceso a la plataforma académica. Se requerirá confirmación administrativa.
       </p>
-      <button
-        type="button"
-        onClick={() => setIsConfirmOpen(true)}
-        className="mt-4 rounded-lg border border-red-300 px-4 py-2.5 text-sm font-semibold text-red-700 transition-colors hover:bg-red-50"
-      >
-        Dar de baja mi cuenta
-      </button>
+      <div className="mt-4 flex justify-end">
+        <Button variant="destructive" onClick={() => setIsConfirmOpen(true)}>
+          Solicitar Baja de Cuenta
+        </Button>
+      </div>
 
       <ConfirmModal
         isOpen={isConfirmOpen}
         title="Dar de baja tu cuenta"
         message="Esta acción es irreversible. Perderás el acceso a la plataforma académica y se cerrará tu sesión automáticamente. Si tienes historial académico o financiero, tus datos se conservarán de forma segura según la normativa vigente."
         variant="destructive"
-        confirmLabel="Sí, dar de baja mi cuenta"
+        confirmText="Sí, dar de baja mi cuenta"
         isConfirming={mutation.isPending}
         onCancel={() => setIsConfirmOpen(false)}
         onConfirm={() => mutation.mutate()}
@@ -233,21 +358,22 @@ export default function MiCuentaPage() {
         <title>Mi cuenta - Portal - IDEMA</title>
       </Helmet>
 
-      <PageHeader title="Mi Perfil" subtitle="Consulta tus datos y edita tu información de contacto." />
+      {isLoading && <p className="py-16 text-center text-sm text-[var(--color-text-secondary)]">Cargando tus datos...</p>}
 
-      <div className="max-w-2xl">
-        <div className={cardClass} style={cardBorder}>
-          {isLoading && <p className="py-16 text-center text-sm" style={{ color: 'var(--admin-color-text-secondary)' }}>Cargando tus datos...</p>}
+      {isError && <p className="py-16 text-center text-sm text-[var(--color-error)]">No se pudieron cargar tus datos. Intenta nuevamente.</p>}
 
-          {isError && (
-            <p className="py-16 text-center text-sm text-red-600">No se pudieron cargar tus datos. Intenta nuevamente.</p>
-          )}
-
-          {!isLoading && !isError && perfil && <ContactoForm key={perfil.id} perfil={perfil} />}
+      {!isLoading && !isError && perfil && (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-10">
+          <div className="lg:col-span-3">
+            <PerfilCard perfil={perfil} />
+          </div>
+          <div className="space-y-6 lg:col-span-7">
+            <DatosContactoCard key={perfil.id} perfil={perfil} />
+            <SeguridadCard />
+            {user && <ZonaDePeligroCard alumnoId={user.id} />}
+          </div>
         </div>
-
-        {user && <ZonaDePeligro alumnoId={user.id} />}
-      </div>
+      )}
     </>
   )
 }
