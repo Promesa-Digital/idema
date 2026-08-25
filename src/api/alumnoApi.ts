@@ -34,3 +34,10 @@ export async function actualizarDatosContacto(values: DatosContactoValues): Prom
   })
   return mapPerfil(data)
 }
+
+export async function actualizarPassword(values: { passwordActual: string; passwordNueva: string }): Promise<void> {
+  await httpClient.patch('/auth/me/password', {
+    password_actual: values.passwordActual,
+    password_nueva: values.passwordNueva,
+  })
+}

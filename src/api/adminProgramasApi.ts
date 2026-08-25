@@ -22,12 +22,13 @@ export async function createPrograma(values: CreateProgramaValues): Promise<Prog
 }
 
 /**
- * PATCH, no PUT: el backend expone una actualización parcial.
- * `codigo` es inmutable — ProgramaUpdate está declarado con extra='forbid',
- * así que enviarlo hace fallar la petición completa con 422.
+ * PATCH, no PUT: el backend expone una actualización parcial (ProgramaUpdate
+ * tiene todos los campos opcionales). `codigo` es inmutable — el schema está
+ * declarado con extra='forbid', así que enviarlo hace fallar la petición
+ * completa con 422.
  */
-export async function updatePrograma(id: string, values: UpdateProgramaValues): Promise<Programa> {
-  const payload = { ...values } as UpdateProgramaValues & { codigo?: string }
+export async function updatePrograma(id: string, values: Partial<UpdateProgramaValues>): Promise<Programa> {
+  const payload = { ...values } as Partial<UpdateProgramaValues> & { codigo?: string }
   delete payload.codigo
   const { data } = await httpClient.patch<Programa>(`${BASE_URL}/${id}`, payload)
   return data
@@ -36,4 +37,12 @@ export async function updatePrograma(id: string, values: UpdateProgramaValues): 
 export async function archivarPrograma(id: string): Promise<Programa> {
   const { data } = await httpClient.patch<Programa>(`${BASE_URL}/${id}/archivar`)
   return data
+}
+
+/**
+ * El backend no expone un endpoint `/restaurar` dedicado: un programa archivado
+ * se reactiva con el mismo PATCH de actualización, mandando `estado: 'no_publicado'`.
+ */
+export async function restaurarPrograma(id: string): Promise<Programa> {
+  return updatePrograma(id, { estado: 'no_publicado' })
 }

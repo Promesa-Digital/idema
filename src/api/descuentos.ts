@@ -33,6 +33,11 @@ export async function deleteDescuento(id: string): Promise<Descuento> {
   return data
 }
 
+export async function activarDescuento(id: string): Promise<Descuento> {
+  const { data } = await httpClient.patch<Descuento>(`${BASE_URL}/${id}/activar`)
+  return data
+}
+
 /** Descuento activo vigente para un concepto de cobro (usa el mismo cálculo que POST /ordenes). */
 export async function getDescuentoVigente(conceptoId: string): Promise<Descuento> {
   const { data } = await httpClient.get<Descuento>(`${BASE_URL}/vigente`, {

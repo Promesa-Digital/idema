@@ -29,3 +29,8 @@ export async function deleteCombo(id: string): Promise<Combo> {
   const { data } = await httpClient.delete<Combo>(`${BASE_URL}/${id}`)
   return data
 }
+
+export async function activarCombo(id: string): Promise<Combo> {
+  const { data } = await httpClient.patch<Combo>(`${BASE_URL}/${id}/activar`)
+  return data
+}
