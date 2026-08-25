@@ -14,3 +14,20 @@ export const datosContactoSchema = z.object({
 })
 
 export type DatosContactoValues = z.infer<typeof datosContactoSchema>
+
+export const passwordSchema = z
+  .object({
+    passwordActual: z.string().min(1, 'Ingresa tu contraseña actual.'),
+    passwordNueva: z
+      .string()
+      .min(8, 'La contraseña debe tener al menos 8 caracteres.')
+      .regex(/\d/, 'La contraseña debe incluir al menos un número.')
+      .regex(/[^a-zA-Z0-9]/, 'La contraseña debe incluir al menos un símbolo.'),
+    passwordConfirmar: z.string(),
+  })
+  .refine((values) => values.passwordNueva === values.passwordConfirmar, {
+    message: 'Las contraseñas no coinciden.',
+    path: ['passwordConfirmar'],
+  })
+
+export type PasswordValues = z.infer<typeof passwordSchema>
