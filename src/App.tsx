@@ -55,6 +55,12 @@ const PopupsAdminPage = lazy(() => import('./pages/admin/PopupsAdminPage'))
 const PopupNuevoPage = lazy(() => import('./pages/admin/PopupNuevoPage'))
 const PopupEditarPage = lazy(() => import('./pages/admin/PopupEditarPage'))
 const AdminResourcePage = lazy(() => import('./pages/admin/AdminResourcePage'))
+const UsuariosAdminPage = lazy(() => import('./pages/admin/UsuariosAdminPage'))
+const LeadsAdminPage = lazy(() => import('./pages/admin/LeadsAdminPage'))
+const OrdenesAdminPage = lazy(() => import('./pages/admin/OrdenesAdminPage'))
+const ComprobantesAdminPage = lazy(() => import('./pages/admin/ComprobantesAdminPage'))
+const ConciliacionesAdminPage = lazy(() => import('./pages/admin/ConciliacionesAdminPage'))
+const CuentasAlumnosAdminPage = lazy(() => import('./pages/admin/CuentasAlumnosAdminPage'))
 const AdminReportsPage = lazy(() => import('./pages/admin/AdminReportsPage'))
 
 function App() {
@@ -127,7 +133,7 @@ function App() {
               <Route path="admin/popups/:id/editar" element={<PopupEditarPage />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={['admin_sistema']} />}>
-              <Route path="admin/usuarios" element={<AdminResourcePage />} />
+              <Route path="admin/usuarios" element={<UsuariosAdminPage />} />
               <Route path="admin/conceptos-cobro" element={<AdminResourcePage />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={['ventas', 'marketing', 'director_marketing', 'admin_sistema']} />}>
@@ -135,18 +141,18 @@ function App() {
               <Route path="admin/descuentos" element={<AdminResourcePage />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={['ventas', 'marketing', 'director_marketing', 'administracion', 'admin_sistema']} />}>
-              <Route path="admin/leads" element={<AdminResourcePage />} />
+              <Route path="admin/leads" element={<LeadsAdminPage />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={['admin_sistema', 'administracion']} />}>
-              <Route path="admin/cuentas-alumnos" element={<AdminResourcePage />} />
-              <Route path="admin/ordenes" element={<AdminResourcePage />} />
-              <Route path="admin/comprobantes" element={<AdminResourcePage />} />
+              <Route path="admin/cuentas-alumnos" element={<CuentasAlumnosAdminPage />} />
+              <Route path="admin/ordenes" element={<OrdenesAdminPage />} />
+              <Route path="admin/comprobantes" element={<ComprobantesAdminPage />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={['administracion']} />}>
               <Route path="admin/matriculas" element={<AdminResourcePage />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={['administracion', 'admin_sistema']} />}>
-              <Route path="admin/conciliaciones" element={<AdminResourcePage />} />
+              <Route path="admin/conciliaciones" element={<ConciliacionesAdminPage />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={['academico', 'administracion']} />}>
               <Route path="admin/electivos" element={<AdminResourcePage />} />

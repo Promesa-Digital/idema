@@ -271,6 +271,7 @@ export interface OrdenesFiltros {
   medio_pago?: OrdenPagoMedioPago
   fecha_desde?: string
   fecha_hasta?: string
+  alumno_id?: string
 }
 
 // ---- Comprobante ----
@@ -399,7 +400,7 @@ export interface Lead {
   updated_at: string
 }
 
-export type ConceptoCobroTipo = 'matricula' | 'mensualidad' | 'certificacion' | 'gratuito'
+export type ConceptoCobroTipo = 'matricula' | 'inscripcion' | 'curso' | 'pension' | 'gratuito'
 export type ConceptoCobroEstado = 'activo' | 'inactivo'
 export interface ConceptoCobro {
   id: string
