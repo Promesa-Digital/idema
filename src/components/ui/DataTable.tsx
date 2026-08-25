@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react'
+import { FiInbox } from 'react-icons/fi'
 
 export interface DataTableColumn<T> {
   header: string
@@ -41,18 +42,17 @@ export default function DataTable<T>({
 
   return (
     <div
-      className="overflow-hidden rounded-[var(--admin-radius-md)] bg-[var(--admin-color-surface)] border"
-      style={{ borderColor: 'var(--admin-color-border)' }}
+      className="overflow-hidden rounded-[var(--radius-md)] bg-[var(--color-bg-card)] border border-[var(--color-border)]"
+      style={{ fontFamily: 'var(--font-body)' }}
     >
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="border-b" style={{ borderColor: 'var(--admin-color-border)' }}>
+            <tr className="bg-[var(--color-bg-page)]">
               {columns.map((col) => (
                 <th
                   key={String(col.accessor)}
-                  className="px-4 py-3 text-xs font-semibold uppercase tracking-wide"
-                  style={{ color: 'var(--admin-color-text-secondary)' }}
+                  className="px-4 py-3 text-[12px] font-semibold uppercase tracking-wide text-[var(--color-text-tertiary)]"
                 >
                   {col.header}
                 </th>
@@ -62,10 +62,10 @@ export default function DataTable<T>({
           <tbody>
             {isLoading &&
               Array.from({ length: 5 }).map((_, rowIndex) => (
-                <tr key={`skeleton-${rowIndex}`} className="border-b last:border-0" style={{ borderColor: 'var(--admin-color-border)' }}>
+                <tr key={`skeleton-${rowIndex}`} className="border-b border-[var(--color-border)] last:border-0 bg-[var(--color-bg-card)]">
                   {columns.map((_col, colIndex) => (
                     <td key={`skeleton-cell-${colIndex}`} className="px-4 py-3.5">
-                      <div className="h-4 w-3/4 animate-pulse rounded bg-[var(--admin-color-bg-alt)]" />
+                      <div className="h-4 w-3/4 animate-pulse rounded bg-[var(--color-border)]" />
                     </td>
                   ))}
                 </tr>
@@ -73,12 +73,11 @@ export default function DataTable<T>({
 
             {!isLoading && total === 0 && (
               <tr>
-                <td
-                  colSpan={columns.length}
-                  className="px-4 py-12 text-center text-sm"
-                  style={{ color: 'var(--admin-color-text-secondary)' }}
-                >
-                  {emptyMessage}
+                <td colSpan={columns.length} className="px-4 py-16">
+                  <div className="flex flex-col items-center justify-center gap-2 text-center">
+                    <FiInbox className="h-8 w-8 text-[var(--color-text-tertiary)]" />
+                    <p className="text-sm text-[var(--color-text-tertiary)]">{emptyMessage}</p>
+                  </div>
                 </td>
               </tr>
             )}
@@ -88,11 +87,10 @@ export default function DataTable<T>({
                 <tr
                   key={getRowKey ? getRowKey(row, start + index) : start + index}
                   onClick={onRowClick ? () => onRowClick(row) : undefined}
-                  className={`border-b last:border-0 ${onRowClick ? 'cursor-pointer hover:bg-[var(--admin-color-bg)]' : ''}`}
-                  style={{ borderColor: 'var(--admin-color-border)' }}
+                  className={`border-b border-[var(--color-border)] last:border-0 bg-[var(--color-bg-card)] transition-colors hover:bg-[var(--color-bg-page)] ${onRowClick ? 'cursor-pointer' : ''}`}
                 >
                   {columns.map((col) => (
-                    <td key={String(col.accessor)} className="px-4 py-3.5" style={{ color: 'var(--admin-color-text-primary)' }}>
+                    <td key={String(col.accessor)} className="px-4 py-3.5 text-[var(--color-text-main)]">
                       {col.render ? col.render(row) : String(row[col.accessor] ?? '')}
                     </td>
                   ))}
@@ -103,10 +101,7 @@ export default function DataTable<T>({
       </div>
 
       {!isLoading && total > 0 && (
-        <div
-          className="flex items-center justify-between gap-4 border-t px-4 py-3 text-sm"
-          style={{ borderColor: 'var(--admin-color-border)', color: 'var(--admin-color-text-secondary)' }}
-        >
+        <div className="flex items-center justify-between gap-4 border-t border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-text-tertiary)]">
           <span>
             Mostrando {start + 1}–{end} de {total}
           </span>
@@ -115,8 +110,7 @@ export default function DataTable<T>({
               type="button"
               onClick={goPrev}
               disabled={safePage === 0}
-              className="rounded-lg border px-3 py-1.5 font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
-              style={{ borderColor: 'var(--admin-color-border)' }}
+              className="rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-1.5 font-medium transition-colors enabled:hover:border-[var(--color-primary)] enabled:hover:text-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-40"
             >
               Anterior
             </button>
@@ -124,8 +118,7 @@ export default function DataTable<T>({
               type="button"
               onClick={goNext}
               disabled={safePage >= totalPages - 1}
-              className="rounded-lg border px-3 py-1.5 font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
-              style={{ borderColor: 'var(--admin-color-border)' }}
+              className="rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3 py-1.5 font-medium transition-colors enabled:hover:border-[var(--color-primary)] enabled:hover:text-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-40"
             >
               Siguiente
             </button>

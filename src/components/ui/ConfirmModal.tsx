@@ -1,4 +1,6 @@
 import { useEffect } from 'react'
+import { FiAlertTriangle } from 'react-icons/fi'
+import Button from './Button'
 
 interface ConfirmModalProps {
   isOpen: boolean
@@ -7,8 +9,8 @@ interface ConfirmModalProps {
   onConfirm: () => void
   onCancel: () => void
   variant?: 'default' | 'destructive'
-  confirmLabel?: string
-  cancelLabel?: string
+  confirmText?: string
+  cancelText?: string
   isConfirming?: boolean
 }
 
@@ -19,8 +21,8 @@ export default function ConfirmModal({
   onConfirm,
   onCancel,
   variant = 'default',
-  confirmLabel = 'Confirmar',
-  cancelLabel = 'Cancelar',
+  confirmText = 'Confirmar',
+  cancelText = 'Cancelar',
   isConfirming = false,
 }: ConfirmModalProps) {
   useEffect(() => {
@@ -34,15 +36,10 @@ export default function ConfirmModal({
 
   if (!isOpen) return null
 
-  const confirmClasses =
-    variant === 'destructive'
-      ? 'bg-red-600 hover:bg-red-700 text-white'
-      : 'bg-[var(--admin-color-primary)] hover:bg-[var(--admin-color-primary-hover)] text-white'
-
   return (
     // Sin la clase `.idema-admin` aquí: ese selector fija su propio `background`
     // opaco, lo que taparía la página real detrás del overlay oscuro. Los tokens
-    // (--admin-color-*) ya se heredan de AdminLayout/PortalLayout, que envuelven
+    // (--color-*) ya se heredan de AdminLayout/PortalLayout, que envuelven
     // cualquier pantalla donde este modal se use.
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-4"
@@ -50,40 +47,36 @@ export default function ConfirmModal({
       aria-modal="true"
       aria-labelledby="confirm-modal-title"
     >
-      <div
-        className="idema-admin-overlay-in absolute inset-0 bg-[#001F2A]/50"
-        onClick={onCancel}
-        aria-hidden
-      />
+      <div className="ds-overlay-in absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onCancel} aria-hidden />
 
-      <div
-        className="idema-admin-modal-in relative w-full max-w-sm rounded-[var(--admin-radius-lg)] bg-[var(--admin-color-surface)] p-6 shadow-[var(--admin-shadow-lg)]"
-      >
-        <h2 id="confirm-modal-title" className="text-lg font-bold" style={{ color: 'var(--admin-color-text-primary)' }}>
-          {title}
-        </h2>
-        <p className="mt-2 text-sm" style={{ color: 'var(--admin-color-text-secondary)' }}>
-          {message}
-        </p>
+      <div className="ds-modal-in relative w-full max-w-[440px] rounded-[var(--radius-lg)] bg-[var(--color-bg-card)] p-6 shadow-[var(--shadow-modal)]">
+        <div className="flex items-start gap-3">
+          {variant === 'destructive' && (
+            <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FEE2E2] text-[var(--color-error)]">
+              <FiAlertTriangle className="h-5 w-5" />
+            </span>
+          )}
+          <div>
+            <h2
+              id="confirm-modal-title"
+              className="text-lg font-bold text-[var(--color-text-main)]"
+              style={{ fontFamily: 'var(--font-headline)' }}
+            >
+              {title}
+            </h2>
+            <p className="mt-2 text-sm text-[var(--color-text-secondary)]" style={{ fontFamily: 'var(--font-body)' }}>
+              {message}
+            </p>
+          </div>
+        </div>
 
         <div className="mt-6 flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={isConfirming}
-            className="rounded-lg border px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-50"
-            style={{ borderColor: 'var(--admin-color-border)', color: 'var(--admin-color-text-secondary)' }}
-          >
-            {cancelLabel}
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            disabled={isConfirming}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-60 ${confirmClasses}`}
-          >
-            {isConfirming ? 'Procesando...' : confirmLabel}
-          </button>
+          <Button variant="ghost" onClick={onCancel} disabled={isConfirming}>
+            {cancelText}
+          </Button>
+          <Button variant={variant === 'destructive' ? 'destructive' : 'primary'} onClick={onConfirm} disabled={isConfirming}>
+            {isConfirming ? 'Procesando...' : confirmText}
+          </Button>
         </div>
       </div>
     </div>
