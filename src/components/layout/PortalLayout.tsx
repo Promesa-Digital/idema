@@ -8,9 +8,11 @@ import '@fontsource/hanken-grotesk/600.css'
 import '../../styles/admin.css'
 
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import type { LucideIcon } from 'lucide-react'
 import { Home, BookOpen, List, CreditCard, FileText, User, LogOut } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
+import { fetchMiPerfil, PERFIL_QUERY_KEY } from '../../api/alumnoApi'
 
 interface NavItem {
   label: string
@@ -42,8 +44,10 @@ export default function PortalLayout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const { data: perfil } = useQuery({ queryKey: PERFIL_QUERY_KEY, queryFn: fetchMiPerfil })
 
   const title = PAGE_TITLES[location.pathname] ?? 'Portal del Estudiante'
+  const estaActivo = perfil?.estado === 'activa'
   const inicial = (user?.nombre ?? '?').charAt(0).toUpperCase()
 
   const handleLogout = () => {
@@ -68,12 +72,18 @@ export default function PortalLayout() {
             {inicial}
           </span>
           <p className="mt-3 truncate text-sm font-semibold text-white">{user?.nombre ?? 'Alumno'}</p>
-          <span
-            className="mt-2 inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold"
-            style={{ backgroundColor: 'rgba(34,197,94,0.15)', borderColor: 'rgba(34,197,94,0.4)', color: '#4ADE80' }}
-          >
-            Estudiante Activo
-          </span>
+          {perfil && (
+            <span
+              className="mt-2 inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold"
+              style={
+                estaActivo
+                  ? { backgroundColor: 'rgba(34,197,94,0.15)', borderColor: 'rgba(34,197,94,0.4)', color: '#4ADE80' }
+                  : { backgroundColor: 'rgba(248,113,113,0.15)', borderColor: 'rgba(248,113,113,0.4)', color: '#F87171' }
+              }
+            >
+              {estaActivo ? 'Estudiante Activo' : 'Estudiante Inactivo'}
+            </span>
+          )}
         </div>
 
         <nav className="flex-1 overflow-y-auto px-3 py-2">

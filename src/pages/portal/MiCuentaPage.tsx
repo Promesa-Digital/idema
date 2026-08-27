@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import { FiLock, FiMail, FiShield, FiAlertTriangle, FiArrowRight } from 'react-icons/fi'
-import { fetchMiPerfil, actualizarDatosContacto, actualizarPassword } from '../../api/alumnoApi'
+import { fetchMiPerfil, actualizarDatosContacto, actualizarPassword, PERFIL_QUERY_KEY } from '../../api/alumnoApi'
 import { darDeBajaCuenta } from '../../api/cuentasAlumno'
 import { datosContactoSchema, passwordSchema, type DatosContactoValues, type PasswordValues } from '../../schemas/miCuenta'
 import type { AlumnoPerfil } from '../../types/alumno'
@@ -14,8 +14,6 @@ import Button from '../../components/ui/Button'
 import FormInput from '../../components/ui/FormInput'
 import ConfirmModal from '../../components/ui/ConfirmModal'
 import { useToast } from '../../hooks/useToast'
-
-const PERFIL_QUERY_KEY = ['alumno', 'perfil'] as const
 
 const cardClass = 'rounded-[var(--radius-md)] bg-[var(--color-bg-card)] p-6'
 
@@ -73,7 +71,7 @@ function PerfilCard({ perfil }: { perfil: AlumnoPerfil }) {
           {perfil.nombres} {perfil.apellidos}
         </p>
         <div className="mt-2">
-          <Badge value="activa" label="Estudiante Activo" />
+          <Badge value={perfil.estado} label={perfil.estado === 'activa' ? 'Estudiante Activo' : 'Estudiante Inactivo'} />
         </div>
       </div>
 
