@@ -7,8 +7,9 @@ import Badge from '../../components/ui/Badge'
 import PageHeader from '../../components/ui/PageHeader'
 import DataTable, { type DataTableColumn } from '../../components/ui/DataTable'
 import DetailModal from '../../components/ui/DetailModal'
-import ConfirmModal from '../../components/ui/ConfirmModal'
 import Button from '../../components/ui/Button'
+import Modal from '../../components/ui/Modal'
+import FormInput from '../../components/ui/FormInput'
 import { useToast } from '../../hooks/useToast'
 import { formatFecha } from '../../utils/format'
 
@@ -19,21 +20,38 @@ export default function ComprobantesAdminPage() {
   const queryClient = useQueryClient()
   const [selected, setSelected] = useState<Comprobante | null>(null)
   const [paraAnular, setParaAnular] = useState<Comprobante | null>(null)
+  const [motivo, setMotivo] = useState('')
+  const [motivoError, setMotivoError] = useState<string | null>(null)
 
   const { data, isLoading, isError } = useQuery({ queryKey: COMPROBANTES_QUERY_KEY, queryFn: getComprobantes })
   const comprobantes = data ?? []
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: COMPROBANTES_QUERY_KEY })
 
+  const cerrarAnular = () => {
+    setParaAnular(null)
+    setMotivo('')
+    setMotivoError(null)
+  }
+
   const anularMutation = useMutation({
-    mutationFn: (id: string) => anularComprobante(id, 'Anulación desde panel administrativo'),
+    mutationFn: ({ id, motivo }: { id: string; motivo: string }) => anularComprobante(id, motivo),
     onSuccess: () => {
       invalidate()
-      setParaAnular(null)
+      cerrarAnular()
       addToast('success', 'Comprobante anulado', 'Se generó la nota de crédito correspondiente.')
     },
     onError: () => addToast('error', 'No se pudo anular', 'Inténtalo nuevamente en unos segundos.'),
   })
+
+  const confirmarAnular = () => {
+    if (!paraAnular) return
+    if (!motivo.trim()) {
+      setMotivoError('Indica el motivo de la anulación.')
+      return
+    }
+    anularMutation.mutate({ id: paraAnular.id, motivo: motivo.trim() })
+  }
 
   const columns: DataTableColumn<Comprobante>[] = [
     { header: 'Tipo', accessor: 'tipo', render: (c) => <Badge value={c.tipo} /> },
@@ -93,16 +111,34 @@ export default function ComprobantesAdminPage() {
         />
       )}
 
-      <ConfirmModal
-        isOpen={!!paraAnular}
-        title="Anular comprobante"
-        message="Se generará la nota de crédito correspondiente. Esta acción no se puede deshacer."
-        variant="destructive"
-        confirmText="Anular"
-        isConfirming={anularMutation.isPending}
-        onCancel={() => setParaAnular(null)}
-        onConfirm={() => paraAnular && anularMutation.mutate(paraAnular.id)}
-      />
+      <Modal isOpen={!!paraAnular} onClose={cerrarAnular} title="Anular comprobante">
+        <form
+          className="space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault()
+            confirmarAnular()
+          }}
+        >
+          <p className="text-sm text-[var(--color-text-secondary)]">
+            Se generará la nota de crédito correspondiente. Esta acción no se puede deshacer.
+          </p>
+          <FormInput
+            label="Motivo de la anulación"
+            value={motivo}
+            onChange={(v) => { setMotivo(v); setMotivoError(null) }}
+            error={motivoError ?? undefined}
+            disabled={anularMutation.isPending}
+          />
+          <div className="flex justify-end gap-3 border-t border-[var(--color-border)] pt-4">
+            <Button type="button" variant="ghost" onClick={cerrarAnular} disabled={anularMutation.isPending}>
+              Cancelar
+            </Button>
+            <Button type="submit" variant="destructive" disabled={anularMutation.isPending}>
+              {anularMutation.isPending ? 'Anulando...' : 'Anular'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </>
   )
 }
