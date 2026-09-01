@@ -1,149 +1,117 @@
+import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
-import { FaMoneyBillWave, FaUserGraduate, FaCertificate } from 'react-icons/fa'
+import { FaArrowUpRightFromSquare } from 'react-icons/fa6'
 
-interface StatItem {
-  icon: typeof FaMoneyBillWave
+interface TransparenciaDocumento {
+  number: number
   title: string
-  value: string
-  pending: boolean
+  href?: string
 }
 
-const stats: StatItem[] = [
+const documentos: TransparenciaDocumento[] = [
   {
-    icon: FaMoneyBillWave,
-    title: 'Costo de las Pensiones',
-    value: 'S/ 150.00 mensual',
-    pending: false,
+    number: 1,
+    title: 'Relación y número de becas',
+    href: '/assets/files/transparencia/relacion-numero-becas-idema.pdf',
   },
   {
-    icon: FaUserGraduate,
-    title: 'Cantidad de Matriculados en el Semestre Anterior',
-    value: 'Por publicar.',
-    pending: true,
+    number: 2,
+    title: 'Relación de derechos, tasas y montos de pensiones u otros pagos',
+    href: '/assets/files/transparencia/tarifario-ies-idema.pdf',
   },
   {
-    icon: FaCertificate,
-    title: 'Periodo de Vigencia del Licenciamiento',
-    value: '2026 - 2032',
-    pending: false,
+    number: 3,
+    title: 'Conformación del cuerpo docente y las materias en las que se desempeña',
+    href: '/assets/files/transparencia/cuerpo-docentes-ies-idema.pdf',
   },
-]
-
-const tarifario: { documento: string; precio: string }[] = [
-  { documento: 'Matrícula', precio: 'S/ 100.00' },
-  { documento: 'Certificado de estudios por semestre', precio: 'S/ 80.00' },
-  { documento: 'Constancia de egresado', precio: 'S/ 0.00' },
-  { documento: 'Constancia de estudios', precio: 'S/ 40.00' },
-  { documento: 'Inscripción de curso', precio: 'S/ 50.00' },
-  { documento: 'Costo del curso', precio: 'S/ 150.00' },
-  { documento: 'Traslados', precio: 'S/ 500.00' },
-  { documento: 'Convalidación', precio: 'S/ 500.00' },
-  { documento: 'Titulación', precio: 'S/ 3,500.00' },
-  { documento: 'Recuperación de cursos', precio: 'S/ 50.00' },
-  { documento: 'Recuperación de curso (egresado)', precio: 'S/ 80.00' },
-  { documento: 'Tesis / Proyecto de implementación', precio: 'S/ 1,000.00' },
-  { documento: 'Certificado de taller', precio: 'S/ 55.00' },
-  { documento: 'Certificado de seminario', precio: 'S/ 50.00' },
-  { documento: 'Constancia de vacante', precio: 'S/ 0.00' },
-  { documento: 'Constancia de matrícula', precio: 'S/ 40.00' },
-  { documento: 'Constancia de no adeudo', precio: 'S/ 40.00' },
-  { documento: 'Certificado modular', precio: 'S/ 150.00' },
-  { documento: 'Curso de inglés', precio: 'S/ 150.00' },
-  { documento: 'Curso de cómputo', precio: 'S/ 150.00' },
-  { documento: 'Diploma de egresado', precio: 'S/ 40.00' },
-  { documento: 'Duplicado de diploma de egresado', precio: 'S/ 150.00' },
-  { documento: 'Duplicado de título antes del 2017', precio: 'S/ 2,000.00' },
-  { documento: 'Duplicado de título después del 2017', precio: 'S/ 40.00' },
-  { documento: 'Formato Único de Trámite (FUT)', precio: 'S/ 1.00' },
-  { documento: 'Kit de titulación', precio: 'S/ 110.00' },
-  { documento: 'Certificado físico de carreras de 1 año', precio: 'S/ 50.00' },
+  {
+    number: 4,
+    title: 'Número de ingresantes, matriculados y egresados por año y programa formativo',
+    href: '/assets/files/transparencia/ingresantes-matriculados-egresados-ies.pdf',
+  },
+  {
+    number: 5,
+    title: 'Programas de estudio',
+    href: '/assets/files/transparencia/programas-estudio-ies.pdf',
+  },
+  {
+    number: 6,
+    title: 'Resoluciones de licenciamiento',
+  },
+  {
+    number: 7,
+    title: 'Reglamento institucional',
+    href: '/assets/files/transparencia/reglamento-institucional-ies.pdf',
+  },
+  {
+    number: 8,
+    title: 'Manual de Perfiles de Puestos (MPP)',
+    href: '/assets/files/transparencia/mpp-idema.pdf',
+  },
 ]
 
 export default function TransparenciaPage() {
   return (
     <>
       <Helmet>
-        <title>Transparencia - Instituto IDEMA</title>
-        <meta name="description" content="Información institucional de transparencia de IES Idema: tasas educativas, pensiones, matriculados y vigencia del licenciamiento." />
+        <title>Portal de Transparencia - Instituto IDEMA</title>
+        <meta name="description" content="Portal de Transparencia del Instituto de Educación Superior IDEMA: becas, tasas educativas, cuerpo docente, ingresantes, programas de estudio, resoluciones de licenciamiento, reglamento institucional y Manual de Perfiles de Puestos." />
       </Helmet>
 
-      {/* Hero Section */}
-      <div className="relative h-72 md:h-80 overflow-hidden bg-gradient-to-br from-dark to-deep">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-primary rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+      <div className="bg-gradient-to-b from-dark via-deep/80 to-dark">
+        {/* Breadcrumb */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-32 lg:pt-36">
+          <nav aria-label="breadcrumb" className="flex items-center gap-2 text-xs text-white/45">
+            <Link to="/" className="hover:text-white transition-colors">Inicio</Link>
+            <span>/</span>
+            <span className="text-white/70">Portal de Transparencia</span>
+          </nav>
         </div>
+
+        {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="relative h-full flex flex-col justify-center items-center text-white text-center p-6"
+          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16"
         >
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4">Transparencia</h1>
-          <p className="text-lg sm:text-xl text-white/80 max-w-2xl">Información institucional al servicio de nuestra comunidad educativa</p>
+          <h1 className="font-heading font-extrabold uppercase leading-[0.95] text-white">
+            <span className="block text-2xl sm:text-3xl">Portal de</span>
+            <span className="block text-5xl sm:text-6xl lg:text-7xl">Transparencia</span>
+          </h1>
         </motion.div>
-      </div>
 
-      <div className="bg-white py-16 sm:py-20 lg:py-24">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 mb-16">
-            {stats.map((item, index) => {
-              const Icon = item.icon
-              return (
-                <motion.div
-                  key={item.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-surface rounded-2xl p-6 sm:p-8 border border-deep/10"
-                >
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-primary to-accent mb-4">
-                    <Icon className="text-white text-xl" />
-                  </div>
-                  <h2 className="text-lg sm:text-xl font-bold text-deep mb-2">{item.title}</h2>
-                  <p className={item.pending ? 'text-deep/50 text-sm italic' : 'text-2xl font-bold gradient-text'}>
-                    {item.value}
-                  </p>
-                </motion.div>
-              )
-            })}
-          </div>
-
-          {/* Tarifario */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-2xl sm:text-3xl font-bold text-deep mb-2">Montos de Derechos de Tasas Educativas</h2>
-            <div className="h-1 w-16 bg-gradient-to-r from-primary to-accent rounded-full mb-8" />
-
-            <div className="overflow-x-auto rounded-2xl border border-deep/10">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-gradient-to-r from-primary to-dark text-white">
-                    <th className="text-left px-4 sm:px-6 py-3 font-semibold">Documento / Servicio</th>
-                    <th className="text-right px-4 sm:px-6 py-3 font-semibold">Precio Actual</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tarifario.map((row, index) => (
-                    <tr
-                      key={row.documento}
-                      className={index % 2 === 0 ? 'bg-surface' : 'bg-white'}
+        {/* Documents Grid */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 sm:pb-20 lg:pb-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-8">
+            {documentos.map((doc, index) => (
+              <motion.div
+                key={doc.number}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: (index % 3) * 0.08 }}
+              >
+                <div className="flex items-center justify-between gap-4 bg-white/5 rounded-xl border border-white/10 px-5 py-4 h-full">
+                  <h2 className="text-sm text-white/90 font-semibold leading-snug">{doc.number}. {doc.title}</h2>
+                  {doc.href ? (
+                    <a
+                      href={doc.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Ver ${doc.title}`}
+                      className="flex-shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full bg-white text-accent hover:scale-110 transition-transform"
                     >
-                      <td className="px-4 sm:px-6 py-3 text-deep">{row.documento}</td>
-                      <td className="px-4 sm:px-6 py-3 text-right font-semibold text-deep">{row.precio}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </motion.div>
+                      <FaArrowUpRightFromSquare className="text-xs" />
+                    </a>
+                  ) : (
+                    <span className="flex-shrink-0 text-xs text-white/40 italic whitespace-nowrap">Por publicar</span>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </>
