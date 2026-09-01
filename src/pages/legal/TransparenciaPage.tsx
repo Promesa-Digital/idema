@@ -47,7 +47,11 @@ const documentos: TransparenciaDocumento[] = [
   {
     number: 8,
     title: 'Manual de Perfiles de Puestos (MPP)',
-    href: '/assets/files/transparencia/mpp-idema.pdf',
+  },
+  {
+    number: 9,
+    title: 'Manual de Procesos Académicos',
+    href: '/assets/files/transparencia/manual-procesos-academicos-idema.pdf',
   },
 ]
 
