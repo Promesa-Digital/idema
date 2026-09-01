@@ -1,0 +1,9 @@
+# Permitir acceso público a los documentos del Portal de Transparencia
+# (sobreescribe el "Deny from all" heredado de public/assets/files/.htaccess)
+Order Allow,Deny
+Allow from all
+
+<FilesMatch ".*">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
