@@ -13,7 +13,7 @@ export default function Home() {
     <>
       <Helmet>
         <title>Instituto IDEMA - Transformando la Educación</title>
-        <meta name="description" content="Instituto Superior Tecnológico IDEMA - Carreras técnicas, cursos y especializaciones en Arequipa, Perú. +30 años de experiencia educativa." />
+        <meta name="description" content="Instituto Superior Tecnológico IDEMA - Programas de estudio, cursos y especializaciones en Arequipa, Perú. +30 años de experiencia educativa." />
       </Helmet>
       <Hero />
       <Features />

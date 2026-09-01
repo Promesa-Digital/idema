@@ -152,6 +152,19 @@ export default function BienestarPage() {
               defaultServicioSlug={searchParams.get('servicio') ?? undefined}
             />
           </motion.div>
+
+          {/* Acceso al panel */}
+          <div className="mt-8 flex flex-col items-center gap-3">
+            <p className="text-sm text-deep/60">¿Eres parte del equipo de Bienestar Estudiantil?</p>
+            <a
+              href="https://bienestar.idema.edu.pe"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-primary/50 text-primary font-bold rounded-xl hover:bg-primary/10 transition-all duration-300"
+            >
+              Acceder al panel de solicitudes
+            </a>
+          </div>
         </div>
       </div>
     </>

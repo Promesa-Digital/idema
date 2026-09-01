@@ -109,7 +109,7 @@ export default function ProgramasSection() {
             Nuestra Oferta Educativa
           </h2>
           <p className="text-lg text-deep/70 max-w-2xl mx-auto">
-            Carreras, programas auxiliares, especializaciones y cursos cortos
+            Programas de estudio, programas auxiliares, especializaciones y cursos cortos
           </p>
           <div className="h-1 w-16 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mt-4" />
         </motion.div>
@@ -201,7 +201,7 @@ export default function ProgramasSection() {
           className="text-center mt-10 sm:mt-12"
         >
           <Link
-            to="/carreras"
+            to="/programas-de-estudio"
             className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-white font-semibold rounded-full hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-1"
           >
             Ver toda la oferta educativa

@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom'
 import FieldError from '../ui/FieldError'
 import SuccessCheck from '../ui/SuccessCheck'
 import { validateName, validatePhone, validateEmail } from '../../utils/validation'
+import { submitCita } from '../../utils/citaIntake'
 
-const FORMSUBMIT_ENDPOINT = 'https://formsubmit.co/bienestar.estudiantil@idema.edu.pe'
 const MENSAJE_MAX_LENGTH = 300
+const DEFAULT_ERROR_MESSAGE = 'Ocurrió un error. Por favor intenta de nuevo o contáctanos directamente por WhatsApp.'
 
 interface ServicioOption {
   slug: string
@@ -24,18 +25,20 @@ interface CitaFormData {
   nombreCompleto: string
   email: string
   telefono: string
-  servicio: string
+  servicioSlug: string
   mensaje: string
   consentimiento: boolean
+  website: string // honeypot — nunca lo rellena un usuario real
 }
 
-const emptyForm = (servicioInicial: string): CitaFormData => ({
+const emptyForm = (servicioSlugInicial: string): CitaFormData => ({
   nombreCompleto: '',
   email: '',
   telefono: '',
-  servicio: servicioInicial,
+  servicioSlug: servicioSlugInicial,
   mensaje: '',
   consentimiento: false,
+  website: '',
 })
 
 export default function CitaForm({
@@ -44,14 +47,15 @@ export default function CitaForm({
   title = 'Solicitar cita',
   subtitle = 'Completa el formulario y nos comunicaremos contigo para confirmar tu cita.',
 }: Props) {
-  const servicioInicial = servicios.length === 1
-    ? servicios[0].title
-    : (servicios.find(s => s.slug === defaultServicioSlug)?.title ?? '')
+  const servicioSlugInicial = servicios.length === 1
+    ? servicios[0].slug
+    : (servicios.find(s => s.slug === defaultServicioSlug)?.slug ?? '')
 
-  const [formData, setFormData] = useState<CitaFormData>(() => emptyForm(servicioInicial))
+  const [formData, setFormData] = useState<CitaFormData>(() => emptyForm(servicioSlugInicial))
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [errorMessage, setErrorMessage] = useState(DEFAULT_ERROR_MESSAGE)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target
@@ -81,7 +85,7 @@ export default function CitaForm({
     const phoneResult = validatePhone(formData.telefono)
     if (!phoneResult.valid) newErrors.telefono = phoneResult.error!
 
-    if (!formData.servicio) newErrors.servicio = 'Selecciona el servicio solicitado.'
+    if (!formData.servicioSlug) newErrors.servicioSlug = 'Selecciona el servicio solicitado.'
     if (!formData.consentimiento) newErrors.consentimiento = 'Debes autorizar el tratamiento de tus datos personales.'
 
     setErrors(newErrors)
@@ -95,34 +99,29 @@ export default function CitaForm({
     setIsSubmitting(true)
     setStatus('idle')
 
-    try {
-      const body = new FormData()
-      body.append('Nombre completo', formData.nombreCompleto.trim())
-      body.append('Correo electrónico', formData.email.trim())
-      body.append('Teléfono / WhatsApp', formData.telefono.trim())
-      body.append('Servicio solicitado', formData.servicio)
-      body.append('Motivo o mensaje', formData.mensaje.trim())
-      body.append('_subject', 'Nueva solicitud de cita - Bienestar Estudiantil IDEMA')
-      body.append('_captcha', 'false')
-      body.append('_next', 'false')
+    const servicioTitle = servicios.find(s => s.slug === formData.servicioSlug)?.title ?? ''
 
-      const res = await fetch(FORMSUBMIT_ENDPOINT, {
-        method: 'POST',
-        body,
-        headers: { Accept: 'application/json' },
-      })
+    const result = await submitCita({
+      nombreCompleto: formData.nombreCompleto,
+      email: formData.email,
+      telefono: formData.telefono,
+      servicioSlug: formData.servicioSlug,
+      servicio: servicioTitle,
+      mensaje: formData.mensaje,
+      consentimiento: formData.consentimiento,
+      origen: window.location.hostname,
+      website: formData.website,
+    })
 
-      if (res.ok) {
-        setStatus('success')
-        setFormData(emptyForm(servicioInicial))
-      } else {
-        setStatus('error')
-      }
-    } catch {
+    if (result.ok) {
+      setStatus('success')
+      setFormData(emptyForm(servicioSlugInicial))
+    } else {
       setStatus('error')
-    } finally {
-      setIsSubmitting(false)
+      setErrorMessage(result.error || DEFAULT_ERROR_MESSAGE)
     }
+
+    setIsSubmitting(false)
   }
 
   return (
@@ -155,13 +154,20 @@ export default function CitaForm({
           </motion.div>
         ) : (
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5" noValidate>
-          <input type="hidden" name="_subject" value="Nueva solicitud de cita - Bienestar Estudiantil IDEMA" />
-          <input type="hidden" name="_captcha" value="false" />
-          <input type="hidden" name="_next" value="false" />
+          {/* Honeypot anti-bot: invisible fuera de pantalla, no display:none/hidden
+              (los bots simples saltan esos). Oculto también a lectores de pantalla
+              y navegación por teclado. */}
+          <div className="absolute left-[-9999px] top-auto w-px h-px overflow-hidden" aria-hidden="true">
+            <label htmlFor="cita-website">No completar este campo</label>
+            <input
+              id="cita-website" type="text" name="website" value={formData.website}
+              onChange={handleChange} tabIndex={-1} autoComplete="off"
+            />
+          </div>
 
           {status === 'error' && (
             <div className="bg-rose-500/15 border border-rose-400/40 text-rose-50 px-4 py-3 rounded-lg text-sm" role="alert">
-              Ocurrió un error. Por favor intenta de nuevo o contáctanos directamente por WhatsApp.
+              {errorMessage}
             </div>
           )}
 
@@ -169,17 +175,17 @@ export default function CitaForm({
             <div>
               <label htmlFor="cita-servicio" className="block text-white text-sm font-semibold mb-2">Servicio solicitado</label>
               <select
-                id="cita-servicio" name="servicio" value={formData.servicio} onChange={handleChange}
-                disabled={isSubmitting} aria-invalid={!!errors.servicio}
-                aria-describedby={errors.servicio ? 'cita-err-servicio' : undefined}
-                className={`w-full px-4 py-3 rounded-lg bg-white/95 text-deep focus:outline-none focus:ring-2 focus:ring-primary transition disabled:opacity-60 ${errors.servicio ? 'ring-2 ring-rose-400' : ''}`}
+                id="cita-servicio" name="servicioSlug" value={formData.servicioSlug} onChange={handleChange}
+                disabled={isSubmitting} aria-invalid={!!errors.servicioSlug}
+                aria-describedby={errors.servicioSlug ? 'cita-err-servicio' : undefined}
+                className={`w-full px-4 py-3 rounded-lg bg-white/95 text-deep focus:outline-none focus:ring-2 focus:ring-primary transition disabled:opacity-60 ${errors.servicioSlug ? 'ring-2 ring-rose-400' : ''}`}
               >
                 <option value="" disabled>Selecciona un servicio</option>
                 {servicios.map(s => (
-                  <option key={s.slug} value={s.title}>{s.title}</option>
+                  <option key={s.slug} value={s.slug}>{s.title}</option>
                 ))}
               </select>
-              <FieldError id="cita-err-servicio" message={errors.servicio} />
+              <FieldError id="cita-err-servicio" message={errors.servicioSlug} />
             </div>
           ) : (
             <div className="px-4 py-3 rounded-lg bg-white/10 border border-white/15 text-white text-sm">

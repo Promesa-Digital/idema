@@ -11,7 +11,6 @@ const companies = [
   { name: 'Chamilo LMS', logo: '/assets/img/logos/Chamilo_LMS.svg' },
   { name: 'Microsoft 365', logo: '/assets/img/logos/Office_Microsoft_365.webp' },
   { name: 'Aviacon', logo: '/assets/img/logos/aviacon.webp' },
-  { name: 'Andrew Pietowsky', logo: '/assets/img/logos/pietowsky.webp' },
   { name: 'Brasilero', logo: '/assets/img/logos/brasilero.webp' },
   { name: 'CETPAR', logo: '/assets/img/logos/cetpar.webp' },
   { name: 'Pro Avance', logo: '/assets/img/logos/proavance.webp' },

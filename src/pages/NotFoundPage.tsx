@@ -7,7 +7,7 @@ import ContactLink from '../components/ui/ContactLink'
 export default function NotFoundPage() {
   const suggestedLinks = [
     { label: 'Inicio', href: '/', icon: FaHome },
-    { label: 'Carreras', href: '/#carreras', icon: FaSearch },
+    { label: 'Programas de Estudio', href: '/programas-de-estudio', icon: FaSearch },
     { label: 'Sobre Nosotros', href: '/nosotros', icon: FaSearch },
     { label: 'Contacto', href: '/#contacto', icon: FaSearch },
   ]

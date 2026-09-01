@@ -20,6 +20,11 @@ export default defineConfig({
         target: 'https://idema.edu.pe',
         changeOrigin: true,
       },
+      '/api/cita': {
+        target: 'https://bienestar.idema.edu.pe',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 })

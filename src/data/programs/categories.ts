@@ -21,12 +21,12 @@ export interface ProgramCategory {
 export const programCategories: ProgramCategory[] = [
   {
     key: 'carreras',
-    badge: 'CARRERAS TÉCNICAS',
-    titulo: 'Carreras Técnicas',
+    badge: 'PROGRAMAS DE ESTUDIO',
+    titulo: 'Programas de Estudio',
     descripcion:
       'Formación profesional de 3 años con título oficial reconocido por el MINEDU. Áreas de agropecuaria, salud y ciencias empresariales. Modalidades presencial, semipresencial y virtual para que estudies a tu ritmo.',
     imagen: '/assets/img/programs/carreras.webp',
-    ruta: '/carreras?categoria=carrera',
+    ruta: '/programas-de-estudio?categoria=carrera',
     cantidad: carreras.length,
     imagenIzquierda: true,
     duracion: '3 años (6 semestres)',
@@ -41,7 +41,7 @@ export const programCategories: ProgramCategory[] = [
     descripcion:
       'Formación corta e intensiva de 10 meses, ideal para insertarte rápidamente al mercado laboral. Certificado Auxiliar con modalidad 100% virtual y horarios completamente flexibles.',
     imagen: '/assets/img/programs/auxiliares.webp',
-    ruta: '/carreras?categoria=auxiliar',
+    ruta: '/programas-de-estudio?categoria=auxiliar',
     cantidad: auxiliares.length,
     imagenIzquierda: false,
     duracion: '10 meses',
@@ -55,7 +55,7 @@ export const programCategories: ProgramCategory[] = [
     descripcion:
       'Profundización en un área específica para profesionales que ya cuentan con base técnica. Potencia tus habilidades y amplía tu empleabilidad con programas diseñados para el mercado actual.',
     imagen: '/assets/img/programs/especializaciones.webp',
-    ruta: '/carreras?categoria=especializacion',
+    ruta: '/programas-de-estudio?categoria=especializacion',
     cantidad: especializaciones.length,
     imagenIzquierda: true,
     duracion: '10 meses',
@@ -69,7 +69,7 @@ export const programCategories: ProgramCategory[] = [
     descripcion:
       'Capacitaciones puntuales con certificado de participación. Modalidad flexible, duración reducida y contenido práctico para quienes buscan actualizar conocimientos de forma rápida y efectiva.',
     imagen: '/assets/img/programs/cursos.webp',
-    ruta: '/carreras?categoria=curso',
+    ruta: '/programas-de-estudio?categoria=curso',
     cantidad: cursos.length,
     imagenIzquierda: false,
     duracion: '4 semanas',

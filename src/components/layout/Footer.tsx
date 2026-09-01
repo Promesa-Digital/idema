@@ -8,6 +8,7 @@ import {
   FaPhone,
   FaEnvelope,
   FaMapMarkerAlt,
+  FaGooglePlay,
 } from 'react-icons/fa'
 import { footerLinks } from '../../data/navigation'
 
@@ -53,7 +54,7 @@ export default function Footer() {
           <motion.div variants={itemVariants} className="lg:col-span-1">
             <img src="/assets/img/idema-white.png" alt="IDEMA" className="h-12 w-auto mb-4" />
             <p className="text-white text-xs mb-1">
-              Instituto Santiago Ramón y Cajal
+              IES Idema
             </p>
             <p className="text-white/80 text-sm leading-relaxed mb-6">
               Formando profesionales de excelencia en educación técnica y superior desde 1994.
@@ -75,6 +76,16 @@ export default function Footer() {
                 )
               })}
             </div>
+            {/* Google Play */}
+            <a
+              href={footerLinks.googlePlay}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/10 hover:bg-primary px-4 py-2 transition-colors text-sm"
+            >
+              <FaGooglePlay className="w-4 h-4" />
+              Descarga la App
+            </a>
           </motion.div>
 
           {/* Quick Links */}
@@ -111,12 +122,20 @@ export default function Footer() {
             <ul className="space-y-3">
               {footerLinks.bienestar.map(item => (
                 <li key={item.href}>
-                  <Link
-                    to={item.href}
-                    className="text-white/80 hover:text-primary transition-colors text-sm"
-                  >
-                    {item.label}
-                  </Link>
+                  {item.external ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-white/80 hover:text-primary transition-colors text-sm"
+                    >
+                      {item.label}
+                    </a>
+                  ) : (
+                    <Link to={item.href} className="text-white/80 hover:text-primary transition-colors text-sm">
+                      {item.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -212,7 +231,7 @@ export default function Footer() {
           className="border-t border-white/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4"
         >
           <p className="text-white/70 text-sm">
-            &copy; {new Date().getFullYear()} Instituto Santiago Ramón y Cajal — IDEMA. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} IES Idema. Todos los derechos reservados.
           </p>
           <div className="flex flex-wrap gap-4 md:gap-6 text-white/70 text-sm">
             <Link to="/politica-privacidad" className="hover:text-primary transition-colors">
@@ -226,6 +245,9 @@ export default function Footer() {
             </Link>
             <Link to="/eliminar-cuenta" className="hover:text-primary transition-colors">
               Eliminar Cuenta
+            </Link>
+            <Link to="/transparencia" className="hover:text-primary transition-colors">
+              Transparencia
             </Link>
           </div>
         </motion.div>

@@ -15,6 +15,9 @@ dist-ssr
 .env.*
 !.env.example
 
+# Reference PDFs for TK-93 (portal de transparencia) — not to be committed
+/transparencia-pdfs/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

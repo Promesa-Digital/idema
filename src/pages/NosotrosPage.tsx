@@ -5,7 +5,7 @@ import { FaBullseye, FaLightbulb, FaAward, FaGraduationCap, FaBuilding, FaMapMar
 export default function NosotrosPage() {
   const stats = [
     { icon: FaAward, label: 'Años de Experiencia', value: '+30' },
-    { icon: FaBuilding, label: 'Carreras Técnicas', value: '5' },
+    { icon: FaBuilding, label: 'Programas de Estudio', value: '3' },
     { icon: FaBookOpen, label: 'Cursos Online', value: '+250' },
   ]
 
@@ -29,8 +29,7 @@ export default function NosotrosPage() {
   ]
 
   const locations = [
-    { name: 'Instituto Santiago Ramón y Cajal', address: 'Urb. Las Malvinas U-1 Pedregal - Majes, Arequipa', hours: 'Lunes a Viernes 9:00 a.m. a 7:00 p.m.', phone: '951 361 224' },
-    { name: 'Instituto Andrew Pietowsky (Chivay)', address: 'Chivay, Arequipa - Código modular: 1639152', hours: 'Carreras: Administración de Empresas, Contabilidad', phone: '' },
+    { name: 'IES Idema', address: 'Urb. Las Malvinas U-1 Pedregal - Majes, Arequipa', hours: 'Lunes a Viernes 9:00 a.m. a 7:00 p.m.', phone: '951 361 224' },
     { name: 'Oficina Majes', address: 'Calle Municipal Mz. I Lote 9 El Pedregal - Arequipa', hours: '', phone: '' },
     { name: 'Oficina Arequipa', address: 'Calle Manuel Ugarteche 207, Selva Alegre, Arequipa', hours: 'Lunes a Viernes 9:00 a.m. a 1:00 p.m. y 3:00 p.m. a 7:00 p.m. / Sábados 9:00 a.m. a 1:00 p.m.', phone: '(054) 209978' },
   ]
@@ -79,13 +78,10 @@ export default function NosotrosPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center">
               <div className="space-y-4">
                 <p className="text-lg text-deep leading-relaxed">
-                  El Instituto nace el 7 de Octubre de 1994 como Instituto Superior Tecnológico "Santiago Ramón y Cajal" mediante Resoluciones Ministeriales Nro: 693-91 ED y R.M. 810-94 ED debidamente revalidado mediante R.D. Nro. 0765.ED (Código modular: 0898189).
+                  El Instituto nace el 7 de Octubre de 1994 como IES Idema mediante Resoluciones Ministeriales Nro: 693-91 ED y R.M. 810-94 ED debidamente revalidado mediante R.D. Nro. 0765.ED (Código modular: 0898189).
                 </p>
                 <p className="text-lg text-deep leading-relaxed">
                   Desde esa fecha hemos logrado impartir educación de calidad, inclusiva y abierta, siempre promoviendo la investigación entre nuestros estudiantes y docentes. Con más de 30 años de excelencia educativa en el Perú.
-                </p>
-                <p className="text-lg text-deep leading-relaxed">
-                  Contamos además con el Instituto Andrew Pietowsky en Chivay, Arequipa (código modular 1639152), autorizado por el Ministerio de Educación, que otorga títulos a nombre de la nación en las carreras de Administración de Empresas y Contabilidad.
                 </p>
               </div>
               <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }} className="space-y-4">

@@ -12,14 +12,14 @@ import type { Carrera } from '../../types'
 
 const categories = [
   { key: 'todos', label: 'Todos' },
-  { key: 'carrera', label: 'Carreras Técnicas' },
+  { key: 'carrera', label: 'Programas de Estudio' },
   { key: 'auxiliar', label: 'Programas Auxiliares' },
   { key: 'especializacion', label: 'Especializaciones' },
   { key: 'curso', label: 'Cursos Cortos' },
 ] as const
 
 const categoryBasePath: Record<string, string> = {
-  carrera: '/carreras',
+  carrera: '/programas-de-estudio',
   auxiliar: '/auxiliares',
   especializacion: '/especializaciones',
   curso: '/cursos',
@@ -37,7 +37,7 @@ const learningPath = [
     icon: FaGraduationCap,
     color: 'bg-accent',
     title: 'Formación Técnica Base',
-    description: 'Carreras técnicas de 3 años con título a nombre de la nación',
+    description: 'Programas de estudio de 3 años con título a nombre de la nación',
   },
   {
     icon: FaCertificate,
@@ -87,7 +87,7 @@ export default function ProgramasPage() {
     <>
       <Helmet>
         <title>Oferta Educativa - Instituto IDEMA</title>
-        <meta name="description" content="Explora todas las carreras técnicas, programas auxiliares, especializaciones y cursos cortos del Instituto IDEMA." />
+        <meta name="description" content="Explora todos los programas de estudio, programas auxiliares, especializaciones y cursos cortos del Instituto IDEMA." />
       </Helmet>
 
       {/* Header */}
@@ -133,7 +133,7 @@ export default function ProgramasPage() {
                   key={cat.key}
                   onClick={() => {
                     setActiveFilter(cat.key)
-                    navigate(`/carreras?categoria=${cat.key}`)
+                    navigate(`/programas-de-estudio?categoria=${cat.key}`)
                   }}
                   className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
                     activeFilter === cat.key
@@ -168,7 +168,7 @@ export default function ProgramasPage() {
             <div className="text-center py-20">
               <p className="text-deep/60 text-lg">No se encontraron programas con esos criterios.</p>
               <button
-                onClick={() => { setActiveFilter('todos'); navigate('/carreras'); setSearch('') }}
+                onClick={() => { setActiveFilter('todos'); navigate('/programas-de-estudio'); setSearch('') }}
                 className="mt-4 text-primary font-semibold hover:underline"
               >
                 Limpiar filtros

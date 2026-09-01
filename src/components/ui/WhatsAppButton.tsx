@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { FaWhatsapp, FaTimes } from 'react-icons/fa'
 import { getAssignedWhatsAppRep, getWhatsAppRepForProgram, getWhatsAppUrl } from '../../data/whatsapp'
 
-const PROGRAM_CATEGORIES = ['auxiliares', 'especializaciones', 'carreras']
+const PROGRAM_CATEGORIES = ['auxiliares', 'especializaciones', 'programas-de-estudio']
 
 const repImages: Record<string, string> = {
   RODOLFO: '/assets/img/vendedoras/rodolfo.jpeg',

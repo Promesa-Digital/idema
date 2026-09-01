@@ -26,7 +26,7 @@ export default function CursoDetailPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
           <h1 className="text-5xl font-bold text-white mb-4">404</h1>
           <p className="text-xl text-white/50 mb-8">Curso no encontrado</p>
-          <Link to="/carreras?categoria=curso">
+          <Link to="/programas-de-estudio?categoria=curso">
             <button className="px-8 py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-full hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 hover:scale-105">
               Ver Cursos
             </button>
@@ -64,7 +64,7 @@ export default function CursoDetailPage() {
           transition={{ duration: 0.6 }}
           className="relative h-full flex flex-col justify-end p-6 md:p-12 text-white"
         >
-          {curso.convenio && (
+          {curso.convenio && curso.convenio.name !== 'IDEMA' && (
             <div className="flex items-center gap-2 mb-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-3 py-2 w-fit max-w-full">
               <img src={curso.convenio.logo} alt={curso.convenio.name} className="h-5 w-auto object-contain flex-shrink-0" />
               <span className="text-white/90 text-xs sm:text-sm font-medium truncate">En convenio con {curso.convenio.name}</span>
@@ -80,7 +80,7 @@ export default function CursoDetailPage() {
         <div className="max-w-6xl mx-auto flex items-center gap-2 text-sm text-deep/80">
           <Link to="/" className="hover:text-primary">Inicio</Link>
           <span>/</span>
-          <Link to="/carreras?categoria=curso" className="hover:text-primary">Cursos</Link>
+          <Link to="/programas-de-estudio?categoria=curso" className="hover:text-primary">Cursos</Link>
           <span>/</span>
           <span className="text-deep font-semibold">{curso.title}</span>
         </div>
