@@ -44,10 +44,16 @@ const documentos: TransparenciaDocumento[] = [
     title: 'Reglamento institucional',
     href: '/assets/files/transparencia/reglamento-institucional-ies.pdf',
   },
+  // Oculto temporalmente hasta su publicación oficial
+  // {
+  //   number: 8,
+  //   title: 'Manual de Perfiles de Puestos (MPP)',
+  //   href: '/assets/files/transparencia/mpp-idema.pdf',
+  // },
   {
     number: 8,
-    title: 'Manual de Perfiles de Puestos (MPP)',
-    href: '/assets/files/transparencia/mpp-idema.pdf',
+    title: 'Manual de Procesos Académicos',
+    href: '/assets/files/transparencia/manual-procesos-academicos-idema.pdf',
   },
 ]
 
@@ -56,7 +62,7 @@ export default function TransparenciaPage() {
     <>
       <Helmet>
         <title>Portal de Transparencia - Instituto IDEMA</title>
-        <meta name="description" content="Portal de Transparencia del Instituto de Educación Superior IDEMA: becas, tasas educativas, cuerpo docente, ingresantes, programas de estudio, resoluciones de licenciamiento, reglamento institucional y Manual de Perfiles de Puestos." />
+        <meta name="description" content="Portal de Transparencia del Instituto de Educación Superior IDEMA: becas, tasas educativas, cuerpo docente, ingresantes, programas de estudio, resoluciones de licenciamiento, reglamento institucional y Manual de Procesos Académicos." />
       </Helmet>
 
       <div className="bg-gradient-to-b from-dark via-deep/80 to-dark">
@@ -78,7 +84,7 @@ export default function TransparenciaPage() {
         >
           <h1 className="font-heading font-extrabold uppercase leading-[0.95] text-white">
             <span className="block text-2xl sm:text-3xl">Portal de</span>
-            <span className="block text-5xl sm:text-6xl lg:text-7xl">Transparencia</span>
+            <span className="block text-[clamp(1.875rem,9.6vw,3.75rem)] lg:text-7xl">Transparencia</span>
           </h1>
         </motion.div>
 
