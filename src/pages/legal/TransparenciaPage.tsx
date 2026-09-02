@@ -35,12 +35,13 @@ const documentos: TransparenciaDocumento[] = [
     title: 'Programas de estudio',
     href: '/assets/files/transparencia/programas-estudio-ies.pdf',
   },
+  // Oculto temporalmente hasta su publicación oficial
+  // {
+  //   number: 6,
+  //   title: 'Resoluciones de licenciamiento',
+  // },
   {
     number: 6,
-    title: 'Resoluciones de licenciamiento',
-  },
-  {
-    number: 7,
     title: 'Reglamento institucional',
     href: '/assets/files/transparencia/reglamento-institucional-ies.pdf',
   },
@@ -51,7 +52,7 @@ const documentos: TransparenciaDocumento[] = [
   //   href: '/assets/files/transparencia/mpp-idema.pdf',
   // },
   {
-    number: 8,
+    number: 7,
     title: 'Manual de Procesos Académicos',
     href: '/assets/files/transparencia/manual-procesos-academicos-idema.pdf',
   },
@@ -62,7 +63,7 @@ export default function TransparenciaPage() {
     <>
       <Helmet>
         <title>Portal de Transparencia - Instituto IDEMA</title>
-        <meta name="description" content="Portal de Transparencia del Instituto de Educación Superior IDEMA: becas, tasas educativas, cuerpo docente, ingresantes, programas de estudio, resoluciones de licenciamiento, reglamento institucional y Manual de Procesos Académicos." />
+        <meta name="description" content="Portal de Transparencia del Instituto de Educación Superior IDEMA: becas, tasas educativas, cuerpo docente, ingresantes, programas de estudio, reglamento institucional y Manual de Procesos Académicos." />
       </Helmet>
 
       <div className="bg-gradient-to-b from-dark via-deep/80 to-dark">
