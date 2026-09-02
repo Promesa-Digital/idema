@@ -7,10 +7,9 @@ import { getAssignedWhatsAppRep, getWhatsAppRepForProgram, getWhatsAppUrl } from
 const PROGRAM_CATEGORIES = ['auxiliares', 'especializaciones', 'programas-de-estudio']
 
 const repImages: Record<string, string> = {
-  RODOLFO: '/assets/img/vendedoras/rodolfo.jpeg',
   GERALDINE: '/assets/img/vendedoras/geraldine.jpeg',
-  GIMENA: '/assets/img/idemaNEWLOGO2026.png',
   TATIANA: '/assets/img/vendedoras/tatiana.png',
+  IDEMA: '/assets/img/idemaNEWLOGO2026.png',
 }
 
 export default function WhatsAppButton() {
