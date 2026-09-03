@@ -18,6 +18,9 @@ dist-ssr
 # Reference PDFs for TK-93 (portal de transparencia) — not to be committed
 /transparencia-pdfs/
 
+# Local skill-registry tooling cache (machine-specific, not project code)
+.atl/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
