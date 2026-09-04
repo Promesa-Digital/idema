@@ -40,6 +40,7 @@ const ProgramasPage = lazy(() => import('./pages/programs/ProgramasPage'))
 const LoginPage = lazy(() => import('./pages/admin/LoginPage'))
 const ProgramasAdminPage = lazy(() => import('./pages/admin/ProgramasAdminPage'))
 const PopupsAdminPage = lazy(() => import('./pages/admin/PopupsAdminPage'))
+const CombosAdminPage = lazy(() => import('./pages/admin/CombosAdminPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function App() {
@@ -98,6 +99,14 @@ function App() {
                 allowedRoles={['marketing', 'director_marketing', 'admin_sistema']}
               >
                 <PopupsAdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="combos"
+            element={
+              <ProtectedRoute allowedRoles={['ventas', 'marketing', 'admin_sistema']}>
+                <CombosAdminPage />
               </ProtectedRoute>
             }
           />
