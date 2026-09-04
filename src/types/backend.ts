@@ -149,3 +149,29 @@ export interface DescuentoCreate {
 }
 
 export type DescuentoUpdate = Partial<DescuentoCreate>
+
+export type OrdenPagoEstado =
+  | 'pendiente'
+  | 'pagada'
+  | 'fallida'
+  | 'anulada'
+  | 'conciliada'
+  | 'pendiente_confirmacion'
+
+export type OrdenPagoMedioPago = 'tarjeta' | 'yape' | 'transferencia'
+
+export interface OrdenPagoBackend {
+  id: string
+  monto: string
+  medio_pago: OrdenPagoMedioPago
+  estado: OrdenPagoEstado
+  ref_culqi: string | null
+  voucher_url: string | null
+  motivo_anulacion: string | null
+  fecha_pago: string | null
+  alumno_id: string
+  concepto_id: string
+  descuento_id: string | null
+  created_at: string
+  updated_at: string
+}
