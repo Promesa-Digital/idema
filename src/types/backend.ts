@@ -136,13 +136,36 @@ export interface ComboCreate {
 
 export type ComboUpdate = Partial<ComboCreate>
 
+export type ConceptoCobroTipo = 'matricula' | 'inscripcion' | 'curso' | 'pension' | 'gratuito'
+
+export type ConceptoCobroEstado = 'activo' | 'inactivo'
+
 export interface ConceptoCobroBackend {
   id: string
-  tipo: string
+  tipo: ConceptoCobroTipo
   monto: string
   descripcion: string | null
+  estado: ConceptoCobroEstado
   programa_id: string | null
   combo_id: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface ConceptoCobroCreate {
+  tipo: ConceptoCobroTipo
+  monto: number
+  descripcion?: string | null
+  programa_id?: string | null
+  combo_id?: string | null
+}
+
+export interface ConceptoCobroUpdate {
+  tipo?: ConceptoCobroTipo
+  monto?: number
+  descripcion?: string | null
+  programa_id?: string | null
+  combo_id?: string | null
 }
 
 export type DescuentoTipo = 'manual' | 'pronto_pago'
