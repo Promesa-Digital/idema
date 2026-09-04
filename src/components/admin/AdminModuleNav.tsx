@@ -27,6 +27,11 @@ const ADMIN_MODULES: AdminModule[] = [
     path: '/admin/combos',
     allowedRoles: ['ventas', 'marketing', 'admin_sistema'],
   },
+  {
+    label: 'Descuentos',
+    path: '/admin/descuentos',
+    allowedRoles: ['ventas', 'admin_sistema'],
+  },
 ]
 
 export default function AdminModuleNav({ role }: AdminModuleNavProps) {
