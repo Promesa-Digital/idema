@@ -32,6 +32,11 @@ const ADMIN_MODULES: AdminModule[] = [
     path: '/admin/descuentos',
     allowedRoles: ['ventas', 'admin_sistema'],
   },
+  {
+    label: 'Órdenes',
+    path: '/admin/ordenes',
+    allowedRoles: ['administracion', 'admin_sistema'],
+  },
 ]
 
 export default function AdminModuleNav({ role }: AdminModuleNavProps) {
