@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
+import AdminModuleNav from '@/components/admin/AdminModuleNav'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Modal from '@/components/ui/Modal'
@@ -372,6 +373,7 @@ export default function ProgramasAdminPage() {
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">IDEMA Admin</p>
             <h1 className="mt-1 text-2xl font-bold sm:text-3xl">Gestión de Programas</h1>
+            <AdminModuleNav role={user?.rol} />
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <div className="text-sm sm:text-right">
