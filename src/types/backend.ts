@@ -262,3 +262,35 @@ export interface LeadBackend {
   created_at: string
   updated_at: string
 }
+
+export type CuentaAlumnoEstado = 'activa' | 'inactiva'
+
+export interface CuentaAlumnoBackend {
+  id: string
+  nombres: string
+  apellido_paterno: string
+  apellido_materno: string | null
+  dni: string
+  correo: string
+  telefono: string
+  estado: CuentaAlumnoEstado
+  created_at: string
+  updated_at: string
+}
+
+export type MatriculaTipo = 'nueva' | 'retorno'
+
+export type MatriculaEstado = 'pendiente' | 'activa' | 'anulada'
+
+export interface MatriculaBackend {
+  id: string
+  tipo: MatriculaTipo
+  estado: MatriculaEstado
+  motivo_anulacion: string | null
+  fecha_activacion: string | null
+  alumno_id: string
+  programa_id: string
+  orden_id: string
+  created_at: string
+  updated_at: string
+}
