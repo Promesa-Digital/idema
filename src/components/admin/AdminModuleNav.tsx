@@ -5,8 +5,36 @@ interface AdminModuleNavProps {
   role?: UsuarioRol
 }
 
+interface AdminModule {
+  label: string
+  path: string
+  allowedRoles: UsuarioRol[]
+}
+
+const ADMIN_MODULES: AdminModule[] = [
+  {
+    label: 'Programas',
+    path: '/admin/programas',
+    allowedRoles: ['academico', 'administracion', 'admin_sistema'],
+  },
+  {
+    label: 'Popups',
+    path: '/admin/popups',
+    allowedRoles: ['marketing', 'director_marketing', 'admin_sistema'],
+  },
+  {
+    label: 'Combos',
+    path: '/admin/combos',
+    allowedRoles: ['ventas', 'marketing', 'admin_sistema'],
+  },
+]
+
 export default function AdminModuleNav({ role }: AdminModuleNavProps) {
-  if (role !== 'admin_sistema') return null
+  const availableModules = role
+    ? ADMIN_MODULES.filter((module) => module.allowedRoles.includes(role))
+    : []
+
+  if (availableModules.length === 0) return null
 
   const linkClasses = ({ isActive }: { isActive: boolean }) =>
     `rounded-md px-3 py-1.5 text-sm font-semibold transition ${
@@ -15,12 +43,11 @@ export default function AdminModuleNav({ role }: AdminModuleNavProps) {
 
   return (
     <nav aria-label="Módulos de administración" className="mt-3 flex flex-wrap gap-2">
-      <NavLink to="/admin/programas" className={linkClasses}>
-        Programas
-      </NavLink>
-      <NavLink to="/admin/popups" className={linkClasses}>
-        Popups
-      </NavLink>
+      {availableModules.map((module) => (
+        <NavLink key={module.path} to={module.path} className={linkClasses}>
+          {module.label}
+        </NavLink>
+      ))}
     </nav>
   )
 }

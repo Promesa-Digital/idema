@@ -92,3 +92,27 @@ export interface PopupCreate {
 }
 
 export type PopupUpdate = Partial<PopupCreate>
+
+export type ComboEstado = 'activo' | 'inactivo'
+
+export interface ComboBackend {
+  id: string
+  nombre: string
+  descripcion: string | null
+  vigencia_inicio: string
+  vigencia_fin: string
+  estado: ComboEstado
+  programa_ids: string[]
+  created_at: string
+  updated_at: string
+}
+
+export interface ComboCreate {
+  nombre: string
+  descripcion?: string | null
+  vigencia_inicio: string
+  vigencia_fin: string
+  programa_ids: string[]
+}
+
+export type ComboUpdate = Partial<ComboCreate>

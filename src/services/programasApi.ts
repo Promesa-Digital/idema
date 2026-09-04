@@ -5,6 +5,10 @@ export function listarProgramas(): Promise<ProgramaBackend[]> {
   return apiRequest<ProgramaBackend[]>('/api/v1/programas/')
 }
 
+export function listarProgramasPublicos(): Promise<ProgramaBackend[]> {
+  return apiRequest<ProgramaBackend[]>('/api/v1/programas/publicos', { token: null })
+}
+
 export function obtenerPrograma(id: string): Promise<ProgramaBackend> {
   return apiRequest<ProgramaBackend>(`/api/v1/programas/${encodeURIComponent(id)}`)
 }
