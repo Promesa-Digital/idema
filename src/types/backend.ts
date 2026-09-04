@@ -116,3 +116,36 @@ export interface ComboCreate {
 }
 
 export type ComboUpdate = Partial<ComboCreate>
+
+export interface ConceptoCobroBackend {
+  id: string
+  tipo: string
+  monto: string
+  descripcion: string | null
+  programa_id: string | null
+  combo_id: string | null
+}
+
+export type DescuentoTipo = 'manual' | 'pronto_pago'
+
+export type DescuentoEstado = 'activo' | 'inactivo'
+
+export interface DescuentoBackend {
+  id: string
+  tipo: DescuentoTipo
+  porcentaje: string
+  descripcion: string | null
+  estado: DescuentoEstado
+  concepto_id: string
+  created_at: string
+  updated_at: string
+}
+
+export interface DescuentoCreate {
+  tipo: DescuentoTipo
+  porcentaje: number
+  descripcion?: string | null
+  concepto_id: string
+}
+
+export type DescuentoUpdate = Partial<DescuentoCreate>
