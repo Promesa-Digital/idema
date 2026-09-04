@@ -19,6 +19,20 @@ export interface UsuarioDirectorio extends UsuarioBackend {
   updated_at: string
 }
 
+export interface UsuarioCreate {
+  nombre: string
+  correo: string
+  password: string
+  rol: UsuarioRol
+}
+
+export interface UsuarioUpdate {
+  nombre?: string
+  rol?: UsuarioRol
+  estado?: UsuarioBackend['estado']
+  password?: string
+}
+
 export interface TokenResponse {
   access_token: string
   token_type: string
