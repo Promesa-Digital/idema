@@ -42,6 +42,17 @@ const ADMIN_MODULES: AdminModule[] = [
     path: '/admin/comprobantes',
     allowedRoles: ['administracion', 'admin_sistema'],
   },
+  {
+    label: 'Leads',
+    path: '/admin/leads',
+    allowedRoles: [
+      'marketing',
+      'director_marketing',
+      'ventas',
+      'administracion',
+      'admin_sistema',
+    ],
+  },
 ]
 
 export default function AdminModuleNav({ role }: AdminModuleNavProps) {
