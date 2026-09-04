@@ -1,11 +1,21 @@
-import { Routes, Route, Navigate, useParams } from 'react-router-dom'
+import { Routes, Route, Navigate, Outlet, useParams } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import Layout from './components/Layout'
 import LoadingSpinner from './components/ui/LoadingSpinner'
+import ProtectedRoute from './components/admin/ProtectedRoute'
+import { AuthProvider } from './context/AuthContext'
 
 function RedirectToProgramaSlug() {
   const { slug } = useParams<{ slug: string }>()
   return <Navigate to={`/programas-de-estudio/${slug}`} replace />
+}
+
+function AdminRoutes() {
+  return (
+    <AuthProvider>
+      <Outlet />
+    </AuthProvider>
+  )
 }
 
 // Lazy load pages for code splitting
@@ -27,6 +37,8 @@ const CursosGratisPage = lazy(() => import('./pages/CursosGratisPage'))
 const OrientacionVocacionalPage = lazy(() => import('./pages/OrientacionVocacionalPage'))
 const NoticiasPage = lazy(() => import('./pages/NoticiasPage'))
 const ProgramasPage = lazy(() => import('./pages/programs/ProgramasPage'))
+const LoginPage = lazy(() => import('./pages/admin/LoginPage'))
+const ProgramasAdminPage = lazy(() => import('./pages/admin/ProgramasAdminPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function App() {
@@ -67,6 +79,17 @@ function App() {
           <Route path="eliminar-cuenta" element={<EliminarCuentaPage />} />
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
+        </Route>
+        <Route path="/admin" element={<AdminRoutes />}>
+          <Route path="login" element={<LoginPage />} />
+          <Route
+            path="programas"
+            element={
+              <ProtectedRoute>
+                <ProgramasAdminPage />
+              </ProtectedRoute>
+            }
+          />
         </Route>
       </Routes>
     </Suspense>
