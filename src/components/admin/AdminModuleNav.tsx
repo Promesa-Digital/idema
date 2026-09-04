@@ -58,6 +58,11 @@ const ADMIN_MODULES: AdminModule[] = [
     path: '/admin/usuarios',
     allowedRoles: ['admin_sistema'],
   },
+  {
+    label: 'Conceptos de Cobro',
+    path: '/admin/conceptos-cobro',
+    allowedRoles: ['academico', 'administracion', 'ventas', 'admin_sistema'],
+  },
 ]
 
 export default function AdminModuleNav({ role }: AdminModuleNavProps) {

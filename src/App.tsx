@@ -46,6 +46,7 @@ const OrdenesAdminPage = lazy(() => import('./pages/admin/OrdenesAdminPage'))
 const ComprobantesAdminPage = lazy(() => import('./pages/admin/ComprobantesAdminPage'))
 const LeadsAdminPage = lazy(() => import('./pages/admin/LeadsAdminPage'))
 const UsuariosAdminPage = lazy(() => import('./pages/admin/UsuariosAdminPage'))
+const ConceptosAdminPage = lazy(() => import('./pages/admin/ConceptosAdminPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function App() {
@@ -160,6 +161,16 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['admin_sistema']}>
                 <UsuariosAdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="conceptos-cobro"
+            element={
+              <ProtectedRoute
+                allowedRoles={['academico', 'administracion', 'ventas', 'admin_sistema']}
+              >
+                <ConceptosAdminPage />
               </ProtectedRoute>
             }
           />
