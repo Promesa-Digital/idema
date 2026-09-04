@@ -175,3 +175,31 @@ export interface OrdenPagoBackend {
   created_at: string
   updated_at: string
 }
+
+export type ComprobanteTipo = 'boleta' | 'factura'
+
+export type ComprobanteEstado = 'emitido' | 'observado' | 'anulado'
+
+export interface ComprobanteBackend {
+  id: string
+  tipo: ComprobanteTipo
+  numero: string | null
+  nombre_pagador: string
+  ruc: string | null
+  razon_social: string | null
+  estado: ComprobanteEstado
+  motivo: string | null
+  nota_credito: string | null
+  fecha_emision: string
+  orden_id: string
+  created_at: string
+  updated_at: string
+}
+
+export interface ComprobanteCreate {
+  orden_id: string
+  tipo: ComprobanteTipo
+  nombre_pagador: string
+  ruc?: string
+  razon_social?: string
+}
