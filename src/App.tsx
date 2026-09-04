@@ -43,6 +43,7 @@ const PopupsAdminPage = lazy(() => import('./pages/admin/PopupsAdminPage'))
 const CombosAdminPage = lazy(() => import('./pages/admin/CombosAdminPage'))
 const DescuentosAdminPage = lazy(() => import('./pages/admin/DescuentosAdminPage'))
 const OrdenesAdminPage = lazy(() => import('./pages/admin/OrdenesAdminPage'))
+const ComprobantesAdminPage = lazy(() => import('./pages/admin/ComprobantesAdminPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function App() {
@@ -125,6 +126,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['administracion', 'admin_sistema']}>
                 <OrdenesAdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="comprobantes"
+            element={
+              <ProtectedRoute allowedRoles={['administracion', 'admin_sistema']}>
+                <ComprobantesAdminPage />
               </ProtectedRoute>
             }
           />

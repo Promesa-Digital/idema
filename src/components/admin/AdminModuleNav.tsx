@@ -37,6 +37,11 @@ const ADMIN_MODULES: AdminModule[] = [
     path: '/admin/ordenes',
     allowedRoles: ['administracion', 'admin_sistema'],
   },
+  {
+    label: 'Comprobantes',
+    path: '/admin/comprobantes',
+    allowedRoles: ['administracion', 'admin_sistema'],
+  },
 ]
 
 export default function AdminModuleNav({ role }: AdminModuleNavProps) {
