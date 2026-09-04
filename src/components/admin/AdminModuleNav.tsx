@@ -63,6 +63,11 @@ const ADMIN_MODULES: AdminModule[] = [
     path: '/admin/conceptos-cobro',
     allowedRoles: ['academico', 'administracion', 'ventas', 'admin_sistema'],
   },
+  {
+    label: 'Matrículas',
+    path: '/admin/matriculas',
+    allowedRoles: ['academico', 'administracion', 'admin_sistema'],
+  },
 ]
 
 export default function AdminModuleNav({ role }: AdminModuleNavProps) {
