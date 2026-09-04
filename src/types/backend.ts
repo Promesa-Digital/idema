@@ -14,6 +14,11 @@ export interface UsuarioBackend {
   estado: 'activo' | 'inactivo'
 }
 
+export interface UsuarioDirectorio extends UsuarioBackend {
+  created_at: string
+  updated_at: string
+}
+
 export interface TokenResponse {
   access_token: string
   token_type: string
@@ -202,4 +207,21 @@ export interface ComprobanteCreate {
   nombre_pagador: string
   ruc?: string
   razon_social?: string
+}
+
+export type LeadOrigen = 'popup' | 'formulario'
+
+export type LeadEstado = 'nuevo' | 'contactado' | 'pago' | 'descartado'
+
+export interface LeadBackend {
+  id: string
+  nombre: string | null
+  correo: string | null
+  telefono: string | null
+  origen: LeadOrigen
+  estado: LeadEstado
+  cuenta_alumno_id: string | null
+  asesor_asignado_id: string | null
+  created_at: string
+  updated_at: string
 }
