@@ -53,6 +53,11 @@ const ADMIN_MODULES: AdminModule[] = [
       'admin_sistema',
     ],
   },
+  {
+    label: 'Usuarios',
+    path: '/admin/usuarios',
+    allowedRoles: ['admin_sistema'],
+  },
 ]
 
 export default function AdminModuleNav({ role }: AdminModuleNavProps) {
