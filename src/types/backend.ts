@@ -294,3 +294,16 @@ export interface MatriculaBackend {
   created_at: string
   updated_at: string
 }
+
+export type ElectivoEstado = 'activado' | 'en_curso' | 'completado' | 'cancelado'
+
+export interface ElectivoBackend {
+  id: string
+  estado: ElectivoEstado
+  gratuito: boolean
+  fecha_activacion: string
+  matricula_id: string
+  programa_id: string
+  created_at: string
+  updated_at: string
+}

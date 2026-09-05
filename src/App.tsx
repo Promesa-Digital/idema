@@ -48,6 +48,7 @@ const LeadsAdminPage = lazy(() => import('./pages/admin/LeadsAdminPage'))
 const UsuariosAdminPage = lazy(() => import('./pages/admin/UsuariosAdminPage'))
 const ConceptosAdminPage = lazy(() => import('./pages/admin/ConceptosAdminPage'))
 const MatriculasAdminPage = lazy(() => import('./pages/admin/MatriculasAdminPage'))
+const ElectivosAdminPage = lazy(() => import('./pages/admin/ElectivosAdminPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function App() {
@@ -180,6 +181,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['academico', 'administracion', 'admin_sistema']}>
                 <MatriculasAdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="electivos"
+            element={
+              <ProtectedRoute allowedRoles={['academico', 'administracion', 'admin_sistema']}>
+                <ElectivosAdminPage />
               </ProtectedRoute>
             }
           />

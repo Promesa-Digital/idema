@@ -68,6 +68,11 @@ const ADMIN_MODULES: AdminModule[] = [
     path: '/admin/matriculas',
     allowedRoles: ['academico', 'administracion', 'admin_sistema'],
   },
+  {
+    label: 'Electivos',
+    path: '/admin/electivos',
+    allowedRoles: ['academico', 'administracion', 'admin_sistema'],
+  },
 ]
 
 export default function AdminModuleNav({ role }: AdminModuleNavProps) {
