@@ -4,8 +4,12 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { FaTimes } from 'react-icons/fa'
 import { anuncios } from '../../data/anuncios'
 import type { Anuncio } from '../../types'
+import { listarPopupsPublicos, registrarInteraccionPopup } from '@/services/popupsApi'
+import type { PopupPublicoBackend } from '@/types/backend'
 
 const STORAGE_PREFIX = 'idema:anuncio:'
+
+type DisplayAnuncio = Anuncio & { backendId?: string }
 
 function isWithinRange(a: Anuncio, today: Date): boolean {
   const t = today.getTime()
@@ -57,9 +61,30 @@ function markDismissed(a: Anuncio) {
   }
 }
 
-function pickAnuncio(pathname: string): Anuncio | null {
+function popupToAnuncio(popup: PopupPublicoBackend): DisplayAnuncio {
+  const pages = popup.paginas
+    .split(',')
+    .map((page) => page.trim())
+    .filter(Boolean)
+    .map((page) => (page === 'home' ? '/' : page.startsWith('/') ? page : `/${page}`))
+  return {
+    id: `api-${popup.id}`,
+    backendId: popup.id,
+    image: popup.imagen_url,
+    alt: popup.texto,
+    startDate: popup.fecha_inicio,
+    endDate: popup.fecha_fin,
+    pages,
+    frequency: popup.tipo === 'descuento' ? 'day' : 'always',
+    cta: popup.enlace
+      ? { label: 'Ver más', href: popup.enlace, external: /^https?:\/\//.test(popup.enlace) }
+      : undefined,
+  }
+}
+
+function pickAnuncio(pathname: string, candidates: DisplayAnuncio[]): DisplayAnuncio | null {
   const today = new Date()
-  for (const a of anuncios) {
+  for (const a of candidates) {
     const pages = a.pages ?? ['/']
     if (!pages.includes(pathname)) continue
     if (!isWithinRange(a, today)) continue
@@ -71,30 +96,62 @@ function pickAnuncio(pathname: string): Anuncio | null {
 
 export default function AnnouncementModal() {
   const { pathname } = useLocation()
-  const [anuncio, setAnuncio] = useState<Anuncio | null>(null)
+  const [anuncio, setAnuncio] = useState<DisplayAnuncio | null>(null)
   const [open, setOpen] = useState(false)
   const closeBtnRef = useRef<HTMLButtonElement | null>(null)
   const previouslyFocused = useRef<HTMLElement | null>(null)
   const dialogRef = useRef<HTMLDivElement | null>(null)
+  const trackedViews = useRef(new Set<string>())
   const prefersReducedMotion = useReducedMotion()
 
   // Selección por ruta
   useEffect(() => {
-    const match = pickAnuncio(pathname)
-    if (match) {
-      setAnuncio(match)
-      // pequeño delay para que el resto del layout monte primero
-      const t = window.setTimeout(() => setOpen(true), 350)
-      return () => window.clearTimeout(t)
+    let active = true
+    let timer: number | undefined
+
+    const showCandidate = (candidates: DisplayAnuncio[]) => {
+      if (!active) return
+      const match = pickAnuncio(pathname, candidates)
+      if (match) {
+        setAnuncio(match)
+        timer = window.setTimeout(() => {
+          if (active) setOpen(true)
+        }, 350)
+      } else {
+        setAnuncio(null)
+        setOpen(false)
+      }
     }
-    setAnuncio(null)
-    setOpen(false)
+
+    listarPopupsPublicos()
+      .then((popups) => showCandidate([...popups.map(popupToAnuncio), ...anuncios]))
+      .catch(() => showCandidate(anuncios))
+
+    return () => {
+      active = false
+      if (timer !== undefined) window.clearTimeout(timer)
+    }
   }, [pathname])
+
+  useEffect(() => {
+    if (!open || !anuncio?.backendId) return
+    const key = `${anuncio.backendId}:${pathname}`
+    if (trackedViews.current.has(key)) return
+    trackedViews.current.add(key)
+    void registrarInteraccionPopup(anuncio.backendId, 'vista', pathname).catch(() => undefined)
+  }, [anuncio, open, pathname])
 
   // Cerrar
   const handleClose = () => {
     if (anuncio) markDismissed(anuncio)
     setOpen(false)
+  }
+
+  const handleCtaClick = () => {
+    if (anuncio?.backendId) {
+      void registrarInteraccionPopup(anuncio.backendId, 'clic', pathname).catch(() => undefined)
+    }
+    handleClose()
   }
 
   // ESC + scroll lock + focus management
@@ -208,7 +265,7 @@ export default function AnnouncementModal() {
                 href={anuncio.cta.href}
                 target={anuncio.cta.external ? '_blank' : undefined}
                 rel={anuncio.cta.external ? 'noopener noreferrer' : undefined}
-                onClick={handleClose}
+                onClick={handleCtaClick}
                 className="mt-4 inline-flex items-center justify-center gap-2 px-6 py-3 min-h-[44px] rounded-full font-semibold text-white shadow-lg transition hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black/60"
                 style={{ background: 'linear-gradient(135deg, var(--color-cta), var(--color-accent))' }}
               >

@@ -112,6 +112,17 @@ export interface PopupCreate {
 
 export type PopupUpdate = Partial<PopupCreate>
 
+export interface PopupPublicoBackend {
+  id: string
+  tipo: PopupTipo
+  texto: string
+  imagen_url: string
+  enlace: string | null
+  paginas: string
+  fecha_inicio: string
+  fecha_fin: string
+}
+
 export type ComboEstado = 'activo' | 'inactivo'
 
 export interface ComboBackend {
@@ -306,4 +317,46 @@ export interface ElectivoBackend {
   programa_id: string
   created_at: string
   updated_at: string
+}
+
+export interface ReportePopupItem {
+  popup_id: string
+  tipo: PopupTipo
+  texto: string
+  vistas: number
+  clics: number
+  tasa_clics: string
+}
+
+export interface ReportePopupsBackend {
+  resumen: {
+    total_popups: number
+    vistas: number
+    clics: number
+    tasa_clics: string
+  }
+  items: ReportePopupItem[]
+}
+
+export interface ReporteOrdenItem {
+  orden_id: string
+  fecha: string
+  fecha_pago: string | null
+  estado: OrdenPagoEstado
+  medio_pago: OrdenPagoMedioPago
+  monto: string
+  referencia_culqi: string | null
+  alumno: string
+  dni: string
+  correo: string
+  concepto: string
+}
+
+export interface ReporteOrdenesBackend {
+  resumen: {
+    total_ordenes: number
+    monto_total: string
+    monto_confirmado: string
+  }
+  items: ReporteOrdenItem[]
 }

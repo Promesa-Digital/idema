@@ -3,6 +3,7 @@ import type {
   PopupBackend,
   PopupCreate,
   PopupEstado,
+  PopupPublicoBackend,
   PopupTipo,
   PopupUpdate,
 } from '@/types/backend'
@@ -24,6 +25,23 @@ export function listarPopups(filtros: PopupFiltros = {}): Promise<PopupBackend[]
 
 export function obtenerPopup(id: string): Promise<PopupBackend> {
   return apiRequest<PopupBackend>(`/api/v1/popups/${encodeURIComponent(id)}`)
+}
+
+export function listarPopupsPublicos(): Promise<PopupPublicoBackend[]> {
+  return apiRequest<PopupPublicoBackend[]>('/api/v1/popups/publicos', { token: null })
+}
+
+export function registrarInteraccionPopup(
+  id: string,
+  tipo: 'vista' | 'clic',
+  pagina: string,
+): Promise<void> {
+  return apiRequest<void>(`/api/v1/popups/${encodeURIComponent(id)}/interacciones`, {
+    method: 'POST',
+    token: null,
+    keepalive: true,
+    body: { tipo, pagina },
+  })
 }
 
 export function crearPopup(data: PopupCreate): Promise<PopupBackend> {
