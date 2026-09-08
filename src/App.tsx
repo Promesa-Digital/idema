@@ -50,6 +50,7 @@ const ConceptosAdminPage = lazy(() => import('./pages/admin/ConceptosAdminPage')
 const MatriculasAdminPage = lazy(() => import('./pages/admin/MatriculasAdminPage'))
 const ElectivosAdminPage = lazy(() => import('./pages/admin/ElectivosAdminPage'))
 const ReportesAdminPage = lazy(() => import('./pages/admin/ReportesAdminPage'))
+const ConciliacionesAdminPage = lazy(() => import('./pages/admin/ConciliacionesAdminPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function App() {
@@ -205,6 +206,14 @@ function App() {
                 ]}
               >
                 <ReportesAdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="conciliaciones"
+            element={
+              <ProtectedRoute allowedRoles={['administracion', 'admin_sistema']}>
+                <ConciliacionesAdminPage />
               </ProtectedRoute>
             }
           />

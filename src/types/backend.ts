@@ -225,6 +225,7 @@ export interface OrdenPagoBackend {
   alumno_id: string
   concepto_id: string
   descuento_id: string | null
+  conciliacion_id: string | null
   created_at: string
   updated_at: string
 }
@@ -359,4 +360,47 @@ export interface ReporteOrdenesBackend {
     monto_confirmado: string
   }
   items: ReporteOrdenItem[]
+}
+
+export type ConciliacionEstado = 'abierta' | 'en_revision' | 'cerrada'
+
+export interface ConciliacionOrdenBackend {
+  orden_id: string
+  monto: string
+  medio_pago: OrdenPagoMedioPago
+  referencia_culqi: string | null
+  fecha_pago: string
+  alumno: string
+  dni: string
+  concepto: string
+  conciliada: boolean
+}
+
+export interface ConciliacionBackend {
+  id: string
+  periodo_inicio: string
+  periodo_fin: string
+  monto_esperado: string
+  monto_abonado_culqi: string
+  comision: string
+  diferencia: string
+  total_ordenes: number
+  ordenes_conciliadas: number
+  estado: ConciliacionEstado
+  created_at: string
+  updated_at: string
+}
+
+export interface ConciliacionDetalleBackend extends ConciliacionBackend {
+  ordenes: ConciliacionOrdenBackend[]
+}
+
+export interface ConciliacionCreate {
+  periodo_inicio: string
+  periodo_fin: string
+}
+
+export interface ConciliacionUpdate {
+  monto_abonado_culqi?: number
+  comision?: number
 }
