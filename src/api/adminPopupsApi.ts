@@ -29,9 +29,13 @@ interface PopupPayload {
   paginas: string
   fecha_inicio: string
   fecha_fin: string
+  monto_descuento?: number
+  duracion_temporizador?: number
+  texto_superior?: string
 }
 
 function toPayload(values: PopupFormValues): PopupPayload {
+  const esDescuento = values.tipo === 'descuento'
   return {
     tipo: values.tipo,
     texto: values.texto,
@@ -41,6 +45,9 @@ function toPayload(values: PopupFormValues): PopupPayload {
     paginas: values.paginas,
     fecha_inicio: values.fecha_inicio,
     fecha_fin: values.fecha_fin,
+    monto_descuento: esDescuento && values.monto_descuento ? Number(values.monto_descuento) : undefined,
+    duracion_temporizador: esDescuento && values.duracion_temporizador ? Number(values.duracion_temporizador) : undefined,
+    texto_superior: esDescuento ? values.texto_superior || undefined : undefined,
   }
 }
 
