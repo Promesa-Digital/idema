@@ -22,6 +22,7 @@ import {
   FileText,
   CheckSquare,
   BarChart3,
+  ListChecks,
   LogOut,
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
@@ -52,6 +53,7 @@ const COMPROBANTES: NavItem = { label: 'Comprobantes', to: '/admin/comprobantes'
 const CONCILIACIONES: NavItem = { label: 'Conciliaciones', to: '/admin/conciliaciones', icon: CheckSquare }
 const CUENTAS_ALUMNOS: NavItem = { label: 'Cuentas de Alumnos', to: '/admin/cuentas-alumnos', icon: UserCheck }
 const MATRICULAS: NavItem = { label: 'Matrículas', to: '/admin/matriculas', icon: BookOpen }
+const ELECTIVOS: NavItem = { label: 'Electivos', to: '/admin/electivos', icon: ListChecks }
 
 /** Grupos del sidebar por rol. admin_sistema ve todo; el resto solo su área. */
 const NAV_GROUPS_BY_ROLE: Partial<Record<UserRole, NavGroup[]>> = {
@@ -64,7 +66,7 @@ const NAV_GROUPS_BY_ROLE: Partial<Record<UserRole, NavGroup[]>> = {
     { label: 'ALUMNOS', items: [CUENTAS_ALUMNOS] },
   ],
   academico: [
-    { label: 'ACADÉMICO', items: [PROGRAMAS] },
+    { label: 'ACADÉMICO', items: [PROGRAMAS, ELECTIVOS] },
   ],
   marketing: [
     { label: 'MARKETING', items: [POPUPS, REPORTES] },
@@ -81,7 +83,7 @@ const NAV_GROUPS_BY_ROLE: Partial<Record<UserRole, NavGroup[]>> = {
   ],
   administracion: [
     { label: 'FINANZAS', items: [ORDENES, COMPROBANTES, CONCILIACIONES, REPORTES] },
-    { label: 'ALUMNOS', items: [CUENTAS_ALUMNOS, MATRICULAS] },
+    { label: 'ALUMNOS', items: [CUENTAS_ALUMNOS, MATRICULAS, ELECTIVOS] },
   ],
 }
 
