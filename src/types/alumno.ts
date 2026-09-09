@@ -1,3 +1,5 @@
+import type { CuentaAlumnoEstado } from './index'
+
 export interface AlumnoPerfil {
   id: string
   dni: string
@@ -5,4 +7,5 @@ export interface AlumnoPerfil {
   apellidos: string
   email: string
   telefono?: string
+  estado: CuentaAlumnoEstado
 }

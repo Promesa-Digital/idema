@@ -7,7 +7,7 @@ export interface RegistroAlumnoValues {
   correo: string
   telefono: string
   password: string
-  consentimiento: true
+  consentimiento: boolean
 }
 
 export async function registrarAlumno(values: RegistroAlumnoValues): Promise<{ id: string; correo: string; mensaje: string }> {

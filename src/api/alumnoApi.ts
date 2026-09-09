@@ -1,6 +1,9 @@
 import { httpClient } from './httpClient'
 import type { AlumnoPerfil } from '../types/alumno'
+import type { CuentaAlumnoEstado } from '../types'
 import type { DatosContactoValues } from '../schemas/miCuenta'
+
+export const PERFIL_QUERY_KEY = ['alumno', 'perfil'] as const
 
 interface AlumnoPerfilResponse {
   id: string
@@ -9,6 +12,7 @@ interface AlumnoPerfilResponse {
   apellidos: string
   correo: string
   telefono?: string
+  estado: CuentaAlumnoEstado
 }
 
 function mapPerfil(data: AlumnoPerfilResponse): AlumnoPerfil {
@@ -19,6 +23,7 @@ function mapPerfil(data: AlumnoPerfilResponse): AlumnoPerfil {
     apellidos: data.apellidos,
     email: data.correo,
     telefono: data.telefono,
+    estado: data.estado,
   }
 }
 
