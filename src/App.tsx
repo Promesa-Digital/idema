@@ -3,7 +3,9 @@ import { lazy, Suspense } from 'react'
 import Layout from './components/Layout'
 import LoadingSpinner from './components/ui/LoadingSpinner'
 import ProtectedRoute from './components/admin/ProtectedRoute'
+import AlumnoProtectedRoute from './components/alumno/AlumnoProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
+import { AlumnoAuthProvider } from './context/AlumnoAuthContext'
 
 function RedirectToProgramaSlug() {
   const { slug } = useParams<{ slug: string }>()
@@ -15,6 +17,14 @@ function AdminRoutes() {
     <AuthProvider>
       <Outlet />
     </AuthProvider>
+  )
+}
+
+function AlumnoRoutes() {
+  return (
+    <AlumnoAuthProvider>
+      <Outlet />
+    </AlumnoAuthProvider>
   )
 }
 
@@ -51,6 +61,10 @@ const MatriculasAdminPage = lazy(() => import('./pages/admin/MatriculasAdminPage
 const ElectivosAdminPage = lazy(() => import('./pages/admin/ElectivosAdminPage'))
 const ReportesAdminPage = lazy(() => import('./pages/admin/ReportesAdminPage'))
 const ConciliacionesAdminPage = lazy(() => import('./pages/admin/ConciliacionesAdminPage'))
+const CuentasAlumnoAdminPage = lazy(() => import('./pages/admin/CuentasAlumnoAdminPage'))
+const AlumnoLoginPage = lazy(() => import('./pages/alumno/AlumnoLoginPage'))
+const AlumnoRegistroPage = lazy(() => import('./pages/alumno/AlumnoRegistroPage'))
+const MiCuentaPage = lazy(() => import('./pages/alumno/MiCuentaPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function App() {
@@ -215,6 +229,28 @@ function App() {
               <ProtectedRoute allowedRoles={['administracion', 'admin_sistema']}>
                 <ConciliacionesAdminPage />
               </ProtectedRoute>
+            }
+          />
+          <Route
+            path="alumnos"
+            element={
+              <ProtectedRoute
+                allowedRoles={['ventas', 'academico', 'administracion', 'admin_sistema']}
+              >
+                <CuentasAlumnoAdminPage />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+        <Route path="/alumno" element={<AlumnoRoutes />}>
+          <Route path="login" element={<AlumnoLoginPage />} />
+          <Route path="registro" element={<AlumnoRegistroPage />} />
+          <Route
+            path="mi-cuenta"
+            element={
+              <AlumnoProtectedRoute>
+                <MiCuentaPage />
+              </AlumnoProtectedRoute>
             }
           />
         </Route>

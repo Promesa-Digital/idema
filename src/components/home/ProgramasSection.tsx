@@ -22,7 +22,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
 }
 
-function CategoriaCard({ titulo, descripcion, imagen, ruta, cantidad, duracion, modalidad, certificaciones, titulacion, imagenIzquierda }: Omit<ProgramCategory, 'key' | 'badge'>) {
+function CategoriaCard({ titulo, descripcion, imagen, ruta, cantidad, duracion, modalidad, certificaciones, titulacion, imagenIzquierda }: Omit<ProgramCategory, 'key'>) {
   const imgBlock = (
     <div className="relative md:w-2/5 h-48 md:h-auto overflow-hidden flex-shrink-0">
       <img
@@ -187,7 +187,7 @@ export default function ProgramasSection() {
           animate={inView ? 'visible' : 'hidden'}
           className="flex flex-col gap-6 sm:gap-8 max-w-3xl mx-auto"
         >
-          {programCategories.map(({ key, badge: _, ...cat }) => (
+          {programCategories.map(({ key, ...cat }) => (
             <CategoriaCard key={key} {...cat} />
           ))}
         </motion.div>

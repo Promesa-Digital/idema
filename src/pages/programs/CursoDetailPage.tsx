@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { FaCheck, FaClock, FaBook, FaCertificate, FaCalendar, FaWhatsapp, FaEnvelope, FaCreditCard, FaShieldAlt, FaShoppingCart, FaUniversity, FaChevronUp } from 'react-icons/fa'
 import { cursos } from '../../data/programs/cursos'
 import { useCulqi } from '../../hooks/useCulqi'
-import { useCart } from '../../context/CartContext'
+import { useCart } from '../../hooks/useCart'
 
 const paymentMethods = [
   { bank: 'BCP', lines: ['Recaudación: 20430', 'Cuenta: 25105155619028', 'CCI: 00225110515561902870'] },

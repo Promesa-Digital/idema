@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FiChevronLeft, FiChevronRight, FiChevronDown } from 'react-icons/fi'
 import { theme } from '@/theme'
@@ -43,13 +43,12 @@ const PAUSE_AFTER_MANUAL = 3000
 
 export default function Hero() {
   const [current, setCurrent] = useState(0)
-  const [isMobile, setIsMobile] = useState(false)
+  const [isMobile, setIsMobile] = useState(() => window.matchMedia('(max-width: 768px)').matches)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const pauseRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const mq = window.matchMedia('(max-width: 768px)')
-    setIsMobile(mq.matches)
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
     mq.addEventListener('change', handler)
     return () => mq.removeEventListener('change', handler)

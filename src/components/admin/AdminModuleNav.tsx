@@ -83,6 +83,11 @@ const ADMIN_MODULES: AdminModule[] = [
     path: '/admin/conciliaciones',
     allowedRoles: ['administracion', 'admin_sistema'],
   },
+  {
+    label: 'Alumnos',
+    path: '/admin/alumnos',
+    allowedRoles: ['ventas', 'academico', 'administracion', 'admin_sistema'],
+  },
 ]
 
 export default function AdminModuleNav({ role }: AdminModuleNavProps) {

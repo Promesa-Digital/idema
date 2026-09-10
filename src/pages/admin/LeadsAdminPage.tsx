@@ -554,11 +554,6 @@ export default function LeadsAdminPage() {
                 </span>
               )}
             </DetailItem>
-            {detailLead.cuenta_alumno_id && (
-              <DetailItem label="Cuenta de alumno" fullWidth>
-                <span className="font-mono text-xs">{detailLead.cuenta_alumno_id}</span>
-              </DetailItem>
-            )}
             <DetailItem label="Fecha de creación">{formatDate(detailLead.created_at)}</DetailItem>
             <DetailItem label="Última actualización">{formatDate(detailLead.updated_at)}</DetailItem>
           </dl>

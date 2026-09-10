@@ -269,7 +269,6 @@ export interface LeadBackend {
   telefono: string | null
   origen: LeadOrigen
   estado: LeadEstado
-  cuenta_alumno_id: string | null
   asesor_asignado_id: string | null
   created_at: string
   updated_at: string
@@ -286,8 +285,107 @@ export interface CuentaAlumnoBackend {
   correo: string
   telefono: string
   estado: CuentaAlumnoEstado
+  consentimiento_datos: boolean
+  fecha_consentimiento: string | null
+  version_politica: string | null
+  lead_origen_id: string | null
   created_at: string
   updated_at: string
+}
+
+export interface AlumnoPerfil {
+  id: string
+  nombres: string
+  apellido_paterno: string
+  apellido_materno: string | null
+  dni: string
+  correo: string
+  telefono: string
+  rol: 'alumno'
+  estado: CuentaAlumnoEstado
+  consentimiento_datos: boolean
+  fecha_consentimiento: string | null
+  version_politica: string | null
+}
+
+export interface AlumnoRegistro {
+  nombres: string
+  apellido_paterno: string
+  apellido_materno?: string
+  dni: string
+  correo: string
+  telefono: string
+  password: string
+  consentimiento: boolean
+}
+
+export interface AlumnoPerfilUpdate {
+  nombres?: string
+  apellido_paterno?: string
+  apellido_materno?: string | null
+  dni?: string
+  correo?: string
+  telefono?: string
+}
+
+export interface PortalAlumnoOrden {
+  id: string
+  monto: string
+  medio_pago: OrdenPagoMedioPago
+  estado: OrdenPagoEstado
+  referencia_culqi: string | null
+  voucher_url: string | null
+  fecha_pago: string | null
+  concepto: string
+  concepto_tipo: ConceptoCobroTipo
+  created_at: string
+}
+
+export interface PortalAlumnoComprobante {
+  id: string
+  tipo: ComprobanteTipo
+  numero: string | null
+  nombre_pagador: string
+  ruc: string | null
+  razon_social: string | null
+  estado: ComprobanteEstado
+  nota_credito: string | null
+  fecha_emision: string
+  orden_id: string
+}
+
+export interface PortalAlumnoMatricula {
+  id: string
+  tipo: MatriculaTipo
+  estado: MatriculaEstado
+  motivo_anulacion: string | null
+  fecha_activacion: string | null
+  programa_id: string
+  programa_codigo: string
+  programa_nombre: string
+  programa_tipo: ProgramaTipo
+  orden_id: string
+  created_at: string
+}
+
+export interface PortalAlumnoElectivo {
+  id: string
+  estado: ElectivoEstado
+  gratuito: boolean
+  fecha_activacion: string
+  matricula_id: string
+  programa_id: string
+  programa_codigo: string
+  programa_nombre: string
+  programa_tipo: ProgramaTipo
+}
+
+export interface PortalAlumnoHistorial {
+  perfil: Omit<AlumnoPerfil, 'rol'> & { created_at: string }
+  ordenes: PortalAlumnoOrden[]
+  comprobantes: PortalAlumnoComprobante[]
+  matriculas: PortalAlumnoMatricula[]
+  electivos: PortalAlumnoElectivo[]
 }
 
 export type MatriculaTipo = 'nueva' | 'retorno'

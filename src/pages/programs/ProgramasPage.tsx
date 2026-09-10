@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useSearchParams, useNavigate, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
@@ -60,20 +60,13 @@ const learningPath = [
 ]
 
 export default function ProgramasPage() {
-  const [activeFilter, setActiveFilter] = useState<string>('todos')
   const [search, setSearch] = useState('')
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-
-  useLayoutEffect(() => {
-    const categoria = searchParams.get('categoria')
-
-    if (categoria && categories.some(c => c.key === categoria)) {
-      setActiveFilter(categoria)
-      return
-    }
-    setActiveFilter('todos')
-  }, [searchParams, categories])
+  const categoryParam = searchParams.get('categoria')
+  const activeFilter = categories.some((category) => category.key === categoryParam)
+    ? categoryParam ?? 'todos'
+    : 'todos'
 
   const filtered = useMemo(() => {
     return allPrograms.filter((p) => {
@@ -132,7 +125,6 @@ export default function ProgramasPage() {
                 <button
                   key={cat.key}
                   onClick={() => {
-                    setActiveFilter(cat.key)
                     navigate(`/programas-de-estudio?categoria=${cat.key}`)
                   }}
                   className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
@@ -168,7 +160,7 @@ export default function ProgramasPage() {
             <div className="text-center py-20">
               <p className="text-deep/60 text-lg">No se encontraron programas con esos criterios.</p>
               <button
-                onClick={() => { setActiveFilter('todos'); navigate('/programas-de-estudio'); setSearch('') }}
+                onClick={() => { navigate('/programas-de-estudio'); setSearch('') }}
                 className="mt-4 text-primary font-semibold hover:underline"
               >
                 Limpiar filtros

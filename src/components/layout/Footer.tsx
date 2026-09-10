@@ -190,7 +190,7 @@ export default function Footer() {
                     <p className="text-white/80 text-sm flex items-center gap-1.5 mt-1">
                       <FaPhone className="w-3 h-3 text-[#0dcaf0]" />
                       <span>
-                        {addr.phone.split(/\s*[\/,&]\s*/).map((p, i, arr) => {
+                        {addr.phone.split(/\s*[/,&]\s*/).map((p, i, arr) => {
                           const cleaned = p.replace(/[^+0-9]/g, '')
                           return (
                             <span key={i}>
