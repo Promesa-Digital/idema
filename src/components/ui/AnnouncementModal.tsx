@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { FaTimes } from 'react-icons/fa'
-import { anuncios } from '../../data/anuncios'
-import type { Anuncio } from '../../types'
+import { anuncios, imagenPopupInstitucional } from '@/data/anuncios'
+import type { Anuncio } from '@/types'
 import { listarPopupsPublicos, registrarInteraccionPopup } from '@/services/popupsApi'
 import type { PopupPublicoBackend } from '@/types/backend'
 
@@ -70,7 +70,7 @@ function popupToAnuncio(popup: PopupPublicoBackend): DisplayAnuncio {
   return {
     id: `api-${popup.id}`,
     backendId: popup.id,
-    image: popup.imagen_url,
+    image: popup.imagen_url || imagenPopupInstitucional,
     alt: popup.texto,
     startDate: popup.fecha_inicio,
     endDate: popup.fecha_fin,
@@ -253,6 +253,12 @@ export default function AnnouncementModal() {
               <img
                 src={anuncio.image}
                 alt={anuncio.alt}
+                onError={(event) => {
+                  const image = event.currentTarget
+                  if (image.dataset.fallbackApplied === 'true') return
+                  image.dataset.fallbackApplied = 'true'
+                  image.src = imagenPopupInstitucional
+                }}
                 className="block w-full h-auto max-h-[80dvh] object-contain select-none"
                 draggable={false}
                 fetchPriority="high"

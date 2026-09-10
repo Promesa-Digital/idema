@@ -1,4 +1,7 @@
-import type { Anuncio } from '../types'
+import type { Anuncio } from '@/types'
+import popupInstitucionalImage from '@/assets/anuncios/popup-institucional-idema.webp'
+
+export const imagenPopupInstitucional = popupInstitucionalImage
 
 /**
  * Registro de anuncios full-screen.
@@ -10,4 +13,13 @@ import type { Anuncio } from '../types'
  *   5. `pages`: rutas donde aparece (default solo `'/'`).
  * Se muestra el primero cuyo rango y página coinciden y que el usuario no haya descartado.
  */
-export const anuncios: Anuncio[] = []
+export const anuncios: Anuncio[] = [
+  {
+    id: 'institucional-idema',
+    image: popupInstitucionalImage,
+    alt: 'Estudia hoy. Transforma tu futuro con IDEMA.',
+    cta: { label: 'Conoce nuestros programas', href: '/programas-de-estudio' },
+    frequency: 'session',
+    pages: ['/'],
+  },
+]
