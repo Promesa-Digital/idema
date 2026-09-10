@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
-import Button from '@/components/ui/Button'
+import { Link, Navigate, useLocation } from 'react-router-dom'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { useAuth } from '@/context/AuthContextType'
 import type { UsuarioRol } from '@/types/backend'
@@ -16,7 +15,7 @@ export default function ProtectedRoute({
   children,
   allowedRoles = DEFAULT_ALLOWED_ROLES,
 }: ProtectedRouteProps) {
-  const { user, token, isLoading, logout } = useAuth()
+  const { user, token, isLoading } = useAuth()
   const location = useLocation()
 
   if (isLoading) return <LoadingSpinner />
@@ -33,12 +32,8 @@ export default function ProtectedRoute({
             Acceso restringido
           </p>
           <h1 className="mb-3 text-3xl font-bold text-dark">No tienes permiso</h1>
-          <p className="mb-6 text-slate-600">
-            Tu cuenta no tiene uno de los roles habilitados para gestionar programas.
-          </p>
-          <Button variant="secondary" onClick={logout}>
-            Cerrar sesión
-          </Button>
+          <p className="mb-6 text-slate-600">Tu cuenta no tiene permisos para consultar este módulo.</p>
+          <Link to="/admin" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-deep px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-deep/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-deep focus-visible:ring-offset-2">Volver al panel</Link>
         </section>
       </main>
     )

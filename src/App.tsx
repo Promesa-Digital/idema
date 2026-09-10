@@ -3,6 +3,8 @@ import { lazy, Suspense } from 'react'
 import Layout from './components/Layout'
 import LoadingSpinner from './components/ui/LoadingSpinner'
 import ProtectedRoute from './components/admin/ProtectedRoute'
+import AdminLayout from './components/admin/AdminLayout'
+import { ALL_ADMIN_ROLES } from './components/admin/adminModules'
 import AlumnoProtectedRoute from './components/alumno/AlumnoProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
 import { AlumnoAuthProvider } from './context/AlumnoAuthContext'
@@ -48,6 +50,7 @@ const OrientacionVocacionalPage = lazy(() => import('./pages/OrientacionVocacion
 const NoticiasPage = lazy(() => import('./pages/NoticiasPage'))
 const ProgramasPage = lazy(() => import('./pages/programs/ProgramasPage'))
 const LoginPage = lazy(() => import('./pages/admin/LoginPage'))
+const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'))
 const ProgramasAdminPage = lazy(() => import('./pages/admin/ProgramasAdminPage'))
 const PopupsAdminPage = lazy(() => import('./pages/admin/PopupsAdminPage'))
 const CombosAdminPage = lazy(() => import('./pages/admin/CombosAdminPage'))
@@ -65,6 +68,9 @@ const CuentasAlumnoAdminPage = lazy(() => import('./pages/admin/CuentasAlumnoAdm
 const AlumnoLoginPage = lazy(() => import('./pages/alumno/AlumnoLoginPage'))
 const AlumnoRegistroPage = lazy(() => import('./pages/alumno/AlumnoRegistroPage'))
 const MiCuentaPage = lazy(() => import('./pages/alumno/MiCuentaPage'))
+const RecuperarPasswordPage = lazy(() => import('./pages/auth/RecuperarPasswordPage'))
+const RestablecerPasswordPage = lazy(() => import('./pages/auth/RestablecerPasswordPage'))
+const VerificarCorreoPage = lazy(() => import('./pages/auth/VerificarCorreoPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function App() {
@@ -106,8 +112,19 @@ function App() {
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
         </Route>
+        <Route path="/recuperar-password" element={<RecuperarPasswordPage />} />
+        <Route path="/restablecer-password" element={<RestablecerPasswordPage />} />
+        <Route path="/verificar-correo" element={<VerificarCorreoPage />} />
         <Route path="/admin" element={<AdminRoutes />}>
           <Route path="login" element={<LoginPage />} />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={ALL_ADMIN_ROLES}>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+          <Route index element={<AdminDashboardPage />} />
           <Route
             path="programas"
             element={
@@ -241,8 +258,10 @@ function App() {
               </ProtectedRoute>
             }
           />
+          </Route>
         </Route>
         <Route path="/alumno" element={<AlumnoRoutes />}>
+          <Route index element={<Navigate to="/alumno/mi-cuenta" replace />} />
           <Route path="login" element={<AlumnoLoginPage />} />
           <Route path="registro" element={<AlumnoRegistroPage />} />
           <Route

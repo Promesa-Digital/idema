@@ -113,6 +113,7 @@ export default function CuentasAlumnoAdminPage() {
   const columns = useMemo<TableColumn<CuentaAlumnoBackend>[]>(() => [
     { key: 'alumno', header: 'Alumno', render: (item) => <div><p className="font-semibold text-dark">{fullName(item)}</p><p className="text-xs text-slate-500">DNI {item.dni}</p></div> },
     { key: 'contacto', header: 'Contacto', render: (item) => <div><p>{item.correo}</p><p className="text-xs text-slate-500">{item.telefono}</p></div> },
+    { key: 'verificacion', header: 'Correo', render: (item) => <Badge variant={item.correo_verificado_at ? 'emerald' : 'amber'}>{item.correo_verificado_at ? 'Verificado' : 'Pendiente'}</Badge> },
     { key: 'consentimiento', header: 'Consentimiento', render: (item) => <Badge variant={item.consentimiento_datos ? 'emerald' : 'slate'}>{item.consentimiento_datos ? 'Vigente' : 'No vigente'}</Badge> },
     { key: 'estado', header: 'Estado', render: (item) => <Badge variant={item.estado === 'activa' ? 'emerald' : 'red'}>{item.estado}</Badge> },
     { key: 'acciones', header: 'Acciones', render: (item) => <Button size="sm" variant="ghost" onClick={() => openDetail(item)}>{canEdit ? 'Gestionar' : 'Ver detalle'}</Button> },

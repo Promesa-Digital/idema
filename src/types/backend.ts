@@ -10,6 +10,8 @@ export interface UsuarioBackend {
   id: string
   nombre: string
   correo: string
+  correo_verificado?: boolean
+  correo_verificado_at?: string | null
   rol: UsuarioRol
   estado: 'activo' | 'inactivo'
 }
@@ -283,6 +285,7 @@ export interface CuentaAlumnoBackend {
   apellido_materno: string | null
   dni: string
   correo: string
+  correo_verificado_at: string | null
   telefono: string
   estado: CuentaAlumnoEstado
   consentimiento_datos: boolean
@@ -300,6 +303,8 @@ export interface AlumnoPerfil {
   apellido_materno: string | null
   dni: string
   correo: string
+  correo_verificado: boolean
+  correo_verificado_at: string | null
   telefono: string
   rol: 'alumno'
   estado: CuentaAlumnoEstado
@@ -381,7 +386,7 @@ export interface PortalAlumnoElectivo {
 }
 
 export interface PortalAlumnoHistorial {
-  perfil: Omit<AlumnoPerfil, 'rol'> & { created_at: string }
+  perfil: Omit<AlumnoPerfil, 'rol' | 'correo_verificado'> & { created_at: string }
   ordenes: PortalAlumnoOrden[]
   comprobantes: PortalAlumnoComprobante[]
   matriculas: PortalAlumnoMatricula[]

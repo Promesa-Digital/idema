@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { FiDownload } from 'react-icons/fi'
+import AlumnoPortalNav from '@/components/alumno/AlumnoPortalNav'
+import type { AlumnoPortalTab } from '@/components/alumno/alumnoPortalTabs'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Modal from '@/components/ui/Modal'
 import { useAlumnoAuth } from '@/context/AlumnoAuthContextType'
 import { ApiError } from '@/services/apiClient'
+import { reenviarVerificacionCorreo } from '@/services/authApi'
 import {
   actualizarConsentimientoAlumno,
   actualizarPasswordAlumno,
@@ -14,17 +18,7 @@ import {
   darDeBajaMiCuenta,
   obtenerHistorialAlumno,
 } from '@/services/alumnoApi'
-import type { AlumnoPerfilUpdate, PortalAlumnoHistorial } from '@/types/backend'
-
-type Tab = 'resumen' | 'matriculas' | 'pagos' | 'comprobantes' | 'perfil'
-
-const TABS: Array<{ id: Tab; label: string }> = [
-  { id: 'resumen', label: 'Resumen' },
-  { id: 'matriculas', label: 'Matrículas y electivos' },
-  { id: 'pagos', label: 'Pagos' },
-  { id: 'comprobantes', label: 'Comprobantes' },
-  { id: 'perfil', label: 'Perfil y seguridad' },
-]
+import type { AlumnoPerfilUpdate, PortalAlumnoComprobante, PortalAlumnoHistorial } from '@/types/backend'
 
 const DATE_FORMATTER = new Intl.DateTimeFormat('es-PE', { dateStyle: 'medium' })
 const CURRENCY_FORMATTER = new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' })
@@ -38,6 +32,24 @@ function formatDate(value: string | null): string {
 function formatCurrency(value: string): string {
   const amount = Number(value)
   return Number.isFinite(amount) ? CURRENCY_FORMATTER.format(amount) : `S/ ${value}`
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character] ?? character)
+}
+
+function downloadReceipt(receipt: PortalAlumnoComprobante) {
+  const number = receipt.numero ?? 'sin-numero'
+  const detail = receipt.razon_social
+    ? `<p><strong>Razón social:</strong> ${escapeHtml(receipt.razon_social)}</p><p><strong>RUC:</strong> ${escapeHtml(receipt.ruc ?? '')}</p>`
+    : ''
+  const document = `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Constancia ${escapeHtml(number)}</title><style>body{font-family:Arial,sans-serif;color:#10323f;max-width:720px;margin:48px auto;padding:24px}header{border-bottom:3px solid #00aff0;padding-bottom:20px;margin-bottom:24px}h1{margin:0}p{line-height:1.6}.notice{margin-top:32px;padding:16px;background:#f5f5f5;border-radius:8px;color:#475569}</style></head><body><header><strong>IDEMA</strong><h1>Constancia informativa de comprobante</h1></header><p><strong>Tipo:</strong> ${escapeHtml(receipt.tipo)}</p><p><strong>Número:</strong> ${escapeHtml(number)}</p><p><strong>Pagador:</strong> ${escapeHtml(receipt.nombre_pagador)}</p>${detail}<p><strong>Fecha de emisión:</strong> ${escapeHtml(formatDate(receipt.fecha_emision))}</p><p><strong>Estado:</strong> ${escapeHtml(receipt.estado)}</p><p><strong>Orden relacionada:</strong> ${escapeHtml(receipt.orden_id)}</p><p class="notice">Esta constancia es informativa y no reemplaza la representación electrónica emitida por SUNAT.</p></body></html>`
+  const url = URL.createObjectURL(new Blob([document], { type: 'text/html;charset=utf-8' }))
+  const anchor = window.document.createElement('a')
+  anchor.href = url
+  anchor.download = `constancia-${receipt.tipo}-${number}.html`
+  anchor.click()
+  URL.revokeObjectURL(url)
 }
 
 function messageFrom(error: unknown, fallback: string): string {
@@ -70,7 +82,7 @@ function SummaryCard({ label, value }: { label: string; value: number }) {
 
 export default function MiCuentaPage() {
   const { alumno, token, logout, refreshAlumno } = useAlumnoAuth()
-  const [tab, setTab] = useState<Tab>('resumen')
+  const [tab, setTab] = useState<AlumnoPortalTab>('resumen')
   const [historial, setHistorial] = useState<PortalAlumnoHistorial | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
@@ -182,6 +194,21 @@ export default function MiCuentaPage() {
     }
   }
 
+  const handleResendVerification = async () => {
+    if (!token) return
+    setIsSaving(true)
+    setActionError('')
+    setFeedback('')
+    try {
+      const response = await reenviarVerificacionCorreo(token)
+      setFeedback(response.mensaje)
+    } catch (error) {
+      setActionError(messageFrom(error, 'No se pudo enviar el correo de verificación.'))
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
   const handleDeactivate = async () => {
     if (!token) return
     setIsSaving(true)
@@ -211,16 +238,10 @@ export default function MiCuentaPage() {
             <Button variant="ghost" className="text-white hover:bg-white/10" onClick={logout}>Cerrar sesión</Button>
           </div>
         </div>
-        <nav aria-label="Secciones de mi cuenta" className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 pb-4 sm:px-6 lg:px-8">
-          {TABS.map((item) => (
-            <button key={item.id} type="button" onClick={() => setTab(item.id)} className={`whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold transition ${tab === item.id ? 'bg-white text-dark' : 'text-white/75 hover:bg-white/10 hover:text-white'}`}>
-              {item.label}
-            </button>
-          ))}
-        </nav>
+        <AlumnoPortalNav activeTab={tab} onChange={setTab} />
       </header>
 
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 pb-24 sm:px-6 sm:pb-8 lg:px-8">
         {feedback && <div role="status" className="mb-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{feedback}</div>}
         {actionError && <div role="alert" className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{actionError}</div>}
         {isLoading ? (
@@ -284,7 +305,7 @@ export default function MiCuentaPage() {
               <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                 <h2 className="mb-5 text-xl font-bold text-dark">Mis comprobantes</h2>
                 <div className="space-y-4">
-                  {historial.comprobantes.map((item) => <article key={item.id} className="flex flex-col gap-3 rounded-lg border border-slate-200 p-4 sm:flex-row sm:items-center sm:justify-between"><div><h3 className="font-bold capitalize text-dark">{item.tipo} {item.numero ?? 'pendiente de numeración'}</h3><p className="mt-1 text-sm text-slate-500">{item.nombre_pagador} · {formatDate(item.fecha_emision)}</p>{item.razon_social && <p className="mt-1 text-sm text-slate-500">{item.razon_social} · RUC {item.ruc}</p>}</div><Badge variant={item.estado === 'emitido' ? 'emerald' : item.estado === 'anulado' ? 'red' : 'amber'}>{item.estado}</Badge></article>)}
+                  {historial.comprobantes.map((item) => <article key={item.id} className="flex flex-col gap-4 rounded-lg border border-slate-200 p-4 sm:flex-row sm:items-center sm:justify-between"><div><h3 className="font-bold capitalize text-dark">{item.tipo} {item.numero ?? 'pendiente de numeración'}</h3><p className="mt-1 text-sm text-slate-500">{item.nombre_pagador} · {formatDate(item.fecha_emision)}</p>{item.razon_social && <p className="mt-1 text-sm text-slate-500">{item.razon_social} · RUC {item.ruc}</p>}</div><div className="flex flex-wrap items-center gap-2"><Badge variant={item.estado === 'emitido' ? 'emerald' : item.estado === 'anulado' ? 'red' : 'amber'}>{item.estado}</Badge><Button size="sm" variant="ghost" onClick={() => downloadReceipt(item)}><FiDownload aria-hidden="true" /> Descargar constancia</Button></div></article>)}
                   {historial.comprobantes.length === 0 && <EmptyState>Aún no tienes comprobantes emitidos.</EmptyState>}
                 </div>
               </section>
@@ -316,6 +337,11 @@ export default function MiCuentaPage() {
                   </section>
                   <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                     <h2 className="text-xl font-bold text-dark">Privacidad y cuenta</h2>
+                    <div className={`mt-4 rounded-xl border p-4 ${alumno?.correo_verificado ? 'border-emerald-200 bg-emerald-50' : 'border-amber-200 bg-amber-50'}`}>
+                      <p className={`font-bold ${alumno?.correo_verificado ? 'text-emerald-800' : 'text-amber-900'}`}>{alumno?.correo_verificado ? 'Correo verificado' : 'Correo pendiente de verificación'}</p>
+                      <p className="mt-1 text-sm text-slate-600">{alumno?.correo_verificado ? `Verificado el ${formatDate(alumno.correo_verificado_at)}` : 'Verifica tu correo para reforzar la seguridad de tu cuenta.'}</p>
+                      {!alumno?.correo_verificado && <Button size="sm" variant="ghost" className="mt-3" onClick={() => void handleResendVerification()} isLoading={isSaving}>Reenviar verificación</Button>}
+                    </div>
                     <p className="mt-2 text-sm text-slate-600">Consentimiento de datos: <strong>{alumno?.consentimiento_datos ? 'vigente' : 'revocado'}</strong>{alumno?.fecha_consentimiento ? ` desde ${formatDate(alumno.fecha_consentimiento)}` : ''}.</p>
                     <div className="mt-5 flex flex-wrap gap-3"><Button variant="secondary" onClick={() => void handleConsent()} isLoading={isSaving}>{alumno?.consentimiento_datos ? 'Revocar consentimiento' : 'Aceptar consentimiento'}</Button><Button variant="danger" onClick={() => setShowDeactivate(true)}>Dar de baja mi cuenta</Button></div>
                   </section>

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import SystemStatusBadge from '@/components/ui/SystemStatusBadge'
 import { useAuth } from '@/context/AuthContextType'
 import { ApiError } from '@/services/apiClient'
 
@@ -19,10 +20,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const destination = (location.state as LoginLocationState | null)?.from ?? '/admin/programas'
+  const destination = (location.state as LoginLocationState | null)?.from ?? '/admin'
 
   useEffect(() => {
-    if (!isLoading && user) navigate('/admin/programas', { replace: true })
+    if (!isLoading && user) navigate('/admin', { replace: true })
   }, [isLoading, navigate, user])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -56,6 +57,7 @@ export default function LoginPage() {
           <p className="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-primary">IDEMA</p>
           <h1 className="text-3xl font-bold text-dark">Panel administrativo</h1>
           <p className="mt-2 text-slate-600">Ingresa con tu cuenta institucional.</p>
+          <div className="mt-4 flex justify-center"><SystemStatusBadge /></div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -80,6 +82,7 @@ export default function LoginPage() {
             required
             disabled={isSubmitting}
           />
+          <div className="-mt-2 text-right"><Link to="/recuperar-password" className="text-sm font-semibold text-primary hover:underline">¿Olvidaste tu contraseña?</Link></div>
 
           {error && (
             <div role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">

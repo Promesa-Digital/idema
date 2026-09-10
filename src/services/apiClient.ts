@@ -1,6 +1,6 @@
 export const API_TOKEN_STORAGE_KEY = 'idema_admin_token'
 
-const API_BASE_URL = (
+export const API_BASE_URL = (
   (import.meta.env.VITE_API_URL as string | undefined) || 'http://localhost:8000'
 ).replace(/\/$/, '')
 
@@ -71,7 +71,10 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
       body: body === undefined ? undefined : JSON.stringify(body),
     })
   } catch {
-    throw new ApiError('No se pudo conectar con el servidor. Inténtalo nuevamente.', 0, null)
+    const message = navigator.onLine
+      ? 'El backend no está disponible. Verifica que el servidor esté encendido.'
+      : 'No tienes conexión a internet. Revisa tu red e inténtalo nuevamente.'
+    throw new ApiError(message, 0, null)
   }
 
   const contentType = response.headers.get('content-type') ?? ''

@@ -44,13 +44,19 @@ No existe una suite automatizada de frontend. `npm run build` ejecuta TypeScript
 | Sitio institucional | `/` |
 | Oferta educativa | `/programas-de-estudio` |
 | Inicio administrativo | `/admin/login` |
+| Dashboard administrativo | `/admin` |
 | Cuenta del alumno | `/alumno/login` |
 | Registro del alumno | `/alumno/registro` |
 | Portal privado del alumno | `/alumno/mi-cuenta` |
 | Administración de alumnos | `/admin/alumnos` |
 | Solicitud de baja | `/eliminar-cuenta` |
+| Recuperación de contraseña | `/recuperar-password` |
+| Restablecimiento de contraseña | `/restablecer-password?token=...` |
+| Verificación de correo | `/verificar-correo?token=...` |
 
 El panel administrativo incluye Programas, Popups, Combos, Descuentos, Órdenes, Comprobantes, Leads, Usuarios, Conceptos de Cobro, Matrículas, Electivos, Reportes, Conciliación y Cuentas de Alumnos.
+
+El dashboard y el menú lateral muestran únicamente los módulos autorizados para el rol autenticado. Las tablas incluyen vista móvil y paginación. El encabezado informa si el backend o PostgreSQL no están disponibles.
 
 ## Cuentas de demostración
 
@@ -75,6 +81,8 @@ El portal del alumno usa una sesión separada de la sesión administrativa. Perm
 - consultar órdenes, pagos, comprobantes, matrículas y electivos propios;
 - editar nombres, apellidos, DNI, correo y teléfono;
 - cambiar la contraseña;
+- verificar el correo y solicitar un nuevo enlace;
+- descargar una constancia informativa de cada comprobante;
 - revocar o volver a otorgar el consentimiento de datos personales;
 - dar de baja la cuenta.
 
@@ -93,6 +101,8 @@ Una cuenta inactiva pierde acceso a todos los módulos del alumno. Si la cuenta 
 - Tokens visuales y fuentes en `src/index.css` mediante `@theme` de Tailwind v4.
 
 El token administrativo se guarda como `idema_admin_token` y el del alumno como `idema_alumno_token`, evitando mezclar ambos tipos de sesión.
+
+La recuperación de contraseña funciona para cuentas administrativas y de alumnos sin revelar si el correo solicitado existe. Los enlaces vencen en 30 minutos y dejan de funcionar después del primer cambio de contraseña.
 
 ## Integraciones
 

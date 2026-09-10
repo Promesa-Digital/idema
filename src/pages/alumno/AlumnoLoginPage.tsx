@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import SystemStatusBadge from '@/components/ui/SystemStatusBadge'
 import { useAlumnoAuth } from '@/context/AlumnoAuthContextType'
 import { ApiError } from '@/services/apiClient'
 
@@ -57,17 +58,19 @@ export default function AlumnoLoginPage() {
           </Link>
           <h1 className="mt-2 text-3xl font-bold text-dark">Mi cuenta de alumno</h1>
           <p className="mt-2 text-slate-600">Consulta tus pagos, matrículas y electivos.</p>
+          <div className="mt-4 flex justify-center"><SystemStatusBadge /></div>
         </div>
 
         {state?.registered && (
           <div role="status" className="mb-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-            Tu cuenta fue creada. Ya puedes iniciar sesión.
+            Tu cuenta fue creada. Revisa tu correo para verificarla y luego inicia sesión.
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <Input label="Correo electrónico" type="email" autoComplete="username" value={correo} onChange={(event) => setCorreo(event.target.value)} required disabled={isSubmitting} />
           <Input label="Contraseña" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required disabled={isSubmitting} />
+          <div className="-mt-2 text-right"><Link to="/recuperar-password" className="text-sm font-semibold text-primary hover:underline">¿Olvidaste tu contraseña?</Link></div>
           {error && <div role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
           <Button type="submit" size="lg" fullWidth isLoading={isSubmitting}>Iniciar sesión</Button>
         </form>

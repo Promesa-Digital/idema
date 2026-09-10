@@ -1,114 +1,39 @@
 import { NavLink } from 'react-router-dom'
 import type { UsuarioRol } from '@/types/backend'
+import { getAvailableAdminModules } from './adminModules'
 
 interface AdminModuleNavProps {
   role?: UsuarioRol
+  onNavigate?: () => void
 }
 
-interface AdminModule {
-  label: string
-  path: string
-  allowedRoles: UsuarioRol[]
-}
-
-const ADMIN_MODULES: AdminModule[] = [
-  {
-    label: 'Programas',
-    path: '/admin/programas',
-    allowedRoles: ['academico', 'administracion', 'admin_sistema'],
-  },
-  {
-    label: 'Popups',
-    path: '/admin/popups',
-    allowedRoles: ['marketing', 'director_marketing', 'admin_sistema'],
-  },
-  {
-    label: 'Combos',
-    path: '/admin/combos',
-    allowedRoles: ['ventas', 'marketing', 'admin_sistema'],
-  },
-  {
-    label: 'Descuentos',
-    path: '/admin/descuentos',
-    allowedRoles: ['ventas', 'admin_sistema'],
-  },
-  {
-    label: 'Órdenes',
-    path: '/admin/ordenes',
-    allowedRoles: ['administracion', 'admin_sistema'],
-  },
-  {
-    label: 'Comprobantes',
-    path: '/admin/comprobantes',
-    allowedRoles: ['administracion', 'admin_sistema'],
-  },
-  {
-    label: 'Leads',
-    path: '/admin/leads',
-    allowedRoles: [
-      'marketing',
-      'director_marketing',
-      'ventas',
-      'administracion',
-      'admin_sistema',
-    ],
-  },
-  {
-    label: 'Usuarios',
-    path: '/admin/usuarios',
-    allowedRoles: ['admin_sistema'],
-  },
-  {
-    label: 'Conceptos de Cobro',
-    path: '/admin/conceptos-cobro',
-    allowedRoles: ['academico', 'administracion', 'ventas', 'admin_sistema'],
-  },
-  {
-    label: 'Matrículas',
-    path: '/admin/matriculas',
-    allowedRoles: ['academico', 'administracion', 'admin_sistema'],
-  },
-  {
-    label: 'Electivos',
-    path: '/admin/electivos',
-    allowedRoles: ['academico', 'administracion', 'admin_sistema'],
-  },
-  {
-    label: 'Reportes',
-    path: '/admin/reportes',
-    allowedRoles: ['marketing', 'director_marketing', 'administracion', 'admin_sistema'],
-  },
-  {
-    label: 'Conciliación',
-    path: '/admin/conciliaciones',
-    allowedRoles: ['administracion', 'admin_sistema'],
-  },
-  {
-    label: 'Alumnos',
-    path: '/admin/alumnos',
-    allowedRoles: ['ventas', 'academico', 'administracion', 'admin_sistema'],
-  },
-]
-
-export default function AdminModuleNav({ role }: AdminModuleNavProps) {
-  const availableModules = role
-    ? ADMIN_MODULES.filter((module) => module.allowedRoles.includes(role))
-    : []
+export default function AdminModuleNav({ role, onNavigate }: AdminModuleNavProps) {
+  const availableModules = getAvailableAdminModules(role)
 
   if (availableModules.length === 0) return null
 
   const linkClasses = ({ isActive }: { isActive: boolean }) =>
-    `rounded-md px-3 py-1.5 text-sm font-semibold transition ${
-      isActive ? 'bg-white text-dark' : 'text-white/80 hover:bg-white/10 hover:text-white'
+    `group flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
+      isActive ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-white/70 hover:bg-white/10 hover:text-white'
     }`
 
   return (
-    <nav aria-label="Módulos de administración" className="mt-3 flex flex-wrap gap-2">
-      {availableModules.map((module) => (
-        <NavLink key={module.path} to={module.path} className={linkClasses}>
-          {module.label}
-        </NavLink>
-      ))}
+    <nav aria-label="Módulos de administración" className="space-y-1.5">
+      {availableModules.map((module) => {
+        const Icon = module.icon
+        return (
+          <NavLink
+            key={module.path}
+            to={module.path}
+            end={module.path === '/admin'}
+            className={linkClasses}
+            onClick={onNavigate}
+          >
+            <Icon aria-hidden="true" className="h-5 w-5 shrink-0" />
+            <span>{module.shortLabel}</span>
+          </NavLink>
+        )
+      })}
     </nav>
   )
 }
