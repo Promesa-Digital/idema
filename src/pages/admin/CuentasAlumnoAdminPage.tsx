@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
-import AdminModuleNav from '@/components/admin/AdminModuleNav'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
@@ -15,12 +14,7 @@ import {
   darDeBajaCuentaAlumno,
   listarCuentasAlumno,
 } from '@/services/cuentasAlumnoApi'
-import type { AlumnoPerfilUpdate, CuentaAlumnoBackend, CuentaAlumnoEstado, UsuarioRol } from '@/types/backend'
-
-const ROL_LABELS: Record<UsuarioRol, string> = {
-  marketing: 'Marketing', director_marketing: 'Director de marketing', ventas: 'Ventas',
-  academico: 'Académico', administracion: 'Administración', admin_sistema: 'Administrador del sistema',
-}
+import type { AlumnoPerfilUpdate, CuentaAlumnoBackend, CuentaAlumnoEstado } from '@/types/backend'
 
 function fullName(item: CuentaAlumnoBackend): string {
   return `${item.nombres} ${item.apellido_paterno} ${item.apellido_materno ?? ''}`.trim()
@@ -121,7 +115,6 @@ export default function CuentasAlumnoAdminPage() {
 
   return (
     <main className="min-h-screen bg-surface">
-      <header className="bg-dark text-white shadow-lg"><div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8"><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">IDEMA Admin</p><h1 className="mt-1 text-2xl font-bold sm:text-3xl">Cuentas de Alumnos</h1><AdminModuleNav role={user?.rol} /></div><div className="flex items-center gap-3"><div className="text-sm sm:text-right"><p className="font-semibold">{user?.nombre}</p><p className="text-white/70">{user ? ROL_LABELS[user.rol] : ''}</p></div><Button variant="ghost" className="text-white hover:bg-white/10" onClick={logout}>Cerrar sesión</Button></div></div></header>
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-6 grid gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-[1fr_14rem]"><Input label="Buscar alumno" placeholder="Nombre, DNI o correo" value={search} onChange={(event) => setSearch(event.target.value)} /><Select label="Estado" value={estado} onChange={(event) => setEstado(event.target.value as CuentaAlumnoEstado | '')}><option value="">Todos</option><option value="activa">Activas</option><option value="inactiva">Inactivas</option></Select></div>
         {feedback && <div role="status" className="mb-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{feedback}</div>}

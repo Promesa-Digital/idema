@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
-import AdminModuleNav from '@/components/admin/AdminModuleNav'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
@@ -24,7 +23,6 @@ import type {
   ComboCreate,
   ComboEstado,
   ProgramaBackend,
-  UsuarioRol,
 } from '@/types/backend'
 
 interface ComboFormState {
@@ -41,15 +39,6 @@ const EMPTY_FORM: ComboFormState = {
   vigencia_inicio: '',
   vigencia_fin: '',
   programa_ids: [],
-}
-
-const ROL_LABELS: Record<UsuarioRol, string> = {
-  marketing: 'Marketing',
-  director_marketing: 'Director de marketing',
-  ventas: 'Ventas',
-  academico: 'Académico',
-  administracion: 'Administración',
-  admin_sistema: 'Administrador del sistema',
 }
 
 const ESTADO_LABELS: Record<ComboEstado, string> = {
@@ -377,25 +366,6 @@ export default function CombosAdminPage() {
 
   return (
     <main className="min-h-screen bg-surface">
-      <header className="border-b border-white/10 bg-dark text-white shadow-lg">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">IDEMA Admin</p>
-            <h1 className="mt-1 text-2xl font-bold sm:text-3xl">Gestión de Combos/Paquetes</h1>
-            <AdminModuleNav role={user?.rol} />
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="text-sm sm:text-right">
-              <p className="font-semibold">{user?.nombre}</p>
-              <p className="text-white/70">{user ? ROL_LABELS[user.rol] : ''}</p>
-            </div>
-            <Button variant="ghost" className="text-white hover:bg-white/10" onClick={logout}>
-              Cerrar sesión
-            </Button>
-          </div>
-        </div>
-      </header>
-
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-6 flex justify-end">
           {canManage && (

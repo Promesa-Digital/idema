@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
-import AdminModuleNav from '@/components/admin/AdminModuleNav'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Modal from '@/components/ui/Modal'
@@ -94,7 +93,7 @@ function EstadoBadge({ estado }: { estado: LeadEstado }) {
 }
 
 export default function LeadsAdminPage() {
-  const { user, logout } = useAuth()
+  const { logout } = useAuth()
   const [leads, setLeads] = useState<LeadBackend[]>([])
   const [estadoFiltro, setEstadoFiltro] = useState<LeadEstado | ''>('')
   const [isLoading, setIsLoading] = useState(true)
@@ -401,25 +400,6 @@ export default function LeadsAdminPage() {
 
   return (
     <main className="min-h-screen bg-surface">
-      <header className="border-b border-white/10 bg-dark text-white shadow-lg">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">IDEMA Admin</p>
-            <h1 className="mt-1 text-2xl font-bold sm:text-3xl">Gestión de Leads</h1>
-            <AdminModuleNav role={user?.rol} />
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="text-sm sm:text-right">
-              <p className="font-semibold">{user?.nombre}</p>
-              <p className="text-white/70">{user ? ROL_LABELS[user.rol] : ''}</p>
-            </div>
-            <Button variant="ghost" className="text-white hover:bg-white/10" onClick={logout}>
-              Cerrar sesión
-            </Button>
-          </div>
-        </div>
-      </header>
-
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
