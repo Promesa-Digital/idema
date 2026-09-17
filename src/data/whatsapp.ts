@@ -1,10 +1,8 @@
 import type { WhatsAppRep } from '../types'
 
 export const whatsappReps: WhatsAppRep[] = [
-  { name: 'GERALDINE', phone: '51961768262', probability: 0.25 },
-  { name: 'GIMENA', phone: '51997185822', probability: 0.25 },
-  { name: 'RODOLFO', phone: '51969360623', probability: 0.25 },
-  { name: 'TATIANA', phone: '51991317346', probability: 0.25 },
+  { name: 'RODOLFO', phone: '51969360623', probability: 0.5 },
+  { name: 'TATIANA', phone: '51961768262', probability: 0.5 },
 ]
 
 const ASSIGNED_REP_STORAGE_KEY = 'idema_assigned_whatsapp_rep'
@@ -49,7 +47,7 @@ export function getAssignedWhatsAppRep(): WhatsAppRep {
 }
 
 // Orden explícito de rotación para auxiliares/especializaciones: cada programa consecutivo
-// recibe un vendedor distinto (solo se repite al dar la vuelta cada 4 programas).
+// recibe un vendedor distinto (solo se repite al dar la vuelta cada 2 programas).
 const PROGRAM_ROTATION_ORDER = [
   'auxiliares-veterinaria',
   'auxiliares-farmacia',
