@@ -4,7 +4,8 @@ import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Modal from '@/components/ui/Modal'
-import Select from '@/components/ui/Select'
+import SearchSelect from '@/components/ui/SearchSelect'
+import type { SearchSelectOption } from '@/components/ui/SearchSelect'
 import Table from '@/components/ui/Table'
 import type { TableColumn } from '@/components/ui/Table'
 import Textarea from '@/components/ui/Textarea'
@@ -23,6 +24,7 @@ import type {
   ComboCreate,
   ComboEstado,
   ProgramaBackend,
+  ProgramaTipo,
 } from '@/types/backend'
 
 interface ComboFormState {
@@ -70,6 +72,13 @@ function formatDate(value: string): string {
   return year && month && day ? `${day}/${month}/${year}` : value
 }
 
+const TIPO_PROGRAMA_LABELS: Record<ProgramaTipo, string> = {
+  carrera: 'Carreras',
+  auxiliar: 'Auxiliares',
+  especializacion: 'Especializaciones',
+  curso: 'Cursos',
+}
+
 export default function CombosAdminPage() {
   const { user, logout } = useAuth()
   const [combos, setCombos] = useState<ComboBackend[]>([])
@@ -82,7 +91,6 @@ export default function CombosAdminPage() {
   const [editingCombo, setEditingCombo] = useState<ComboBackend | null>(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [form, setForm] = useState<ComboFormState>({ ...EMPTY_FORM })
-  const [programaToAdd, setProgramaToAdd] = useState('')
   const [formError, setFormError] = useState('')
   const [isSaving, setIsSaving] = useState(false)
   const [comboToDelete, setComboToDelete] = useState<ComboBackend | null>(null)
@@ -120,8 +128,17 @@ export default function CombosAdminPage() {
     [programas],
   )
 
-  const availableProgramas = useMemo(
-    () => programas.filter((programa) => !form.programa_ids.includes(programa.id)),
+  const availableProgramas = useMemo<SearchSelectOption[]>(
+    () =>
+      programas
+        .filter((programa) => !form.programa_ids.includes(programa.id))
+        .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
+        .map((programa) => ({
+          value: programa.id,
+          label: programa.nombre,
+          hint: programa.codigo,
+          group: TIPO_PROGRAMA_LABELS[programa.tipo],
+        })),
     [form.programa_ids, programas],
   )
 
@@ -158,14 +175,12 @@ export default function CombosAdminPage() {
     if (isSaving) return
     setIsFormOpen(false)
     setEditingCombo(null)
-    setProgramaToAdd('')
     setFormError('')
   }, [isSaving])
 
   const openCreateModal = useCallback(() => {
     setEditingCombo(null)
     setForm({ ...EMPTY_FORM, programa_ids: [] })
-    setProgramaToAdd('')
     setFormError('')
     setIsFormOpen(true)
   }, [])
@@ -173,7 +188,6 @@ export default function CombosAdminPage() {
   const openEditModal = useCallback((combo: ComboBackend) => {
     setEditingCombo(combo)
     setForm(toFormState(combo))
-    setProgramaToAdd('')
     setFormError('')
     setIsFormOpen(true)
   }, [])
@@ -189,13 +203,12 @@ export default function CombosAdminPage() {
     setDeleteError('')
   }, [isDeleting])
 
-  const addPrograma = () => {
-    if (!programaToAdd || form.programa_ids.includes(programaToAdd)) return
+  const addPrograma = (programaId: string) => {
+    if (!programaId || form.programa_ids.includes(programaId)) return
     setForm((current) => ({
       ...current,
-      programa_ids: [...current.programa_ids, programaToAdd],
+      programa_ids: [...current.programa_ids, programaId],
     }))
-    setProgramaToAdd('')
     setFormError('')
   }
 
@@ -494,33 +507,22 @@ export default function CombosAdminPage() {
             <legend className="mb-1.5 text-sm font-semibold text-dark">
               Programas incluidos <span className="text-red-600">*</span>
             </legend>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-              <Select
-                label="Agregar programa"
-                value={programaToAdd}
-                onChange={(event) => setProgramaToAdd(event.target.value)}
-                containerClassName="flex-1"
-                disabled={isSaving || availableProgramas.length === 0}
-              >
-                <option value="">
-                  {availableProgramas.length === 0
-                    ? 'No hay más programas disponibles'
-                    : 'Selecciona un programa'}
-                </option>
-                {availableProgramas.map((programa) => (
-                  <option key={programa.id} value={programa.id}>
-                    {programa.nombre}
-                  </option>
-                ))}
-              </Select>
-              <Button
-                variant="secondary"
-                onClick={addPrograma}
-                disabled={!programaToAdd || isSaving}
-              >
-                Agregar
-              </Button>
-            </div>
+            <SearchSelect
+              label="Agregar programa"
+              // El valor vuelve a vacío tras cada alta: este campo no "tiene" un programa,
+              // sirve para ir añadiendo uno tras otro sin volver a pulsar un botón.
+              value=""
+              onChange={addPrograma}
+              options={availableProgramas}
+              disabled={isSaving || availableProgramas.length === 0}
+              placeholder={
+                availableProgramas.length === 0
+                  ? 'Ya agregaste todos los programas'
+                  : 'Busca por nombre o código…'
+              }
+              emptyMessage="No hay más programas disponibles."
+              hint="Al elegir uno se agrega a la lista. Escribe para filtrar."
+            />
 
             <p className="mt-3 text-xs text-slate-500">
               Selecciona al menos 2 programas. El orden mostrado será el orden guardado en el combo.

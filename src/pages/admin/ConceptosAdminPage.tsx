@@ -4,11 +4,15 @@ import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Modal from '@/components/ui/Modal'
+import RowActions from '@/components/ui/RowActions'
+import SearchSelect from '@/components/ui/SearchSelect'
+import type { SearchSelectOption } from '@/components/ui/SearchSelect'
 import Select from '@/components/ui/Select'
 import Table from '@/components/ui/Table'
 import type { TableColumn } from '@/components/ui/Table'
 import Textarea from '@/components/ui/Textarea'
 import { useAuth } from '@/context/AuthContextType'
+import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/services/apiClient'
 import { listarCombosAdmin, listarCombosPublicos } from '@/services/combosApi'
 import {
@@ -27,6 +31,7 @@ import type {
   ConceptoCobroTipo,
   ConceptoCobroUpdate,
   ProgramaBackend,
+  ProgramaTipo,
 } from '@/types/backend'
 
 type DestinoTipo = 'programa' | 'combo'
@@ -62,6 +67,13 @@ const TIPO_LABELS: Record<ConceptoCobroTipo, string> = {
 const ESTADO_LABELS: Record<ConceptoCobroEstado, string> = {
   activo: 'Activo',
   inactivo: 'Inactivo',
+}
+
+const TIPO_PROGRAMA_LABELS: Record<ProgramaTipo, string> = {
+  carrera: 'Carreras',
+  auxiliar: 'Auxiliares',
+  especializacion: 'Especializaciones',
+  curso: 'Cursos',
 }
 
 const ESTADO_BADGE_VARIANTS = {
@@ -102,10 +114,9 @@ export default function ConceptosAdminPage() {
   const [combos, setCombos] = useState<ComboBackend[]>([])
   const [tipoFilter, setTipoFilter] = useState<ConceptoCobroTipo | ''>('')
   const [estadoFilter, setEstadoFilter] = useState<ConceptoCobroEstado | ''>('')
+  const [busqueda, setBusqueda] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
-  const [feedback, setFeedback] = useState('')
-  const [actionError, setActionError] = useState('')
   const [reloadKey, setReloadKey] = useState(0)
   const [editingConcepto, setEditingConcepto] = useState<ConceptoCobroBackend | null>(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -115,15 +126,11 @@ export default function ConceptosAdminPage() {
   const [conceptoToToggle, setConceptoToToggle] = useState<ConceptoCobroBackend | null>(null)
   const [toggleError, setToggleError] = useState('')
   const [isToggling, setIsToggling] = useState(false)
+  const { addToast } = useToast()
   const canManage = user?.rol === 'admin_sistema'
 
   useEffect(() => {
     let isActive = true
-
-    const filtros = {
-      ...(tipoFilter ? { tipo: tipoFilter } : {}),
-      ...(estadoFilter ? { estado: estadoFilter } : {}),
-    }
 
     // Programas y combos son solo para resolver el nombre del "Destino" en la tabla.
     // Los listados completos (/programas, /combos/admin) están restringidos a los roles
@@ -141,7 +148,9 @@ export default function ConceptosAdminPage() {
         throw error
       })
 
-    Promise.all([listarConceptos(filtros), cargarProgramas(), cargarCombos()])
+    // Se traen todos y se filtra en el navegador: cambiar de filtro dejaba la tabla
+    // en blanco con un "Cargando..." cada vez, y el volumen de conceptos no lo amerita.
+    Promise.all([listarConceptos(), cargarProgramas(), cargarCombos()])
       .then(([conceptoData, programaData, comboData]) => {
         if (!isActive) return
         setConceptos(conceptoData)
@@ -163,7 +172,7 @@ export default function ConceptosAdminPage() {
     return () => {
       isActive = false
     }
-  }, [estadoFilter, logout, reloadKey, tipoFilter])
+  }, [logout, reloadKey])
 
   const programaNames = useMemo(
     () => new Map(programas.map((programa) => [programa.id, programa.nombre])),
@@ -185,6 +194,23 @@ export default function ConceptosAdminPage() {
     [combos],
   )
 
+  const opcionesDestino = useMemo<SearchSelectOption[]>(
+    () =>
+      form.destinoTipo === 'programa'
+        ? programasOrdenados.map((programa) => ({
+            value: programa.id,
+            label: programa.nombre,
+            hint: programa.codigo,
+            group: TIPO_PROGRAMA_LABELS[programa.tipo],
+          }))
+        : combosOrdenados.map((combo) => ({
+            value: combo.id,
+            label: combo.nombre,
+            hint: `${combo.programa_ids.length} programa(s)`,
+          })),
+    [combosOrdenados, form.destinoTipo, programasOrdenados],
+  )
+
   const getDestinoNombre = useCallback(
     (concepto: ConceptoCobroBackend) => {
       if (concepto.programa_id) {
@@ -198,24 +224,54 @@ export default function ConceptosAdminPage() {
     [comboNames, programaNames],
   )
 
-  const syncConcepto = useCallback(
-    (updated: ConceptoCobroBackend) => {
-      setConceptos((current) => {
-        if (
-          (tipoFilter && updated.tipo !== tipoFilter) ||
-          (estadoFilter && updated.estado !== estadoFilter)
-        ) {
-          return current.filter((concepto) => concepto.id !== updated.id)
-        }
+  const conceptosFiltrados = useMemo(() => {
+    const termino = busqueda.trim().toLowerCase()
+    return conceptos.filter((concepto) => {
+      if (tipoFilter && concepto.tipo !== tipoFilter) return false
+      if (estadoFilter && concepto.estado !== estadoFilter) return false
+      if (!termino) return true
+      // El destino entra en la búsqueda porque es por donde el usuario lo recuerda:
+      // busca "enfermería", no "matrícula".
+      const texto = [
+        TIPO_LABELS[concepto.tipo],
+        getDestinoNombre(concepto),
+        concepto.descripcion ?? '',
+        concepto.modalidad ?? '',
+        concepto.monto,
+      ]
+        .join(' ')
+        .toLowerCase()
+      return texto.includes(termino)
+    })
+  }, [busqueda, conceptos, estadoFilter, getDestinoNombre, tipoFilter])
 
-        const exists = current.some((concepto) => concepto.id === updated.id)
-        return exists
-          ? current.map((concepto) => (concepto.id === updated.id ? updated : concepto))
-          : [updated, ...current]
-      })
-    },
-    [estadoFilter, tipoFilter],
-  )
+  const resumen = useMemo(() => {
+    const dePago = conceptos.filter((concepto) => concepto.tipo !== 'gratuito')
+    return {
+      total: conceptos.length,
+      activos: conceptos.filter((concepto) => concepto.estado === 'activo').length,
+      inactivos: conceptos.filter((concepto) => concepto.estado === 'inactivo').length,
+      // Un concepto de pago sin enlace no se puede cobrar: es el error que más duele.
+      sinEnlace: dePago.filter((concepto) => !concepto.enlace_pago).length,
+    }
+  }, [conceptos])
+
+  const hayFiltrosActivos = Boolean(busqueda || tipoFilter || estadoFilter)
+
+  const limpiarFiltros = useCallback(() => {
+    setBusqueda('')
+    setTipoFilter('')
+    setEstadoFilter('')
+  }, [])
+
+  const syncConcepto = useCallback((updated: ConceptoCobroBackend) => {
+    setConceptos((current) => {
+      const existe = current.some((concepto) => concepto.id === updated.id)
+      return existe
+        ? current.map((concepto) => (concepto.id === updated.id ? updated : concepto))
+        : [updated, ...current]
+    })
+  }, [])
 
   const closeFormModal = useCallback(() => {
     if (isSaving) return
@@ -254,6 +310,7 @@ export default function ConceptosAdminPage() {
       {
         key: 'tipo',
         header: 'Tipo',
+        sortValue: (concepto) => TIPO_LABELS[concepto.tipo],
         render: (concepto) => (
           <span className="font-semibold text-dark">{TIPO_LABELS[concepto.tipo]}</span>
         ),
@@ -261,16 +318,45 @@ export default function ConceptosAdminPage() {
       {
         key: 'monto',
         header: 'Monto',
-        render: (concepto) => <span className="whitespace-nowrap">{formatMonto(concepto.monto)}</span>,
+        // Por número y no por texto: como texto, S/ 100 iría antes que S/ 90.
+        sortValue: (concepto) => Number(concepto.monto),
+        render: (concepto) => (
+          <span className="whitespace-nowrap tabular-nums">{formatMonto(concepto.monto)}</span>
+        ),
       },
       {
         key: 'destino',
         header: 'Destino',
-        render: (concepto) => getDestinoNombre(concepto),
+        sortValue: (concepto) => getDestinoNombre(concepto),
+        render: (concepto) => (
+          <div className="min-w-0">
+            <p className="truncate font-semibold text-dark">{getDestinoNombre(concepto)}</p>
+            <p className="text-xs text-slate-500">
+              {concepto.programa_id ? 'Programa' : concepto.combo_id ? 'Combo' : 'Sin destino'}
+              {concepto.modalidad ? ` · ${concepto.modalidad}` : ''}
+            </p>
+          </div>
+        ),
+      },
+      {
+        key: 'cobro',
+        header: 'Cobro',
+        sortValue: (concepto) => (concepto.enlace_pago ? 1 : 0),
+        render: (concepto) =>
+          concepto.tipo === 'gratuito' ? (
+            <span className="text-sm text-slate-400">No aplica</span>
+          ) : concepto.enlace_pago ? (
+            <Badge variant="emerald">Con enlace</Badge>
+          ) : (
+            // Un concepto de pago sin enlace no se puede cobrar: hay que verlo en la tabla,
+            // no descubrirlo cuando el alumno intenta pagar.
+            <Badge variant="amber">Sin enlace</Badge>
+          ),
       },
       {
         key: 'estado',
         header: 'Estado',
+        sortValue: (concepto) => ESTADO_LABELS[concepto.estado],
         render: (concepto) => (
           <Badge variant={ESTADO_BADGE_VARIANTS[concepto.estado]}>
             {ESTADO_LABELS[concepto.estado]}
@@ -282,20 +368,20 @@ export default function ConceptosAdminPage() {
     if (canManage) {
       baseColumns.push({
         key: 'acciones',
-        header: 'Acciones',
+        header: '',
+        headerClassName: 'w-12',
         render: (concepto) => (
-          <div className="flex min-w-max flex-wrap items-center gap-2">
-            <Button size="sm" variant="ghost" onClick={() => openEditModal(concepto)}>
-              Editar
-            </Button>
-            <Button
-              size="sm"
-              variant={concepto.estado === 'activo' ? 'danger' : 'primary'}
-              onClick={() => openToggleModal(concepto)}
-            >
-              {concepto.estado === 'activo' ? 'Desactivar' : 'Activar'}
-            </Button>
-          </div>
+          <RowActions
+            etiquetaAccesible={`Acciones de ${TIPO_LABELS[concepto.tipo]} en ${getDestinoNombre(concepto)}`}
+            acciones={[
+              { etiqueta: 'Editar', onSelect: () => openEditModal(concepto) },
+              {
+                etiqueta: concepto.estado === 'activo' ? 'Desactivar' : 'Activar',
+                onSelect: () => openToggleModal(concepto),
+                destructiva: concepto.estado === 'activo',
+              },
+            ]}
+          />
         ),
       })
     }
@@ -306,8 +392,6 @@ export default function ConceptosAdminPage() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setFormError('')
-    setFeedback('')
-    setActionError('')
 
     const montoValue = form.monto.trim()
     const monto = Number(montoValue)
@@ -368,7 +452,7 @@ export default function ConceptosAdminPage() {
         }
 
         if (Object.keys(payload).length === 0) {
-          setFeedback('No se realizaron cambios en el concepto de cobro.')
+          addToast('info', 'Sin cambios', 'No modificaste ningún campo del concepto.')
           setIsFormOpen(false)
           setEditingConcepto(null)
           return
@@ -390,10 +474,10 @@ export default function ConceptosAdminPage() {
       }
 
       syncConcepto(saved)
-      setFeedback(
-        editingConcepto
-          ? `El concepto de ${TIPO_LABELS[saved.tipo]} se actualizó correctamente.`
-          : `El concepto de ${TIPO_LABELS[saved.tipo]} se creó correctamente.`,
+      addToast(
+        'success',
+        editingConcepto ? 'Concepto actualizado' : 'Concepto creado',
+        `${TIPO_LABELS[saved.tipo]} · ${getDestinoNombre(saved)}`,
       )
       setIsFormOpen(false)
       setEditingConcepto(null)
@@ -411,8 +495,6 @@ export default function ConceptosAdminPage() {
   const handleToggle = async () => {
     if (!conceptoToToggle) return
     setToggleError('')
-    setFeedback('')
-    setActionError('')
     setIsToggling(true)
 
     const shouldActivate = conceptoToToggle.estado === 'inactivo'
@@ -423,10 +505,10 @@ export default function ConceptosAdminPage() {
         : await desactivarConcepto(conceptoToToggle.id)
 
       syncConcepto(updated)
-      setFeedback(
-        `El concepto de ${TIPO_LABELS[updated.tipo]} fue ${
-          shouldActivate ? 'activado' : 'desactivado'
-        } correctamente.`,
+      addToast(
+        'success',
+        shouldActivate ? 'Concepto activado' : 'Concepto desactivado',
+        `${TIPO_LABELS[updated.tipo]} · ${getDestinoNombre(updated)}`,
       )
       setConceptoToToggle(null)
     } catch (error) {
@@ -458,16 +540,52 @@ export default function ConceptosAdminPage() {
   return (
     <main className="min-h-screen bg-surface">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {!isLoading && !loadError && (
+          <dl className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+            {[
+              { etiqueta: 'Total', valor: resumen.total, destacado: true },
+              { etiqueta: 'Activos', valor: resumen.activos },
+              { etiqueta: 'Inactivos', valor: resumen.inactivos },
+              {
+                etiqueta: 'Sin enlace de pago',
+                valor: resumen.sinEnlace,
+                alerta: resumen.sinEnlace > 0,
+              },
+            ].map((dato) => (
+              <div
+                key={dato.etiqueta}
+                className={`rounded-xl border bg-white px-4 py-3 ${
+                  dato.alerta ? 'border-amber-200 bg-amber-50/50' : 'border-slate-200'
+                }`}
+              >
+                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  {dato.etiqueta}
+                </dt>
+                <dd
+                  className={`mt-1 text-2xl font-bold ${
+                    dato.alerta ? 'text-amber-700' : dato.destacado ? 'text-primary' : 'text-dark'
+                  }`}
+                >
+                  {dato.valor}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
+
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div className="grid w-full gap-4 sm:grid-cols-2 lg:max-w-2xl">
+          <div className="grid w-full gap-4 sm:grid-cols-3 lg:max-w-3xl">
+            <Input
+              label="Buscar"
+              type="search"
+              value={busqueda}
+              onChange={(event) => setBusqueda(event.target.value)}
+              placeholder="Programa, combo, tipo o monto"
+            />
             <Select
               label="Filtrar por tipo"
               value={tipoFilter}
-              onChange={(event) => {
-                setIsLoading(true)
-                setLoadError('')
-                setTipoFilter(event.target.value as ConceptoCobroTipo | '')
-              }}
+              onChange={(event) => setTipoFilter(event.target.value as ConceptoCobroTipo | '')}
             >
               <option value="">Todos los tipos</option>
               <option value="matricula">Matrícula</option>
@@ -479,11 +597,7 @@ export default function ConceptosAdminPage() {
             <Select
               label="Filtrar por estado"
               value={estadoFilter}
-              onChange={(event) => {
-                setIsLoading(true)
-                setLoadError('')
-                setEstadoFilter(event.target.value as ConceptoCobroEstado | '')
-              }}
+              onChange={(event) => setEstadoFilter(event.target.value as ConceptoCobroEstado | '')}
             >
               <option value="">Todos los estados</option>
               <option value="activo">Activos</option>
@@ -496,24 +610,6 @@ export default function ConceptosAdminPage() {
             </Button>
           )}
         </div>
-
-        {feedback && (
-          <div
-            role="status"
-            className="mb-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
-          >
-            {feedback}
-          </div>
-        )}
-
-        {actionError && (
-          <div
-            role="alert"
-            className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-          >
-            {actionError}
-          </div>
-        )}
 
         {isLoading ? (
           <div className="grid min-h-72 place-items-center rounded-xl border border-slate-200 bg-white">
@@ -533,15 +629,28 @@ export default function ConceptosAdminPage() {
           </div>
         ) : (
           <>
-            <p className="mb-3 text-sm text-slate-600">
-              {conceptos.length} conceptos de cobro disponibles
-            </p>
+            <div className="mb-3 flex flex-wrap items-center gap-3 text-sm text-slate-600">
+              <p>
+                {hayFiltrosActivos
+                  ? `${conceptosFiltrados.length} de ${conceptos.length} conceptos`
+                  : `${conceptos.length} conceptos de cobro`}
+              </p>
+              {hayFiltrosActivos && (
+                <Button size="sm" variant="ghost" onClick={limpiarFiltros}>
+                  Quitar filtros
+                </Button>
+              )}
+            </div>
             <Table
               columns={columns}
-              data={conceptos}
+              data={conceptosFiltrados}
               getRowKey={(concepto) => concepto.id}
               caption="Listado de conceptos de cobro"
-              emptyMessage="No hay conceptos de cobro para los filtros seleccionados."
+              emptyMessage={
+                hayFiltrosActivos
+                  ? 'Ningún concepto coincide con los filtros.'
+                  : 'Todavía no hay conceptos de cobro.'
+              }
             />
           </>
         )}
@@ -665,36 +774,31 @@ export default function ConceptosAdminPage() {
             <option value="programa">Programa</option>
             <option value="combo">Combo</option>
           </Select>
-          <Select
+          <SearchSelect
             label={form.destinoTipo === 'programa' ? 'Programa' : 'Combo'}
             value={form.destinoId}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, destinoId: event.target.value }))
-            }
+            onChange={(destinoId) => {
+              setForm((current) => ({ ...current, destinoId }))
+              setFormError('')
+            }}
+            options={opcionesDestino}
             required
             disabled={isSaving}
-          >
-            <option value="">
-              {form.destinoTipo === 'programa'
-                ? programasOrdenados.length === 0
-                  ? 'No hay programas disponibles'
-                  : 'Selecciona un programa'
-                : combosOrdenados.length === 0
-                  ? 'No hay combos disponibles'
-                  : 'Selecciona un combo'}
-            </option>
-            {form.destinoTipo === 'programa'
-              ? programasOrdenados.map((programa) => (
-                  <option key={programa.id} value={programa.id}>
-                    {programa.nombre} ({programa.codigo})
-                  </option>
-                ))
-              : combosOrdenados.map((combo) => (
-                  <option key={combo.id} value={combo.id}>
-                    {combo.nombre}
-                  </option>
-                ))}
-          </Select>
+            clearLabel={`Quitar ${form.destinoTipo} seleccionado`}
+            placeholder={
+              form.destinoTipo === 'programa' ? 'Busca un programa…' : 'Busca un combo…'
+            }
+            emptyMessage={
+              form.destinoTipo === 'programa'
+                ? 'No hay programas disponibles.'
+                : 'No hay combos disponibles.'
+            }
+            hint={
+              form.destinoTipo === 'programa'
+                ? 'Escribe parte del nombre o el código. Ej.: "enf" o "CAR001".'
+                : 'Escribe parte del nombre del combo.'
+            }
+          />
         </form>
       </Modal>
 
