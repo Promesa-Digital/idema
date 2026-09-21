@@ -238,6 +238,9 @@ export default function Navbar() {
       email: formData.email,
       form: 1,
       message: formData.comment,
+      // La casilla ya se validaba, pero su valor no salía del navegador. El backend
+      // la exige y la guarda con fecha y versión de la política.
+      consent: formData.acceptPolicies,
     })
     setIsSubmitting(false)
 

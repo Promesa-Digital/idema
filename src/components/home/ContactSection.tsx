@@ -119,6 +119,9 @@ export default function ContactSection() {
       email: formData.email,
       form: 2,
       message: formData.comment,
+      // La casilla ya se validaba, pero su valor no salía del navegador. El backend
+      // la exige y la guarda con fecha y versión de la política.
+      consent: formData.acceptPolicies,
     })
 
     if (result.ok) {
