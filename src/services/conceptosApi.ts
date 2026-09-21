@@ -26,6 +26,10 @@ export function listarConceptos(filtros: ListarConceptosFiltros = {}): Promise<C
   return apiRequest<ConceptoCobroBackend[]>(`${CONCEPTOS_COBRO_PATH}/${query ? `?${query}` : ''}`)
 }
 
+export function listarConceptosPublicos(): Promise<ConceptoCobroBackend[]> {
+  return apiRequest<ConceptoCobroBackend[]>(`${CONCEPTOS_COBRO_PATH}/publicos`, { token: null })
+}
+
 export function obtenerConcepto(id: string): Promise<ConceptoCobroBackend> {
   return apiRequest<ConceptoCobroBackend>(`${CONCEPTOS_COBRO_PATH}/${encodeURIComponent(id)}`)
 }

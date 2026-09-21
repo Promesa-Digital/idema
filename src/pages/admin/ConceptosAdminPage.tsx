@@ -35,6 +35,8 @@ interface ConceptoFormState {
   tipo: ConceptoCobroTipo
   monto: string
   descripcion: string
+  modalidad: string
+  enlacePago: string
   destinoTipo: DestinoTipo
   destinoId: string
 }
@@ -43,6 +45,8 @@ const EMPTY_FORM: ConceptoFormState = {
   tipo: 'matricula',
   monto: '',
   descripcion: '',
+  modalidad: '',
+  enlacePago: '',
   destinoTipo: 'programa',
   destinoId: '',
 }
@@ -74,6 +78,8 @@ function toFormState(concepto: ConceptoCobroBackend): ConceptoFormState {
     tipo: concepto.tipo,
     monto: concepto.monto,
     descripcion: concepto.descripcion ?? '',
+    modalidad: concepto.modalidad ?? '',
+    enlacePago: concepto.enlace_pago ?? '',
     destinoTipo: concepto.programa_id ? 'programa' : 'combo',
     destinoId: concepto.programa_id ?? concepto.combo_id ?? '',
   }
@@ -325,6 +331,8 @@ export default function ConceptosAdminPage() {
 
     setIsSaving(true)
     const descripcion = form.descripcion.trim() || null
+    const modalidad = form.modalidad.trim() || null
+    const enlacePago = form.enlacePago.trim() || null
 
     try {
       let saved: ConceptoCobroBackend
@@ -335,6 +343,8 @@ export default function ConceptosAdminPage() {
         if (form.tipo !== editingConcepto.tipo) payload.tipo = form.tipo
         if (monto !== Number(editingConcepto.monto)) payload.monto = monto
         if (descripcion !== editingConcepto.descripcion) payload.descripcion = descripcion
+        if (modalidad !== editingConcepto.modalidad) payload.modalidad = modalidad
+        if (enlacePago !== editingConcepto.enlace_pago) payload.enlace_pago = enlacePago
 
         const originalDestinoTipo: DestinoTipo = editingConcepto.programa_id
           ? 'programa'
@@ -370,6 +380,8 @@ export default function ConceptosAdminPage() {
           tipo: form.tipo,
           monto,
           descripcion,
+          modalidad,
+          enlace_pago: enlacePago,
           ...(form.destinoTipo === 'programa'
             ? { programa_id: form.destinoId }
             : { combo_id: form.destinoId }),
@@ -613,6 +625,27 @@ export default function ConceptosAdminPage() {
             onChange={(event) =>
               setForm((current) => ({ ...current, descripcion: event.target.value }))
             }
+            disabled={isSaving}
+            containerClassName="sm:col-span-2"
+          />
+          <Input
+            label="Modalidad del precio"
+            value={form.modalidad}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, modalidad: event.target.value }))
+            }
+            placeholder="Ej. Virtual, Presencial o Semipresencial"
+            disabled={isSaving}
+            containerClassName="sm:col-span-2"
+          />
+          <Input
+            label="Enlace de pago"
+            type="url"
+            value={form.enlacePago}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, enlacePago: event.target.value }))
+            }
+            hint="Enlace de Culqi u otra pasarela. El monto continúa administrándose en EDU-09."
             disabled={isSaving}
             containerClassName="sm:col-span-2"
           />

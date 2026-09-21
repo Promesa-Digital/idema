@@ -8,8 +8,11 @@ import Select from '@/components/ui/Select'
 import Table from '@/components/ui/Table'
 import type { TableColumn } from '@/components/ui/Table'
 import Textarea from '@/components/ui/Textarea'
+import ImageUploadField from '@/components/admin/ImageUploadField'
 import { useAuth } from '@/context/AuthContextType'
 import { ApiError } from '@/services/apiClient'
+import { listarConceptos } from '@/services/conceptosApi'
+import { listarProgramasPublicos } from '@/services/programasApi'
 import {
   actualizarPopup,
   aprobar,
@@ -22,6 +25,8 @@ import {
 } from '@/services/popupsApi'
 import type {
   PopupBackend,
+  ConceptoCobroBackend,
+  ProgramaBackend,
   PopupCreate,
   PopupEstado,
   PopupTipo,
@@ -34,7 +39,7 @@ interface PopupFormState {
   video_url: string
   enlace: string
   paginas: string
-  monto_descuento: string
+  concepto_cobro_id: string
   duracion_temporizador: string
   texto_superior: string
   fecha_inicio: string
@@ -126,8 +131,8 @@ const EMPTY_FORM: PopupFormState = {
   imagen_url: '',
   video_url: '',
   enlace: '',
-  paginas: '',
-  monto_descuento: '',
+  paginas: '/',
+  concepto_cobro_id: '',
   duracion_temporizador: '',
   texto_superior: '',
   fecha_inicio: '',
@@ -142,8 +147,7 @@ function toFormState(popup: PopupBackend): PopupFormState {
     video_url: popup.video_url ?? '',
     enlace: popup.enlace ?? '',
     paginas: popup.paginas,
-    monto_descuento:
-      popup.monto_descuento === null ? '' : String(popup.monto_descuento),
+    concepto_cobro_id: popup.concepto_cobro_id ?? '',
     duracion_temporizador:
       popup.duracion_temporizador === null ? '' : String(popup.duracion_temporizador),
     texto_superior: popup.texto_superior ?? '',
@@ -157,19 +161,14 @@ function toPayload(form: PopupFormState): PopupCreate {
     tipo: form.tipo,
     texto: form.texto.trim(),
     imagen_url: form.imagen_url.trim(),
+    video_url: form.tipo === 'anuncio' ? form.video_url.trim() || null : null,
+    enlace: form.enlace.trim() || null,
     paginas: form.paginas.trim(),
+    concepto_cobro_id: form.tipo === 'descuento' ? form.concepto_cobro_id : null,
+    duracion_temporizador: form.tipo === 'descuento' ? 600 : null,
+    texto_superior: form.tipo === 'descuento' ? form.texto_superior.trim() : null,
     fecha_inicio: form.fecha_inicio,
     fecha_fin: form.fecha_fin,
-  }
-
-  if (form.video_url.trim()) payload.video_url = form.video_url.trim()
-  if (form.enlace.trim()) payload.enlace = form.enlace.trim()
-  if (form.texto_superior.trim()) payload.texto_superior = form.texto_superior.trim()
-  if (form.duracion_temporizador) {
-    payload.duracion_temporizador = Number(form.duracion_temporizador)
-  }
-  if (form.tipo === 'descuento' && form.monto_descuento) {
-    payload.monto_descuento = Number(form.monto_descuento)
   }
 
   return payload
@@ -195,6 +194,8 @@ function StatusBadge({ estado }: { estado: PopupEstado }) {
 export default function PopupsAdminPage() {
   const { user, logout } = useAuth()
   const [popups, setPopups] = useState<PopupBackend[]>([])
+  const [conceptos, setConceptos] = useState<ConceptoCobroBackend[]>([])
+  const [carreras, setCarreras] = useState<ProgramaBackend[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
   const [feedback, setFeedback] = useState('')
@@ -209,8 +210,38 @@ export default function PopupsAdminPage() {
   const [pendingWorkflow, setPendingWorkflow] = useState<PendingWorkflow | null>(null)
   const [workflowError, setWorkflowError] = useState('')
   const [isTransitioning, setIsTransitioning] = useState(false)
-  const isMarketing = user?.rol === 'marketing'
-  const isDirector = user?.rol === 'director_marketing'
+  const isCreator = user?.rol === 'marketing' || user?.rol === 'ventas' || user?.rol === 'admin_sistema'
+  const isApprover = user?.rol === 'director_marketing' || user?.rol === 'admin_sistema'
+  const isAdmin = user?.rol === 'admin_sistema'
+
+  useEffect(() => {
+    if (!isCreator) return
+    let isActive = true
+    Promise.all([listarConceptos({ estado: 'activo' }), listarProgramasPublicos()])
+      .then(([conceptosActivos, programasPublicos]) => {
+        if (!isActive) return
+        setConceptos(conceptosActivos)
+        setCarreras(programasPublicos.filter((programa) => programa.tipo === 'carrera'))
+      })
+      .catch(() => {
+        if (isActive) {
+          setConceptos([])
+          setCarreras([])
+        }
+      })
+    return () => {
+      isActive = false
+    }
+  }, [isCreator])
+
+  const carrerasById = useMemo(
+    () => new Map(carreras.map((carrera) => [carrera.id, carrera])),
+    [carreras],
+  )
+  const conceptosCarrera = useMemo(
+    () => conceptos.filter((concepto) => concepto.programa_id && carrerasById.has(concepto.programa_id)),
+    [carrerasById, conceptos],
+  )
 
   useEffect(() => {
     let isActive = true
@@ -321,7 +352,7 @@ export default function PopupsAdminPage() {
       },
     ]
 
-    if (isMarketing || isDirector) {
+    if (isCreator || isApprover) {
       baseColumns.push({
         key: 'acciones',
         header: 'Acciones',
@@ -329,7 +360,7 @@ export default function PopupsAdminPage() {
           const isOwn = popup.creado_por === user?.id
           const isEditable = popup.estado === 'borrador' || popup.estado === 'rechazado'
 
-          if (isMarketing && isOwn && isEditable) {
+          if (isCreator && (isOwn || isAdmin) && isEditable) {
             return (
               <div className="flex min-w-max flex-wrap items-center gap-2">
                 <Button size="sm" variant="ghost" onClick={() => openEditModal(popup)}>
@@ -342,7 +373,7 @@ export default function PopupsAdminPage() {
             )
           }
 
-          if (isDirector && popup.estado === 'pendiente') {
+          if (isApprover && popup.estado === 'pendiente') {
             return (
               <div className="flex min-w-max flex-wrap items-center gap-2">
                 <Button size="sm" onClick={() => openWorkflowModal(popup, 'aprobar')}>
@@ -359,7 +390,7 @@ export default function PopupsAdminPage() {
             )
           }
 
-          if (isDirector && popup.estado === 'aprobado') {
+          if (isApprover && popup.estado === 'aprobado') {
             return (
               <Button size="sm" onClick={() => openWorkflowModal(popup, 'publicar')}>
                 Publicar
@@ -367,7 +398,7 @@ export default function PopupsAdminPage() {
             )
           }
 
-          if (isDirector && popup.estado === 'publicado') {
+          if (isApprover && popup.estado === 'publicado') {
             return (
               <Button
                 size="sm"
@@ -385,7 +416,7 @@ export default function PopupsAdminPage() {
     }
 
     return baseColumns
-  }, [isDirector, isMarketing, openEditModal, openWorkflowModal, user?.id])
+  }, [isAdmin, isApprover, isCreator, openEditModal, openWorkflowModal, user?.id])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -484,7 +515,7 @@ export default function PopupsAdminPage() {
               <option value="finalizado">Finalizado</option>
             </Select>
           </div>
-          {isMarketing && (
+          {isCreator && (
             <Button size="lg" onClick={openCreateModal}>
               Nuevo popup
             </Button>
@@ -569,22 +600,28 @@ export default function PopupsAdminPage() {
           <Select
             label="Tipo"
             value={form.tipo}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, tipo: event.target.value as PopupTipo }))
-            }
+            onChange={(event) => {
+              const tipo = event.target.value as PopupTipo
+              setForm((current) => ({
+                ...current,
+                tipo,
+                paginas: tipo === 'anuncio' ? '/' : '',
+                video_url: tipo === 'descuento' ? '' : current.video_url,
+                concepto_cobro_id: tipo === 'anuncio' ? '' : current.concepto_cobro_id,
+                duracion_temporizador: tipo === 'descuento' ? '600' : '',
+                texto_superior: tipo === 'anuncio' ? '' : current.texto_superior,
+              }))
+            }}
             required
             disabled={isSaving}
           >
             <option value="anuncio">Anuncio</option>
             <option value="descuento">Descuento</option>
           </Select>
-          <Input
-            label="URL de imagen"
+          <ImageUploadField
+            label="Imagen"
             value={form.imagen_url}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, imagen_url: event.target.value }))
-            }
-            required
+            onChange={(value) => setForm((current) => ({ ...current, imagen_url: value }))}
             disabled={isSaving}
           />
           <Textarea
@@ -598,14 +635,16 @@ export default function PopupsAdminPage() {
             disabled={isSaving}
             containerClassName="sm:col-span-2"
           />
-          <Input
-            label="URL de video"
-            value={form.video_url}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, video_url: event.target.value }))
-            }
-            disabled={isSaving}
-          />
+          {form.tipo === 'anuncio' && (
+            <Input
+              label="URL de video (opcional)"
+              value={form.video_url}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, video_url: event.target.value }))
+              }
+              disabled={isSaving}
+            />
+          )}
           <Input
             label="Enlace"
             value={form.enlace}
@@ -620,48 +659,56 @@ export default function PopupsAdminPage() {
             onChange={(event) =>
               setForm((current) => ({ ...current, paginas: event.target.value }))
             }
-            hint="Indica las páginas donde se mostrará el popup."
+            hint={form.tipo === 'anuncio' ? 'Los anuncios se muestran únicamente en la página principal.' : 'Se completa automáticamente según la carrera del concepto EDU-09.'}
             required
-            disabled={isSaving}
+            disabled
             containerClassName="sm:col-span-2"
           />
           {form.tipo === 'descuento' && (
-            <Input
-              label="Monto de descuento"
-              type="number"
-              min={0}
-              step="0.01"
-              value={form.monto_descuento}
-              onChange={(event) =>
-                setForm((current) => ({ ...current, monto_descuento: event.target.value }))
-              }
+            <Select
+              label="Concepto de cobro (EDU-09)"
+              value={form.concepto_cobro_id}
+              onChange={(event) => {
+                const conceptoId = event.target.value
+                const concepto = conceptosCarrera.find((item) => item.id === conceptoId)
+                const carrera = concepto?.programa_id ? carrerasById.get(concepto.programa_id) : undefined
+                setForm((current) => ({
+                  ...current,
+                  concepto_cobro_id: conceptoId,
+                  paginas: carrera ? `/programas-de-estudio/${carrera.slug}` : '',
+                }))
+              }}
+              required
               disabled={isSaving}
-            />
+            >
+              <option value="">Selecciona un concepto activo</option>
+              {conceptosCarrera.map((concepto) => (
+                <option key={concepto.id} value={concepto.id}>
+                  {carrerasById.get(concepto.programa_id || '')?.nombre} · {concepto.descripcion || concepto.tipo} — S/ {Number(concepto.monto).toFixed(2)}
+                </option>
+              ))}
+            </Select>
           )}
-          <Input
-            label="Duración del temporizador"
-            type="number"
-            min={0}
-            step={1}
-            value={form.duracion_temporizador}
-            onChange={(event) =>
-              setForm((current) => ({
-                ...current,
-                duracion_temporizador: event.target.value,
-              }))
-            }
-            hint="Duración en segundos."
-            disabled={isSaving}
-          />
-          <Input
-            label="Texto superior"
-            value={form.texto_superior}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, texto_superior: event.target.value }))
-            }
-            disabled={isSaving}
-            containerClassName="sm:col-span-2"
-          />
+          {form.tipo === 'descuento' && (
+            <>
+              <Input
+                label="Temporizador"
+                value="10 minutos"
+                hint="Duración definida por el requisito EDU-02."
+                disabled
+              />
+              <Input
+                label="Texto superior"
+                value={form.texto_superior}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, texto_superior: event.target.value }))
+                }
+                required
+                disabled={isSaving}
+                containerClassName="sm:col-span-2"
+              />
+            </>
+          )}
           <Input
             label="Fecha de inicio"
             type="date"

@@ -50,10 +50,29 @@ export interface ProgramaBackend {
   codigo: string
   abreviatura: string
   nombre: string
+  slug: string
+  nombre_corto: string | null
   tipo: ProgramaTipo
   categoria: string
   malla: string
   descripcion: string | null
+  subtitulo: string | null
+  duracion: string | null
+  modalidad: string | null
+  imagen_url: string | null
+  dirigido_a: string | null
+  contenidos: string[]
+  campo_laboral: Array<{ title: string; description: string }>
+  malla_curricular: Array<{ year: string; courses: string[] }>
+  requisitos: string[]
+  certificaciones: string[]
+  mensaje_whatsapp: string | null
+  titulacion: string | null
+  malla_imagen_url: string | null
+  convenio_nombre: string | null
+  convenio_logo_url: string | null
+  seo_titulo: string | null
+  seo_descripcion: string | null
   anio: number
   num_lecciones: number
   certificado: boolean
@@ -64,7 +83,9 @@ export interface ProgramaBackend {
   updated_at: string
 }
 
-export type ProgramaCreate = Omit<ProgramaBackend, 'id' | 'created_at' | 'updated_at'>
+export type ProgramaCreate = Omit<ProgramaBackend, 'id' | 'created_at' | 'updated_at' | 'slug'> & {
+  slug?: string | null
+}
 
 export type ProgramaUpdate = Partial<Omit<ProgramaCreate, 'codigo'>>
 
@@ -86,7 +107,7 @@ export interface PopupBackend {
   video_url: string | null
   enlace: string | null
   paginas: string
-  monto_descuento: number | null
+  concepto_cobro_id: string | null
   duracion_temporizador: number | null
   texto_superior: string | null
   fecha_inicio: string
@@ -94,6 +115,7 @@ export interface PopupBackend {
   estado: PopupEstado
   creado_por: string
   aprobado_por: string | null
+  publicado_at: string | null
   created_at: string
   updated_at: string
 }
@@ -102,12 +124,12 @@ export interface PopupCreate {
   tipo: PopupTipo
   texto: string
   imagen_url: string
-  video_url?: string
-  enlace?: string
+  video_url?: string | null
+  enlace?: string | null
   paginas: string
-  monto_descuento?: number
-  duracion_temporizador?: number
-  texto_superior?: string
+  concepto_cobro_id?: string | null
+  duracion_temporizador?: number | null
+  texto_superior?: string | null
   fecha_inicio: string
   fecha_fin: string
 }
@@ -119,8 +141,12 @@ export interface PopupPublicoBackend {
   tipo: PopupTipo
   texto: string
   imagen_url: string
+  video_url: string | null
   enlace: string | null
   paginas: string
+  monto_descuento: number | null
+  duracion_temporizador: number | null
+  texto_superior: string | null
   fecha_inicio: string
   fecha_fin: string
 }
@@ -135,6 +161,9 @@ export interface ComboBackend {
   vigencia_fin: string
   estado: ComboEstado
   programa_ids: string[]
+  programa_nombres: string[]
+  monto: string | null
+  enlace_pago: string | null
   created_at: string
   updated_at: string
 }
@@ -158,17 +187,25 @@ export interface ConceptoCobroBackend {
   tipo: ConceptoCobroTipo
   monto: string
   descripcion: string | null
+  modalidad: string | null
+  enlace_pago: string | null
   estado: ConceptoCobroEstado
   programa_id: string | null
   combo_id: string | null
   created_at: string
   updated_at: string
+  monto_original?: string | null
+  monto_final?: string | null
+  porcentaje_descuento?: string | null
+  descuento_id?: string | null
 }
 
 export interface ConceptoCobroCreate {
   tipo: ConceptoCobroTipo
   monto: number
   descripcion?: string | null
+  modalidad?: string | null
+  enlace_pago?: string | null
   programa_id?: string | null
   combo_id?: string | null
 }
@@ -177,6 +214,8 @@ export interface ConceptoCobroUpdate {
   tipo?: ConceptoCobroTipo
   monto?: number
   descripcion?: string | null
+  modalidad?: string | null
+  enlace_pago?: string | null
   programa_id?: string | null
   combo_id?: string | null
 }

@@ -12,7 +12,7 @@ import { useAuth } from '@/context/AuthContextType'
 import { ApiError } from '@/services/apiClient'
 import {
   anularOrden,
-  confirmarTransferencia,
+  confirmarPago,
   listarOrdenes,
   obtenerOrden,
 } from '@/services/ordenesApi'
@@ -344,7 +344,7 @@ export default function OrdenesAdminPage() {
     setIsConfirming(true)
 
     try {
-      const confirmed = await confirmarTransferencia(orderToConfirm.id)
+      const confirmed = await confirmarPago(orderToConfirm.id)
       syncOrder(confirmed)
       setFeedback(`La transferencia de la orden ${truncateId(confirmed.id)} fue confirmada.`)
       setOrderToConfirm(null)

@@ -1,93 +1,60 @@
 import { useEffect, useMemo, useState } from 'react'
-import { FiAlertCircle, FiArrowRight, FiCheckCircle, FiClock, FiCreditCard } from 'react-icons/fi'
+import { FiArrowRight, FiCheck, FiCheckCircle, FiCreditCard } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
-import { getAvailableAdminModules } from '@/components/admin/adminModules'
+import { getAdminModule } from '@/components/admin/adminModules'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import {
+  describirPendientes,
+  useAdminPendientes,
+} from '@/context/AdminPendientesContextType'
 import { useAuth } from '@/context/AuthContextType'
-import { listarComprobantes } from '@/services/comprobantesApi'
-import { listarLeads } from '@/services/leadsApi'
-import { listarMatriculas } from '@/services/matriculasApi'
 import { listarOrdenes } from '@/services/ordenesApi'
 
-interface DashboardMetrics {
-  ordenes: number | null
-  pagosConfirmados: number | null
-  leadsNuevos: number | null
-  matriculasPendientes: number | null
-  pendientes: number | null
-}
-
-const EMPTY_METRICS: DashboardMetrics = {
-  ordenes: null,
-  pagosConfirmados: null,
-  leadsNuevos: null,
-  matriculasPendientes: null,
-  pendientes: null,
+interface TotalesOrdenes {
+  registradas: number
+  pagadas: number
 }
 
 export default function AdminDashboardPage() {
   const { user } = useAuth()
-  const [metrics, setMetrics] = useState<DashboardMetrics>(EMPTY_METRICS)
-  const [isLoading, setIsLoading] = useState(true)
-  const availableModules = useMemo(
-    () => getAvailableAdminModules(user?.rol).filter((module) => module.path !== '/admin'),
-    [user?.rol],
-  )
+  const { porRuta, total, cargando } = useAdminPendientes()
+  const [ordenes, setOrdenes] = useState<TotalesOrdenes | null>(null)
+
+  // Solo Órdenes: los demás totales que se mostraban aquí ya los cuenta el contexto de
+  // pendientes, y pedirlos otra vez era repetir cuatro llamadas en cada entrada al panel.
+  const puedeVerOrdenes = user
+    ? (['administracion', 'admin_sistema'] as const).some((r) => r === user.rol)
+    : false
 
   useEffect(() => {
-    if (!user) return
-    let active = true
+    if (!puedeVerOrdenes) return
+    let vigente = true
 
-    async function loadMetrics() {
-      const canReadOrders = ['administracion', 'admin_sistema'].includes(user!.rol)
-      const canReadLeads = ['marketing', 'director_marketing', 'ventas', 'administracion', 'admin_sistema'].includes(user!.rol)
-      const canReadMatriculas = ['academico', 'administracion', 'admin_sistema'].includes(user!.rol)
-      const next = { ...EMPTY_METRICS }
-      let pending = 0
+    void listarOrdenes()
+      .then((lista) => {
+        if (!vigente) return
+        setOrdenes({
+          registradas: lista.length,
+          pagadas: lista.filter((o) => o.estado === 'pagada' || o.estado === 'conciliada').length,
+        })
+      })
+      .catch(() => {
+        // Sin totales de órdenes el panel sigue siendo útil: no se muestra la tira y ya.
+      })
 
-      const [ordersResult, leadsResult, matriculasResult, receiptsResult] = await Promise.allSettled([
-        canReadOrders ? listarOrdenes() : Promise.resolve(null),
-        canReadLeads ? listarLeads() : Promise.resolve(null),
-        canReadMatriculas ? listarMatriculas() : Promise.resolve(null),
-        canReadOrders ? listarComprobantes() : Promise.resolve(null),
-      ])
-
-      if (ordersResult.status === 'fulfilled' && ordersResult.value) {
-        next.ordenes = ordersResult.value.length
-        next.pagosConfirmados = ordersResult.value.filter((item) => item.estado === 'pagada' || item.estado === 'conciliada').length
-        pending += ordersResult.value.filter((item) => item.estado === 'pendiente' || item.estado === 'pendiente_confirmacion').length
-      }
-      if (leadsResult.status === 'fulfilled' && leadsResult.value) {
-        next.leadsNuevos = leadsResult.value.filter((item) => item.estado === 'nuevo').length
-        pending += next.leadsNuevos
-      }
-      if (matriculasResult.status === 'fulfilled' && matriculasResult.value) {
-        next.matriculasPendientes = matriculasResult.value.filter((item) => item.estado === 'pendiente').length
-        pending += next.matriculasPendientes
-      }
-      if (receiptsResult.status === 'fulfilled' && receiptsResult.value) {
-        pending += receiptsResult.value.filter((item) => item.estado === 'observado').length
-      }
-      next.pendientes = pending
-
-      if (active) {
-        setMetrics(next)
-        setIsLoading(false)
-      }
-    }
-
-    void loadMetrics()
     return () => {
-      active = false
+      vigente = false
     }
-  }, [user])
+  }, [puedeVerOrdenes])
 
-  const cards = [
-    { label: 'Órdenes registradas', value: metrics.ordenes, icon: FiCreditCard, color: 'bg-sky-50 text-sky-700' },
-    { label: 'Pagos confirmados', value: metrics.pagosConfirmados, icon: FiCheckCircle, color: 'bg-emerald-50 text-emerald-700' },
-    { label: 'Leads nuevos', value: metrics.leadsNuevos, icon: FiAlertCircle, color: 'bg-fuchsia-50 text-fuchsia-700' },
-    { label: 'Matrículas pendientes', value: metrics.matriculasPendientes, icon: FiClock, color: 'bg-amber-50 text-amber-800' },
-  ].filter((card) => card.value !== null)
+  /** Módulos con trabajo esperando, de más urgente a menos. */
+  const atencion = useMemo(
+    () =>
+      Object.entries(porRuta)
+        .sort(([, a], [, b]) => b - a)
+        .map(([ruta, cantidad]) => ({ ruta, cantidad, modulo: getAdminModule(ruta) })),
+    [porRuta],
+  )
 
   return (
     <main className="px-4 py-7 sm:px-6 lg:px-8">
@@ -97,56 +64,110 @@ export default function AdminDashboardPage() {
           <div>
             <h2 className="text-2xl font-bold sm:text-3xl">Hola, {user?.nombre}</h2>
             <p className="mt-2 max-w-2xl text-white/70">
-              Revisa el estado de la operación y continúa con las tareas de tu área.
+              {cargando
+                ? 'Revisando qué quedó pendiente en tus módulos…'
+                : total > 0
+                  ? `Tienes ${total} ${total === 1 ? 'asunto' : 'asuntos'} esperando una decisión tuya.`
+                  : 'No hay nada esperando una decisión tuya en este momento.'}
             </p>
           </div>
-          {metrics.pendientes !== null && (
-            <div className="rounded-xl border border-white/10 bg-white/10 px-5 py-3 backdrop-blur">
-              <p className="text-xs font-bold uppercase tracking-wider text-white/60">Pendientes</p>
-              <p className="mt-1 text-3xl font-bold">{metrics.pendientes}</p>
-            </div>
-          )}
+          <div className="rounded-xl border border-white/10 bg-white/10 px-5 py-3 backdrop-blur">
+            <p className="text-xs font-bold uppercase tracking-wider text-white/60">Pendientes</p>
+            <p className="mt-1 text-3xl font-bold">{cargando ? '—' : total}</p>
+          </div>
         </div>
       </section>
 
-      {isLoading ? (
-        <div className="grid min-h-48 place-items-center"><LoadingSpinner /></div>
-      ) : cards.length > 0 ? (
-        <section aria-label="Indicadores principales" className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {cards.map((card) => {
+      <section className="mt-6" aria-label="Requiere tu atención">
+        <h2 className="text-xl font-bold text-dark">Requiere tu atención</h2>
+        <p className="mt-1 text-sm text-slate-500">
+          Ordenado por volumen. Cada fila abre el módulo donde se resuelve.
+        </p>
+
+        {cargando ? (
+          <div className="mt-4 grid min-h-40 place-items-center rounded-2xl border border-slate-200 bg-white">
+            <LoadingSpinner />
+          </div>
+        ) : atencion.length === 0 ? (
+          <div className="mt-4 flex items-center gap-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-6">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-emerald-100 text-emerald-700">
+              <FiCheck className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <div>
+              <p className="font-bold text-emerald-900">Todo al día</p>
+              <p className="mt-0.5 text-sm text-emerald-800/80">
+                Ningún módulo de tu área tiene trabajo esperando.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <ul className="mt-4 divide-y divide-slate-200 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            {atencion.map(({ ruta, cantidad, modulo }) => {
+              const Icon = modulo.icon
+              return (
+                <li key={ruta}>
+                  <Link
+                    to={ruta}
+                    className="group flex min-h-16 items-center gap-4 px-5 transition hover:bg-primary/5"
+                  >
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                      <Icon className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-bold text-dark">{modulo.label}</span>
+                      <span className="block truncate text-sm text-slate-500">
+                        {describirPendientes(ruta, cantidad)}
+                      </span>
+                    </span>
+                    <span className="shrink-0 rounded-full bg-primary/10 px-3 py-1 text-sm font-bold tabular-nums text-primary">
+                      {cantidad}
+                    </span>
+                    <FiArrowRight
+                      aria-hidden="true"
+                      className="shrink-0 text-slate-400 transition group-hover:translate-x-1 group-hover:text-primary"
+                    />
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+      </section>
+
+      {ordenes && (
+        <section aria-label="Totales de cobranza" className="mt-6 grid gap-4 sm:grid-cols-2">
+          {[
+            {
+              label: 'Órdenes registradas',
+              value: ordenes.registradas,
+              icon: FiCreditCard,
+              color: 'bg-sky-50 text-sky-700',
+            },
+            {
+              label: 'Pagos confirmados',
+              value: ordenes.pagadas,
+              icon: FiCheckCircle,
+              color: 'bg-emerald-50 text-emerald-700',
+            },
+          ].map((card) => {
             const Icon = card.icon
             return (
-              <article key={card.label} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <div className={`grid h-11 w-11 place-items-center rounded-xl ${card.color}`}><Icon className="h-5 w-5" /></div>
-                <p className="mt-5 text-3xl font-bold text-dark">{card.value}</p>
-                <p className="mt-1 text-sm font-semibold text-slate-500">{card.label}</p>
+              <article
+                key={card.label}
+                className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+              >
+                <div className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ${card.color}`}>
+                  <Icon className="h-5 w-5" aria-hidden="true" />
+                </div>
+                <div>
+                  <p className="text-3xl font-bold text-dark">{card.value}</p>
+                  <p className="mt-0.5 text-sm font-semibold text-slate-500">{card.label}</p>
+                </div>
               </article>
             )
           })}
         </section>
-      ) : null}
-
-      <section className="mt-8">
-        <div className="mb-4">
-          <h2 className="text-xl font-bold text-dark">Módulos disponibles</h2>
-          <p className="mt-1 text-sm text-slate-500">Accesos habilitados según tu rol.</p>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {availableModules.map((module) => {
-            const Icon = module.icon
-            return (
-              <Link key={module.path} to={module.path} className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary"><Icon className="h-5 w-5" /></div>
-                  <FiArrowRight className="mt-2 text-slate-400 transition group-hover:translate-x-1 group-hover:text-primary" />
-                </div>
-                <h3 className="mt-4 font-bold text-dark">{module.label}</h3>
-                <p className="mt-1 text-sm leading-6 text-slate-500">{module.description}</p>
-              </Link>
-            )
-          })}
-        </div>
-      </section>
+      )}
     </main>
   )
 }

@@ -38,9 +38,9 @@ export function anularOrden(id: string, motivo: string): Promise<OrdenPagoBacken
   })
 }
 
-export function confirmarTransferencia(id: string): Promise<OrdenPagoBackend> {
+export function confirmarPago(id: string): Promise<OrdenPagoBackend> {
   return apiRequest<OrdenPagoBackend>(
-    `${ORDENES_PATH}/${encodeURIComponent(id)}/confirmar-transferencia`,
+    `${ORDENES_PATH}/${encodeURIComponent(id)}/confirmar-pago`,
     { method: 'POST' },
   )
 }

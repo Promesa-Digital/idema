@@ -55,8 +55,9 @@ function getErrorMessage(payload: unknown, fallback: string): string {
 export async function apiRequest<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
   const { body, token = getStoredToken(), headers: customHeaders, ...requestOptions } = options
   const headers = new Headers(customHeaders)
+  const isFormData = body instanceof FormData
 
-  if (body !== undefined && !headers.has('Content-Type')) {
+  if (body !== undefined && !isFormData && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json')
   }
   if (token) {
@@ -68,7 +69,7 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
     response = await fetch(`${API_BASE_URL}${path}`, {
       ...requestOptions,
       headers,
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: body === undefined ? undefined : isFormData ? body : JSON.stringify(body),
     })
   } catch {
     const message = navigator.onLine
