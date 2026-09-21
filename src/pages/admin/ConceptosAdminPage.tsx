@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import Modal from '@/components/ui/Modal'
 import RowActions from '@/components/ui/RowActions'
 import SearchSelect from '@/components/ui/SearchSelect'
@@ -13,6 +14,18 @@ import type { TableColumn } from '@/components/ui/Table'
 import Textarea from '@/components/ui/Textarea'
 import { useAuth } from '@/context/AuthContextType'
 import { useToast } from '@/hooks/useToast'
+import {
+  ESTADO_CONCEPTO_LABELS as ESTADO_LABELS,
+  TIPO_CONCEPTO_LABELS as TIPO_LABELS,
+  formatMonto,
+  validarConcepto,
+} from '@/utils/conceptoCobro'
+import type {
+  CampoConcepto,
+  DestinoTipo,
+  ErroresConcepto,
+} from '@/utils/conceptoCobro'
+import { descargarCSV } from '@/utils/csv'
 import { ApiError } from '@/services/apiClient'
 import { listarCombosAdmin, listarCombosPublicos } from '@/services/combosApi'
 import {
@@ -34,8 +47,6 @@ import type {
   ProgramaTipo,
 } from '@/types/backend'
 
-type DestinoTipo = 'programa' | 'combo'
-
 interface ConceptoFormState {
   tipo: ConceptoCobroTipo
   monto: string
@@ -54,19 +65,6 @@ const EMPTY_FORM: ConceptoFormState = {
   enlacePago: '',
   destinoTipo: 'programa',
   destinoId: '',
-}
-
-const TIPO_LABELS: Record<ConceptoCobroTipo, string> = {
-  matricula: 'Matrícula',
-  inscripcion: 'Inscripción',
-  curso: 'Curso',
-  pension: 'Pensión',
-  gratuito: 'Gratuito',
-}
-
-const ESTADO_LABELS: Record<ConceptoCobroEstado, string> = {
-  activo: 'Activo',
-  inactivo: 'Inactivo',
 }
 
 const TIPO_PROGRAMA_LABELS: Record<ProgramaTipo, string> = {
@@ -97,16 +95,6 @@ function toFormState(concepto: ConceptoCobroBackend): ConceptoFormState {
   }
 }
 
-function formatMonto(value: string): string {
-  const monto = Number(value)
-  if (!Number.isFinite(monto)) return `S/ ${value}`
-
-  return `S/ ${monto.toLocaleString('es-PE', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`
-}
-
 export default function ConceptosAdminPage() {
   const { user, logout } = useAuth()
   const [conceptos, setConceptos] = useState<ConceptoCobroBackend[]>([])
@@ -121,8 +109,14 @@ export default function ConceptosAdminPage() {
   const [editingConcepto, setEditingConcepto] = useState<ConceptoCobroBackend | null>(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [form, setForm] = useState<ConceptoFormState>({ ...EMPTY_FORM })
+  const [errores, setErrores] = useState<ErroresConcepto>({})
   const [formError, setFormError] = useState('')
+  const [confirmandoDescarte, setConfirmandoDescarte] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [seleccionados, setSeleccionados] = useState<string[]>([])
+  const [accionEnLote, setAccionEnLote] = useState(false)
+  /** Foto del formulario al abrirlo, para saber si hay cambios sin guardar. */
+  const formInicial = useRef<ConceptoFormState>({ ...EMPTY_FORM })
   const [conceptoToToggle, setConceptoToToggle] = useState<ConceptoCobroBackend | null>(null)
   const [toggleError, setToggleError] = useState('')
   const [isToggling, setIsToggling] = useState(false)
@@ -264,6 +258,23 @@ export default function ConceptosAdminPage() {
     setEstadoFilter('')
   }, [])
 
+  const exportar = useCallback(() => {
+    descargarCSV(
+      `conceptos-cobro-${new Date().toISOString().slice(0, 10)}.csv`,
+      ['Tipo', 'Monto', 'Destino', 'Tipo de destino', 'Modalidad', 'Enlace de pago', 'Estado', 'Descripción'],
+      conceptosFiltrados.map((concepto) => [
+        TIPO_LABELS[concepto.tipo],
+        concepto.monto,
+        getDestinoNombre(concepto),
+        concepto.programa_id ? 'Programa' : concepto.combo_id ? 'Combo' : '',
+        concepto.modalidad ?? '',
+        concepto.enlace_pago ?? '',
+        ESTADO_LABELS[concepto.estado],
+        concepto.descripcion ?? '',
+      ]),
+    )
+  }, [conceptosFiltrados, getDestinoNombre])
+
   const syncConcepto = useCallback((updated: ConceptoCobroBackend) => {
     setConceptos((current) => {
       const existe = current.some((concepto) => concepto.id === updated.id)
@@ -273,26 +284,112 @@ export default function ConceptosAdminPage() {
     })
   }, [])
 
-  const closeFormModal = useCallback(() => {
-    if (isSaving) return
+  /**
+   * Activa o desactiva varios conceptos de una vez.
+   *
+   * Se informa por separado de los que salieron y de los que no: decir solo "listo"
+   * cuando tres de cinco fallaron deja al usuario creyendo que el trabajo esta hecho.
+   */
+  const aplicarEnLote = useCallback(
+    async (activar: boolean) => {
+      const objetivo: ConceptoCobroEstado = activar ? 'inactivo' : 'activo'
+      const afectados = conceptos.filter(
+        (concepto) => seleccionados.includes(concepto.id) && concepto.estado === objetivo,
+      )
+      if (afectados.length === 0) {
+        addToast(
+          'info',
+          'Nada que hacer',
+          `Los conceptos seleccionados ya están ${activar ? 'activos' : 'inactivos'}.`,
+        )
+        return
+      }
+
+      setAccionEnLote(true)
+      const resultados = await Promise.allSettled(
+        afectados.map((concepto) =>
+          activar ? activarConcepto(concepto.id) : desactivarConcepto(concepto.id),
+        ),
+      )
+
+      const logrados = resultados.filter(
+        (resultado): resultado is PromiseFulfilledResult<ConceptoCobroBackend> =>
+          resultado.status === 'fulfilled',
+      )
+      logrados.forEach((resultado) => syncConcepto(resultado.value))
+
+      if (logrados.length > 0) {
+        addToast(
+          'success',
+          activar ? 'Conceptos activados' : 'Conceptos desactivados',
+          `Se ${activar ? 'activaron' : 'desactivaron'} ${logrados.length} de ${afectados.length}.`,
+        )
+      }
+      if (logrados.length < afectados.length) {
+        addToast(
+          'error',
+          'Algunos no se pudieron cambiar',
+          `${afectados.length - logrados.length} concepto(s) siguen igual. Inténtalo de nuevo.`,
+        )
+      }
+
+      setSeleccionados([])
+      setAccionEnLote(false)
+    },
+    [addToast, conceptos, seleccionados, syncConcepto],
+  )
+
+  /** Quita el rojo de los campos indicados en cuanto el usuario los corrige. */
+  const limpiarError = useCallback((...campos: CampoConcepto[]) => {
+    setErrores((actuales) => {
+      const siguiente = { ...actuales }
+      for (const campo of campos) delete siguiente[campo]
+      return siguiente
+    })
+  }, [])
+
+  const cerrarFormulario = useCallback(() => {
     setIsFormOpen(false)
     setEditingConcepto(null)
+    setErrores({})
     setFormError('')
-  }, [isSaving])
+    setConfirmandoDescarte(false)
+  }, [])
+
+  /**
+   * Cierra avisando si hay cambios. Se compara contra el estado con el que se abrió y
+   * no contra un formulario vacío: al editar, "sin cambios" significa igual al
+   * original. Sin esto, un clic fuera del modal borraba lo escrito en silencio.
+   */
+  const closeFormModal = useCallback(() => {
+    if (isSaving) return
+    if (JSON.stringify(form) !== JSON.stringify(formInicial.current)) {
+      setConfirmandoDescarte(true)
+      return
+    }
+    cerrarFormulario()
+  }, [cerrarFormulario, form, isSaving])
+
+  const abrirFormulario = useCallback((estado: ConceptoFormState) => {
+    setForm(estado)
+    formInicial.current = estado
+    setErrores({})
+    setFormError('')
+    setIsFormOpen(true)
+  }, [])
 
   const openCreateModal = useCallback(() => {
     setEditingConcepto(null)
-    setForm({ ...EMPTY_FORM })
-    setFormError('')
-    setIsFormOpen(true)
-  }, [])
+    abrirFormulario({ ...EMPTY_FORM })
+  }, [abrirFormulario])
 
-  const openEditModal = useCallback((concepto: ConceptoCobroBackend) => {
-    setEditingConcepto(concepto)
-    setForm(toFormState(concepto))
-    setFormError('')
-    setIsFormOpen(true)
-  }, [])
+  const openEditModal = useCallback(
+    (concepto: ConceptoCobroBackend) => {
+      setEditingConcepto(concepto)
+      abrirFormulario(toFormState(concepto))
+    },
+    [abrirFormulario],
+  )
 
   const openToggleModal = useCallback((concepto: ConceptoCobroBackend) => {
     setConceptoToToggle(concepto)
@@ -389,29 +486,20 @@ export default function ConceptosAdminPage() {
     return baseColumns
   }, [canManage, getDestinoNombre, openEditModal, openToggleModal])
 
+  const validar = useCallback(
+    () => validarConcepto(form, conceptos, editingConcepto?.id),
+    [conceptos, editingConcepto, form],
+  )
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setFormError('')
 
-    const montoValue = form.monto.trim()
-    const monto = Number(montoValue)
+    const nuevosErrores = validar()
+    setErrores(nuevosErrores)
+    if (Object.keys(nuevosErrores).length > 0) return
 
-    if (!montoValue || !Number.isFinite(monto)) {
-      setFormError('Ingresa un monto válido.')
-      return
-    }
-    if (form.tipo === 'gratuito' && monto !== 0) {
-      setFormError('El monto debe ser S/ 0.00 para un concepto gratuito.')
-      return
-    }
-    if (form.tipo !== 'gratuito' && monto <= 0) {
-      setFormError('El monto debe ser mayor que S/ 0.00 para este tipo de concepto.')
-      return
-    }
-    if (!form.destinoId) {
-      setFormError(`Selecciona un ${form.destinoTipo}.`)
-      return
-    }
+    const monto = Number(form.monto.trim())
 
     setIsSaving(true)
     const descripcion = form.descripcion.trim() || null
@@ -453,8 +541,7 @@ export default function ConceptosAdminPage() {
 
         if (Object.keys(payload).length === 0) {
           addToast('info', 'Sin cambios', 'No modificaste ningún campo del concepto.')
-          setIsFormOpen(false)
-          setEditingConcepto(null)
+          cerrarFormulario()
           return
         }
 
@@ -479,8 +566,7 @@ export default function ConceptosAdminPage() {
         editingConcepto ? 'Concepto actualizado' : 'Concepto creado',
         `${TIPO_LABELS[saved.tipo]} · ${getDestinoNombre(saved)}`,
       )
-      setIsFormOpen(false)
-      setEditingConcepto(null)
+      cerrarFormulario()
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
         logout()
@@ -604,18 +690,23 @@ export default function ConceptosAdminPage() {
               <option value="inactivo">Inactivos</option>
             </Select>
           </div>
-          {canManage && (
-            <Button size="lg" onClick={openCreateModal}>
-              Nuevo concepto
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              variant="secondary"
+              onClick={exportar}
+              disabled={conceptosFiltrados.length === 0}
+            >
+              Exportar CSV
             </Button>
-          )}
+            {canManage && <Button onClick={openCreateModal}>Nuevo concepto</Button>}
+          </div>
         </div>
 
         {isLoading ? (
           <div className="grid min-h-72 place-items-center rounded-xl border border-slate-200 bg-white">
             <div className="text-center">
-              <div className="mx-auto mb-3 h-10 w-10 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
-              <p className="text-slate-600">Cargando conceptos de cobro...</p>
+              <LoadingSpinner />
+              <p className="mt-3 text-slate-600">Cargando conceptos de cobro…</p>
             </div>
           </div>
         ) : loadError ? (
@@ -641,10 +732,44 @@ export default function ConceptosAdminPage() {
                 </Button>
               )}
             </div>
+
+            {canManage && seleccionados.length > 0 && (
+              <div className="mb-3 flex flex-wrap items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3">
+                <p className="text-sm font-semibold text-dark">
+                  {seleccionados.length} seleccionado(s)
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => void aplicarEnLote(true)}
+                    disabled={accionEnLote}
+                  >
+                    Activar
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="danger"
+                    onClick={() => void aplicarEnLote(false)}
+                    disabled={accionEnLote}
+                  >
+                    Desactivar
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => setSeleccionados([])}>
+                    Quitar selección
+                  </Button>
+                </div>
+              </div>
+            )}
             <Table
               columns={columns}
               data={conceptosFiltrados}
               getRowKey={(concepto) => concepto.id}
+              seleccion={
+                canManage
+                  ? { seleccionados, onChange: setSeleccionados }
+                  : undefined
+              }
               caption="Listado de conceptos de cobro"
               emptyMessage={
                 hayFiltrosActivos
@@ -698,7 +823,8 @@ export default function ConceptosAdminPage() {
                 tipo,
                 monto: tipo === 'gratuito' ? '0' : current.tipo === 'gratuito' ? '' : current.monto,
               }))
-              setFormError('')
+              // Cambiar el tipo puede resolver el duplicado y el monto a la vez.
+              limpiarError('monto', 'destinoId')
             }}
             required
             disabled={isSaving}
@@ -715,9 +841,11 @@ export default function ConceptosAdminPage() {
             min={form.tipo === 'gratuito' ? 0 : 0.01}
             step={0.01}
             value={form.monto}
-            onChange={(event) =>
+            onChange={(event) => {
               setForm((current) => ({ ...current, monto: event.target.value }))
-            }
+              limpiarError('monto')
+            }}
+            error={errores.monto}
             hint={
               form.tipo === 'gratuito'
                 ? 'El monto de un concepto gratuito es S/ 0.00.'
@@ -751,9 +879,12 @@ export default function ConceptosAdminPage() {
             label="Enlace de pago"
             type="url"
             value={form.enlacePago}
-            onChange={(event) =>
+            onChange={(event) => {
               setForm((current) => ({ ...current, enlacePago: event.target.value }))
-            }
+              limpiarError('enlacePago')
+            }}
+            error={errores.enlacePago}
+            placeholder="https://..."
             hint="Enlace de Culqi u otra pasarela. El monto continúa administrándose en EDU-09."
             disabled={isSaving}
             containerClassName="sm:col-span-2"
@@ -761,13 +892,14 @@ export default function ConceptosAdminPage() {
           <Select
             label="Tipo de destino"
             value={form.destinoTipo}
-            onChange={(event) =>
+            onChange={(event) => {
               setForm((current) => ({
                 ...current,
                 destinoTipo: event.target.value as DestinoTipo,
                 destinoId: '',
               }))
-            }
+              limpiarError('destinoId')
+            }}
             required
             disabled={isSaving}
           >
@@ -779,9 +911,10 @@ export default function ConceptosAdminPage() {
             value={form.destinoId}
             onChange={(destinoId) => {
               setForm((current) => ({ ...current, destinoId }))
-              setFormError('')
+              limpiarError('destinoId')
             }}
             options={opcionesDestino}
+            error={errores.destinoId}
             required
             disabled={isSaving}
             clearLabel={`Quitar ${form.destinoTipo} seleccionado`}
@@ -800,6 +933,27 @@ export default function ConceptosAdminPage() {
             }
           />
         </form>
+      </Modal>
+
+      <Modal
+        isOpen={confirmandoDescarte}
+        onClose={() => setConfirmandoDescarte(false)}
+        title="Cambios sin guardar"
+        size="sm"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setConfirmandoDescarte(false)}>
+              Seguir editando
+            </Button>
+            <Button variant="danger" onClick={cerrarFormulario}>
+              Descartar cambios
+            </Button>
+          </>
+        }
+      >
+        <p className="text-slate-700">
+          Hiciste cambios que todavía no se han guardado. Si cierras ahora se perderán.
+        </p>
       </Modal>
 
       <Modal
