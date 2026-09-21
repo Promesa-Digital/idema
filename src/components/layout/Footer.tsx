@@ -52,7 +52,7 @@ export default function Footer() {
         >
           {/* Logo and Description */}
           <motion.div variants={itemVariants} className="lg:col-span-1">
-            <img src="/assets/img/idema-white.png" alt="IDEMA" className="h-12 w-auto mb-4" />
+            <img src="/assets/img/idema-white.webp" alt="IDEMA" className="h-12 w-auto mb-4" loading="lazy" decoding="async" />
             <p className="text-white text-xs mb-1">
               IES Idema
             </p>

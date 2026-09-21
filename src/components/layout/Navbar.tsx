@@ -289,8 +289,9 @@ export default function Navbar() {
           {/* Logo */}
           <Link to="/" onClick={closeNavigationState} className="flex-shrink-0 flex items-center gap-3">
             <img
-              src="/assets/img/idema-white.png"
+              src="/assets/img/idema-white.webp"
               alt="IDEMA"
+              decoding="async"
               className="transition-all duration-300"
               style={{ height: isScrolled ? '36px' : '44px' }}
             />

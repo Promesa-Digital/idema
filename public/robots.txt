@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /alumno/mi-cuenta
+Disallow: /recuperar-password
+Disallow: /restablecer-password
+Disallow: /verificar-correo
+
+Sitemap: https://idema.edu.pe/sitemap.xml

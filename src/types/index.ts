@@ -23,10 +23,20 @@ export interface Carrera {
   mallaCurricular?: MallaCurricular[]
   whatsappMessage?: string
   price?: string
+  priceOriginal?: string
+  discountPercent?: number
   priceVirtual?: string
+  priceVirtualOriginal?: string
+  discountVirtualPercent?: number
   priceSemipresencial?: string
+  priceSemipresencialOriginal?: string
+  discountSemipresencialPercent?: number
   pricePresencial?: string
+  pricePresencialOriginal?: string
+  discountPresencialPercent?: number
   matricula?: string
+  matriculaOriginal?: string
+  discountMatriculaPercent?: number
   requirements?: string[]
   certification?: string[]
   titulacion?: string

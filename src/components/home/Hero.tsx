@@ -106,6 +106,8 @@ export default function Hero() {
           transition={{ duration: 1, ease: 'easeInOut' }}
           className="absolute inset-0 w-full h-full object-cover"
           loading={current === 0 ? 'eager' : 'lazy'}
+          fetchPriority={current === 0 ? 'high' : 'auto'}
+          decoding="async"
         />
       </AnimatePresence>
 

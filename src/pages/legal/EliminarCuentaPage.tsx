@@ -12,7 +12,7 @@ export default function EliminarCuentaPage() {
       </Helmet>
 
       <div className="relative h-72 overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.jpeg')" }} />
+        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.webp')" }} />
         <div className="absolute inset-0 bg-gradient-to-r from-dark/85 via-dark/60 to-transparent" />
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative flex h-full flex-col items-center justify-center p-6 text-center text-white">
           <FaTrash className="mb-4 text-4xl text-cta" />

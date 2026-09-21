@@ -2,16 +2,13 @@ import { useParams, useLocation, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { FaCheck, FaClock, FaBook, FaCertificate, FaCalendar, FaWhatsapp, FaEnvelope, FaBriefcase, FaShoppingCart, FaMoneyBillWave } from 'react-icons/fa'
-import { carreras } from '../../data/programs/carreras'
-import { auxiliares } from '../../data/programs/auxiliares'
-import { especializaciones } from '../../data/programs/especializaciones'
 import { useCart } from '../../hooks/useCart'
 import { getWhatsAppRepForProgram, getWhatsAppUrl } from '../../data/whatsapp'
-import type { Carrera } from '../../types'
 import ContactLink from '../../components/ui/ContactLink'
+import { usePublicCatalog } from '@/hooks/usePublicCatalog'
 
 interface CategoryConfig {
-  data: Carrera[]
+  programType: 'carrera' | 'auxiliar' | 'especializacion'
   breadcrumbLabel: string
   breadcrumbLink: string
   curriculumTitle: string
@@ -28,7 +25,7 @@ interface CategoryConfig {
 
 const categoryMap: Record<string, CategoryConfig> = {
   'programas-de-estudio': {
-    data: carreras,
+    programType: 'carrera',
     breadcrumbLabel: 'Programas de Estudio',
     breadcrumbLink: '/programas-de-estudio?categoria=carrera',
     curriculumTitle: 'Malla Curricular',
@@ -43,7 +40,7 @@ const categoryMap: Record<string, CategoryConfig> = {
     notFoundLabel: 'Carrera no encontrada',
   },
   auxiliares: {
-    data: auxiliares,
+    programType: 'auxiliar',
     breadcrumbLabel: 'Programas Auxiliares',
     breadcrumbLink: '/programas-de-estudio?categoria=auxiliar',
     curriculumTitle: 'Plan de Estudios',
@@ -58,7 +55,7 @@ const categoryMap: Record<string, CategoryConfig> = {
     notFoundLabel: 'Programa auxiliar no encontrado',
   },
   especializaciones: {
-    data: especializaciones,
+    programType: 'especializacion',
     breadcrumbLabel: 'Especializaciones',
     breadcrumbLink: '/programas-de-estudio?categoria=especializacion',
     curriculumTitle: 'Plan de Estudios',
@@ -88,10 +85,20 @@ function highlightTerm(text: string, term: string) {
   )
 }
 
+function parsePrice(value?: string): number {
+  if (!value) return 0
+  const normalized = value
+    .replace(/^\s*S\/\.?\s*/i, '')
+    .replace(/[^0-9,.-]/g, '')
+    .replace(',', '.')
+  return Number(normalized) || 0
+}
+
 export default function ProgramDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const { pathname } = useLocation()
   const { addItem } = useCart()
+  const { programs, isLoading } = usePublicCatalog()
 
   const category = getCategoryFromPath(pathname)
   const config = categoryMap[category]
@@ -112,7 +119,11 @@ export default function ProgramDetailPage() {
     )
   }
 
-  const program = config.data.find(p => p.slug === slug)
+  const program = programs.find((item) => item.category === config.programType && item.slug === slug)
+
+  if (!program && isLoading) {
+    return <div className="min-h-screen grid place-items-center text-deep">Cargando programa...</div>
+  }
 
   if (!program) {
     return (
@@ -131,19 +142,19 @@ export default function ProgramDetailPage() {
   }
 
   const prices = [
-    program.pricePresencial && { label: 'Presencial', price: program.pricePresencial },
-    program.priceSemipresencial && { label: 'Semipresencial', price: program.priceSemipresencial },
-    program.priceVirtual && { label: 'Virtual', price: program.priceVirtual },
-    program.price && !program.pricePresencial && !program.priceVirtual && { label: 'Mensualidad', price: program.price },
-  ].filter(Boolean) as { label: string; price: string }[]
+    program.pricePresencial && { label: 'Presencial', price: program.pricePresencial, original: program.pricePresencialOriginal, discount: program.discountPresencialPercent },
+    program.priceSemipresencial && { label: 'Semipresencial', price: program.priceSemipresencial, original: program.priceSemipresencialOriginal, discount: program.discountSemipresencialPercent },
+    program.priceVirtual && { label: 'Virtual', price: program.priceVirtual, original: program.priceVirtualOriginal, discount: program.discountVirtualPercent },
+    program.price && !program.pricePresencial && !program.priceVirtual && { label: 'Mensualidad', price: program.price, original: program.priceOriginal, discount: program.discountPercent },
+  ].filter(Boolean) as { label: string; price: string; original?: string; discount?: number }[]
 
   const handleAddToCart = (modality?: string, price?: string) => {
-    const numPrice = price ? parseInt(price.replace(/[^0-9]/g, ''), 10) : 0
+    const numPrice = parsePrice(price)
     addItem(program, numPrice, modality)
   }
 
-  const matriculaNum = program.matricula ? parseInt(program.matricula.replace(/[^0-9]/g, ''), 10) : 0
-  const virtualNum = program.priceVirtual ? parseInt(program.priceVirtual.replace(/[^0-9]/g, ''), 10) : 0
+  const matriculaNum = parsePrice(program.matricula)
+  const virtualNum = parsePrice(program.priceVirtual)
 
   const handleStartMatricula = () => {
     if (!program.matricula) return
@@ -233,6 +244,15 @@ export default function ProgramDetailPage() {
                 <FaMoneyBillWave className="inline mr-2" />
                 {config.priceTitle}
               </h2>
+              {prices.some((price) => price.discount !== undefined) && (
+                <div className="mb-8 flex items-center gap-3 rounded-2xl border border-cta/20 bg-cta/10 px-5 py-4 text-cta">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-cta text-lg font-black text-white">%</span>
+                  <div>
+                    <p className="font-bold">Oferta activa para este programa</p>
+                    <p className="text-sm text-deep/70">El precio mostrado ya incluye el descuento vigente.</p>
+                  </div>
+                </div>
+              )}
               {program.matricula && (
                 <motion.div whileHover={{ scale: 1.01 }} className="mb-8 bg-gradient-to-br from-primary to-dark rounded-2xl p-6 md:p-8 text-white">
                   <p className="text-white/70 uppercase text-xs font-bold tracking-wider mb-4">Inicia tu matrícula</p>
@@ -267,8 +287,10 @@ export default function ProgramDetailPage() {
                     <motion.div key={p.label} whileHover={{ translateY: -5 }}
                       className="bg-gradient-to-br from-surface to-white rounded-xl p-6 border-2 border-deep/10 hover:border-primary/40 transition-all text-center">
                       <p className="text-sm text-deep/70 uppercase tracking-wider font-semibold mb-2">{p.label}</p>
-                      <p className="text-3xl font-bold text-deep mb-4">
+                        <p className="text-3xl font-bold text-deep mb-4">
+                        {p.original && <span className="mr-2 text-base font-normal text-deep/45 line-through">{p.original}</span>}
                         {p.price}
+                        {p.discount && <span className="ml-2 text-xs font-bold text-cta">-{p.discount}%</span>}
                         {config.showPriceSuffix && <span className="text-base text-deep/70 font-normal">/mes</span>}
                       </p>
                       <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}

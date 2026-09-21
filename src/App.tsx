@@ -1,5 +1,7 @@
 import { Routes, Route, Navigate, Outlet, useParams } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
+import type { ReactNode } from 'react'
+import { Helmet } from 'react-helmet-async'
 import Layout from './components/Layout'
 import LoadingSpinner from './components/ui/LoadingSpinner'
 import ProtectedRoute from './components/admin/ProtectedRoute'
@@ -17,6 +19,7 @@ function RedirectToProgramaSlug() {
 function AdminRoutes() {
   return (
     <AuthProvider>
+      <Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>
       <Outlet />
     </AuthProvider>
   )
@@ -25,8 +28,18 @@ function AdminRoutes() {
 function AlumnoRoutes() {
   return (
     <AlumnoAuthProvider>
+      <Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>
       <Outlet />
     </AlumnoAuthProvider>
+  )
+}
+
+function NoIndexPage({ children }: { children: ReactNode }) {
+  return (
+    <>
+      <Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>
+      {children}
+    </>
   )
 }
 
@@ -112,9 +125,9 @@ function App() {
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
         </Route>
-        <Route path="/recuperar-password" element={<RecuperarPasswordPage />} />
-        <Route path="/restablecer-password" element={<RestablecerPasswordPage />} />
-        <Route path="/verificar-correo" element={<VerificarCorreoPage />} />
+        <Route path="/recuperar-password" element={<NoIndexPage><RecuperarPasswordPage /></NoIndexPage>} />
+        <Route path="/restablecer-password" element={<NoIndexPage><RestablecerPasswordPage /></NoIndexPage>} />
+        <Route path="/verificar-correo" element={<NoIndexPage><VerificarCorreoPage /></NoIndexPage>} />
         <Route path="/admin" element={<AdminRoutes />}>
           <Route path="login" element={<LoginPage />} />
           <Route
@@ -137,7 +150,7 @@ function App() {
             path="popups"
             element={
               <ProtectedRoute
-                allowedRoles={['marketing', 'director_marketing', 'admin_sistema']}
+                allowedRoles={['marketing', 'ventas', 'director_marketing', 'admin_sistema']}
               >
                 <PopupsAdminPage />
               </ProtectedRoute>

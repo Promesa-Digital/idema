@@ -1,14 +1,13 @@
-import { useState, useMemo } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useSearchParams, useNavigate, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
-import { FaGraduationCap, FaBook, FaCertificate, FaLaptop } from 'react-icons/fa'
-import { carreras } from '../../data/programs/carreras'
-import { auxiliares } from '../../data/programs/auxiliares'
-import { especializaciones } from '../../data/programs/especializaciones'
-import { cursos } from '../../data/programs/cursos'
+import { FaGraduationCap, FaBook, FaCertificate, FaLaptop, FaLayerGroup } from 'react-icons/fa'
 import ProgramCard from '../../components/ui/ProgramCard'
-import type { Carrera } from '../../types'
+import { usePublicCatalog } from '@/hooks/usePublicCatalog'
+import { listarCombosPublicos } from '@/services/combosApi'
+import { useCart } from '@/hooks/useCart'
+import type { ComboBackend } from '@/types/backend'
 
 const categories = [
   { key: 'todos', label: 'Todos' },
@@ -24,13 +23,6 @@ const categoryBasePath: Record<string, string> = {
   especializacion: '/especializaciones',
   curso: '/cursos',
 }
-
-const allPrograms: Carrera[] = [
-  ...carreras,
-  ...auxiliares,
-  ...especializaciones,
-  ...cursos,
-]
 
 const learningPath = [
   {
@@ -60,6 +52,9 @@ const learningPath = [
 ]
 
 export default function ProgramasPage() {
+  const { programs: allPrograms } = usePublicCatalog()
+  const { addItem } = useCart()
+  const [combos, setCombos] = useState<ComboBackend[]>([])
   const [search, setSearch] = useState('')
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
@@ -74,7 +69,21 @@ export default function ProgramasPage() {
       const matchesSearch = !search || p.title.toLowerCase().includes(search.toLowerCase())
       return matchesCategory && matchesSearch
     })
-  }, [activeFilter, search])
+  }, [activeFilter, allPrograms, search])
+
+  useEffect(() => {
+    let active = true
+    listarCombosPublicos()
+      .then((data) => {
+        if (active) setCombos(data.filter((combo) => combo.monto !== null))
+      })
+      .catch(() => {
+        if (active) setCombos([])
+      })
+    return () => {
+      active = false
+    }
+  }, [])
 
   return (
     <>
@@ -85,7 +94,7 @@ export default function ProgramasPage() {
 
       {/* Header */}
       <section className="relative pt-32 pb-16 overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.jpeg')" }} />
+        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.webp')" }} />
         <div className="absolute inset-0 bg-gradient-to-r from-dark/85 via-dark/60 to-transparent" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.h1
@@ -166,6 +175,54 @@ export default function ProgramasPage() {
                 Limpiar filtros
               </button>
             </div>
+          )}
+
+          {activeFilter === 'todos' && !search && combos.length > 0 && (
+            <section className="mt-16 rounded-3xl bg-gradient-to-br from-dark to-deep p-6 text-white sm:p-10">
+              <div className="mb-8 flex items-center gap-4">
+                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-primary text-xl">
+                  <FaLayerGroup />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold sm:text-3xl">Combos académicos</h2>
+                  <p className="text-sm text-white/70">Lleva varios programas en un solo paquete.</p>
+                </div>
+              </div>
+              <div className="grid gap-5 md:grid-cols-2">
+                {combos.map((combo) => {
+                  const product = {
+                    slug: `combo-${combo.id}`,
+                    title: combo.nombre,
+                    shortTitle: combo.nombre,
+                    duration: `${combo.programa_nombres.length} programas incluidos`,
+                    modality: 'Paquete académico',
+                    description: combo.descripcion || combo.programa_nombres.join(', '),
+                    image: '/assets/img/programs/cursos.webp',
+                    category: 'curso' as const,
+                    culqiLink: combo.enlace_pago || undefined,
+                  }
+                  return (
+                    <article key={combo.id} className="rounded-2xl bg-white p-5 text-deep shadow-lg">
+                      <div className="flex gap-4">
+                        <img src={product.image} alt={combo.nombre} className="h-24 w-24 rounded-xl object-cover" />
+                        <div className="min-w-0 flex-1">
+                          <h3 className="text-lg font-bold">{combo.nombre}</h3>
+                          <p className="mt-1 text-sm text-deep/65">{product.description}</p>
+                          <p className="mt-3 text-xl font-black text-primary">S/ {Number(combo.monto).toFixed(2)}</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => addItem(product, Number(combo.monto), 'Combo')}
+                        className="mt-5 w-full rounded-xl bg-primary px-4 py-3 font-bold text-white transition hover:bg-primary/90"
+                      >
+                        Agregar combo al carrito
+                      </button>
+                    </article>
+                  )
+                })}
+              </div>
+            </section>
           )}
         </div>
       </section>

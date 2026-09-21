@@ -3,9 +3,8 @@ import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaCheck, FaClock, FaBook, FaCertificate, FaCalendar, FaWhatsapp, FaEnvelope, FaCreditCard, FaShieldAlt, FaShoppingCart, FaUniversity, FaChevronUp } from 'react-icons/fa'
-import { cursos } from '../../data/programs/cursos'
-import { useCulqi } from '../../hooks/useCulqi'
 import { useCart } from '../../hooks/useCart'
+import { usePublicCatalog } from '@/hooks/usePublicCatalog'
 
 const paymentMethods = [
   { bank: 'BCP', lines: ['Recaudación: 20430', 'Cuenta: 25105155619028', 'CCI: 00225110515561902870'] },
@@ -17,10 +16,14 @@ const paymentMethods = [
 
 export default function CursoDetailPage() {
   const { slug } = useParams<{ slug: string }>()
-  const curso = cursos.find(c => c.slug === slug)
-  useCulqi()
+  const { programs, isLoading } = usePublicCatalog()
+  const curso = programs.find((program) => program.category === 'curso' && program.slug === slug)
   const { addItem } = useCart()
   const [showPaymentMethods, setShowPaymentMethods] = useState(false)
+
+  if (!curso && isLoading) {
+    return <div className="min-h-screen grid place-items-center text-deep">Cargando curso...</div>
+  }
 
   if (!curso) {
     return (
@@ -38,7 +41,9 @@ export default function CursoDetailPage() {
     )
   }
 
-  const priceNumber = curso.price ? parseInt(curso.price.replace(/[^0-9]/g, ''), 10) : 0
+  const priceNumber = curso.price
+    ? Number(curso.price.replace(/^\s*S\/\.?\s*/i, '').replace(/[^0-9,.-]/g, '').replace(',', '.')) || 0
+    : 0
   const priceCents = priceNumber * 100
 
   const handlePaymentClick = () => {
@@ -184,14 +189,22 @@ export default function CursoDetailPage() {
                           <div className="w-px bg-white/20" />
                           <div>
                             <p className="text-xs text-white/60 mb-1">Pensión</p>
-                            <p className="text-2xl font-bold">{curso.price || 'Consultar'}</p>
+                            <p className="text-2xl font-bold">
+                              {curso.priceOriginal && <span className="mr-2 text-sm font-normal text-deep/45 line-through">{curso.priceOriginal}</span>}
+                              {curso.price || 'Consultar'}
+                              {curso.discountPercent && <span className="ml-2 text-xs font-bold text-cta">-{curso.discountPercent}%</span>}
+                            </p>
                           </div>
                         </div>
                       </>
                     ) : (
                       <>
                         <p className="text-primary text-sm font-semibold uppercase tracking-wider mb-2">Precio del Curso</p>
-                        <p className="text-4xl font-bold text-white">{curso.price || 'Consultar'}</p>
+                        <p className="text-4xl font-bold text-white">
+                          {curso.priceOriginal && <span className="mr-2 text-base font-normal text-white/60 line-through">{curso.priceOriginal}</span>}
+                          {curso.price || 'Consultar'}
+                          {curso.discountPercent && <span className="ml-2 text-sm font-bold text-white">-{curso.discountPercent}%</span>}
+                        </p>
                         <p className="text-white/60 text-sm mt-1">Pago único</p>
                       </>
                     )}

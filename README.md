@@ -22,20 +22,24 @@ Variables principales:
 ```dotenv
 VITE_API_URL=http://localhost:8000
 VITE_CULQI_PUBLIC_KEY=
+VITE_WEB3FORMS_KEY=
 VITE_CITA_ENDPOINT=https://bienestar.idema.edu.pe/api/cita
 ```
 
 `VITE_CULQI_PUBLIC_KEY` debe contener únicamente la llave pública de Culqi. Las llaves secretas pertenecen al backend y nunca deben exponerse en Vite.
 
+`VITE_WEB3FORMS_KEY` es la llave pública usada por el formulario del carrito para enviar solicitudes de inscripción. Si no se configura, el carrito mantiene los productos pero no envía el formulario.
+
 ## Verificación
 
 ```bash
 npm run lint
+npm run check:assets
 npm run build
 npm run preview
 ```
 
-No existe una suite automatizada de frontend. `npm run build` ejecuta TypeScript estricto y genera el bundle de producción; `npm run lint` valida todo el código TS/TSX.
+No existe una suite automatizada de frontend. `npm run build` ejecuta TypeScript estricto y genera el bundle de producción; `npm run lint` valida todo el código TS/TSX y `npm run check:assets` comprueba que los recursos públicos referenciados existan. `npm run verify` ejecuta las tres comprobaciones.
 
 ## Rutas principales
 
