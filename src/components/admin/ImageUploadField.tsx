@@ -7,6 +7,9 @@ interface ImageUploadFieldProps {
   value: string
   onChange: (value: string) => void
   disabled?: boolean
+  /** Error de validación del formulario, distinto del fallo al subir el archivo. */
+  error?: string
+  required?: boolean
 }
 
 async function convertToWebp(file: File): Promise<Blob> {
@@ -33,15 +36,19 @@ export default function ImageUploadField({
   value,
   onChange,
   disabled = false,
+  error,
+  required,
 }: ImageUploadFieldProps) {
   const id = useId()
   const [isUploading, setIsUploading] = useState(false)
-  const [error, setError] = useState('')
+  const [errorSubida, setErrorSubida] = useState('')
+  // El fallo al subir manda sobre el de validación: es el más reciente y el más concreto.
+  const mensaje = errorSubida || error
 
   const handleFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
-    setError('')
+    setErrorSubida('')
     setIsUploading(true)
     try {
       const webp = await convertToWebp(file)
@@ -49,7 +56,9 @@ export default function ImageUploadField({
       const url = await subirImagenWebp(webp, `${file.name.replace(/\.[^.]+$/, '')}.webp`)
       onChange(url)
     } catch (uploadError) {
-      setError(uploadError instanceof Error ? uploadError.message : 'No se pudo subir la imagen.')
+      setErrorSubida(
+        uploadError instanceof Error ? uploadError.message : 'No se pudo subir la imagen.',
+      )
     } finally {
       setIsUploading(false)
       event.target.value = ''
@@ -58,8 +67,15 @@ export default function ImageUploadField({
 
   return (
     <div>
-      <label htmlFor={id} className="mb-1.5 block text-sm font-semibold text-dark">{label}</label>
-      <div className="flex flex-col gap-3 rounded-xl border border-slate-200 p-3 sm:flex-row sm:items-center">
+      <label htmlFor={id} className="mb-1.5 block text-sm font-semibold text-dark">
+        {label}
+        {required && <span className="ml-1 text-red-600">*</span>}
+      </label>
+      <div
+        className={`flex flex-col gap-3 rounded-xl border p-3 sm:flex-row sm:items-center ${
+          mensaje ? 'border-red-500' : 'border-slate-200'
+        }`}
+      >
         {value ? (
           <img src={value} alt="Vista previa" className="h-24 w-32 rounded-lg bg-slate-100 object-cover" />
         ) : (
@@ -77,14 +93,21 @@ export default function ImageUploadField({
           <input
             type="url"
             value={value.startsWith('http') ? value : ''}
-            onChange={(event) => onChange(event.target.value)}
+            onChange={(event) => {
+              setErrorSubida('')
+              onChange(event.target.value)
+            }}
             placeholder="O pega una URL externa"
             disabled={disabled || isUploading}
             className="min-h-10 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-primary"
           />
           <p className="text-xs text-slate-500">Se redimensiona y convierte automáticamente a WebP.</p>
           {isUploading && <p className="text-xs font-semibold text-primary">Procesando imagen...</p>}
-          {error && <p className="text-xs text-red-600">{error}</p>}
+          {mensaje && (
+            <p role="alert" className="text-xs text-red-600">
+              {mensaje}
+            </p>
+          )}
         </div>
       </div>
     </div>

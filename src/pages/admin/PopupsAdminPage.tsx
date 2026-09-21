@@ -1,15 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import Modal from '@/components/ui/Modal'
+import RowActions from '@/components/ui/RowActions'
+import SearchSelect from '@/components/ui/SearchSelect'
+import type { SearchSelectOption } from '@/components/ui/SearchSelect'
 import Select from '@/components/ui/Select'
 import Table from '@/components/ui/Table'
 import type { TableColumn } from '@/components/ui/Table'
 import Textarea from '@/components/ui/Textarea'
 import ImageUploadField from '@/components/admin/ImageUploadField'
 import { useAuth } from '@/context/AuthContextType'
+import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/services/apiClient'
 import { listarConceptos } from '@/services/conceptosApi'
 import { listarProgramasPublicos } from '@/services/programasApi'
@@ -23,6 +28,16 @@ import {
   publicar,
   rechazar,
 } from '@/services/popupsApi'
+import {
+  ESTADO_POPUP_LABELS as ESTADO_LABELS,
+  ESTADO_POPUP_SIGUIENTE,
+  TIPO_POPUP_LABELS as TIPO_LABELS,
+  formatFecha as formatDate,
+  validarPopup,
+  vigenciaPopup,
+} from '@/utils/popup'
+import type { CampoPopup, ErroresPopup } from '@/utils/popup'
+import { descargarCSV } from '@/utils/csv'
 import type {
   PopupBackend,
   ConceptoCobroBackend,
@@ -53,20 +68,6 @@ interface PendingWorkflow {
   action: WorkflowAction
 }
 
-const TIPO_LABELS: Record<PopupTipo, string> = {
-  anuncio: 'Anuncio',
-  descuento: 'Descuento',
-}
-
-const ESTADO_LABELS: Record<PopupEstado, string> = {
-  borrador: 'Borrador',
-  pendiente: 'Pendiente',
-  aprobado: 'Aprobado',
-  rechazado: 'Rechazado',
-  publicado: 'Publicado',
-  finalizado: 'Finalizado',
-}
-
 const ESTADO_BADGE_VARIANTS = {
   borrador: 'slate',
   pendiente: 'amber',
@@ -79,6 +80,8 @@ const ESTADO_BADGE_VARIANTS = {
 const WORKFLOW_COPY: Record<
   WorkflowAction,
   {
+    /** Texto corto para el menú de la fila. */
+    menuLabel: string
     confirmLabel: string
     title: string
     question: string
@@ -86,30 +89,35 @@ const WORKFLOW_COPY: Record<
   }
 > = {
   enviar: {
+    menuLabel: 'Enviar a aprobación',
     confirmLabel: 'Sí, enviar',
     title: 'Enviar popup a aprobación',
     question: '¿Confirmas que deseas enviar a revisión el popup',
     success: 'El popup fue enviado a aprobación.',
   },
   aprobar: {
+    menuLabel: 'Aprobar',
     confirmLabel: 'Sí, aprobar',
     title: 'Aprobar popup',
     question: '¿Confirmas que deseas aprobar el popup',
     success: 'El popup fue aprobado.',
   },
   rechazar: {
+    menuLabel: 'Rechazar',
     confirmLabel: 'Sí, rechazar',
     title: 'Rechazar popup',
     question: '¿Confirmas que deseas rechazar el popup',
     success: 'El popup fue rechazado.',
   },
   publicar: {
+    menuLabel: 'Publicar',
     confirmLabel: 'Sí, publicar',
     title: 'Publicar popup',
     question: '¿Confirmas que deseas publicar el popup',
     success: 'El popup fue publicado.',
   },
   finalizar: {
+    menuLabel: 'Finalizar',
     confirmLabel: 'Sí, finalizar',
     title: 'Finalizar popup',
     question: '¿Confirmas que deseas finalizar el popup',
@@ -182,11 +190,6 @@ function truncateText(value: string, maximumLength = 80): string {
   return value.length > maximumLength ? `${value.slice(0, maximumLength).trimEnd()}…` : value
 }
 
-function formatDate(value: string): string {
-  const [year, month, day] = value.slice(0, 10).split('-')
-  return year && month && day ? `${day}/${month}/${year}` : value
-}
-
 function StatusBadge({ estado }: { estado: PopupEstado }) {
   return <Badge variant={ESTADO_BADGE_VARIANTS[estado]}>{ESTADO_LABELS[estado]}</Badge>
 }
@@ -198,21 +201,26 @@ export default function PopupsAdminPage() {
   const [carreras, setCarreras] = useState<ProgramaBackend[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
-  const [feedback, setFeedback] = useState('')
+  const [busqueda, setBusqueda] = useState('')
   const [tipoFilter, setTipoFilter] = useState<PopupTipo | 'todos'>('todos')
   const [estadoFilter, setEstadoFilter] = useState<PopupEstado | 'todos'>('todos')
   const [reloadKey, setReloadKey] = useState(0)
   const [editingPopup, setEditingPopup] = useState<PopupBackend | null>(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [form, setForm] = useState<PopupFormState>({ ...EMPTY_FORM })
+  const [errores, setErrores] = useState<ErroresPopup>({})
   const [formError, setFormError] = useState('')
+  const [confirmandoDescarte, setConfirmandoDescarte] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  /** Foto del formulario al abrirlo, para saber si hay cambios sin guardar. */
+  const formInicial = useRef<PopupFormState>({ ...EMPTY_FORM })
   const [pendingWorkflow, setPendingWorkflow] = useState<PendingWorkflow | null>(null)
   const [workflowError, setWorkflowError] = useState('')
   const [isTransitioning, setIsTransitioning] = useState(false)
   const isCreator = user?.rol === 'marketing' || user?.rol === 'ventas' || user?.rol === 'admin_sistema'
   const isApprover = user?.rol === 'director_marketing' || user?.rol === 'admin_sistema'
   const isAdmin = user?.rol === 'admin_sistema'
+  const { addToast } = useToast()
 
   useEffect(() => {
     if (!isCreator) return
@@ -246,10 +254,9 @@ export default function PopupsAdminPage() {
   useEffect(() => {
     let isActive = true
 
-    listarPopups({
-      tipo: tipoFilter === 'todos' ? undefined : tipoFilter,
-      estado: estadoFilter === 'todos' ? undefined : estadoFilter,
-    })
+    // Se traen todos y se filtra en el navegador: cambiar de filtro vaciaba la tabla con
+    // un "Cargando..." en cada pulsación.
+    listarPopups()
       .then((data) => {
         if (isActive) setPopups(data)
       })
@@ -268,46 +275,132 @@ export default function PopupsAdminPage() {
     return () => {
       isActive = false
     }
-  }, [estadoFilter, logout, reloadKey, tipoFilter])
+  }, [logout, reloadKey])
 
-  const syncPopup = useCallback(
-    (updated: PopupBackend) => {
-      const matchesFilters =
-        (tipoFilter === 'todos' || updated.tipo === tipoFilter) &&
-        (estadoFilter === 'todos' || updated.estado === estadoFilter)
+  const syncPopup = useCallback((updated: PopupBackend) => {
+    setPopups((current) => {
+      const existe = current.some((popup) => popup.id === updated.id)
+      return existe
+        ? current.map((popup) => (popup.id === updated.id ? updated : popup))
+        : [updated, ...current]
+    })
+  }, [])
 
-      setPopups((current) => {
-        if (!matchesFilters) return current.filter((popup) => popup.id !== updated.id)
+  const popupsFiltrados = useMemo(() => {
+    const termino = busqueda.trim().toLowerCase()
+    return popups.filter((popup) => {
+      if (tipoFilter !== 'todos' && popup.tipo !== tipoFilter) return false
+      if (estadoFilter !== 'todos' && popup.estado !== estadoFilter) return false
+      if (!termino) return true
+      return [popup.texto, popup.texto_superior ?? '', popup.paginas, popup.enlace ?? '']
+        .join(' ')
+        .toLowerCase()
+        .includes(termino)
+    })
+  }, [busqueda, estadoFilter, popups, tipoFilter])
 
-        const exists = current.some((popup) => popup.id === updated.id)
-        return exists
-          ? current.map((popup) => (popup.id === updated.id ? updated : popup))
-          : [updated, ...current]
-      })
-    },
-    [estadoFilter, tipoFilter],
+  const resumen = useMemo(() => {
+    const publicados = popups.filter((popup) => popup.estado === 'publicado')
+    return {
+      total: popups.length,
+      pendientes: popups.filter((popup) => popup.estado === 'pendiente').length,
+      publicados: publicados.length,
+      // Un popup publicado fuera de sus fechas no se ve, pero sigue diciendo "Publicado":
+      // sin esta cuenta, nadie se entera de que la campaña dejó de mostrarse.
+      vencidos: publicados.filter(
+        (popup) => vigenciaPopup(popup.fecha_inicio, popup.fecha_fin) === 'vencido',
+      ).length,
+    }
+  }, [popups])
+
+  const hayFiltrosActivos = Boolean(busqueda) || tipoFilter !== 'todos' || estadoFilter !== 'todos'
+
+  const limpiarFiltros = useCallback(() => {
+    setBusqueda('')
+    setTipoFilter('todos')
+    setEstadoFilter('todos')
+  }, [])
+
+  const opcionesConcepto = useMemo<SearchSelectOption[]>(
+    () =>
+      conceptosCarrera.map((concepto) => {
+        const carrera = carrerasById.get(concepto.programa_id ?? '')
+        return {
+          value: concepto.id,
+          label: carrera?.nombre ?? 'Sin carrera',
+          hint: `S/ ${Number(concepto.monto).toFixed(2)}`,
+          group: concepto.descripcion || concepto.tipo,
+        }
+      }),
+    [carrerasById, conceptosCarrera],
   )
 
-  const closeFormModal = useCallback(() => {
-    if (isSaving) return
+  const exportar = useCallback(() => {
+    descargarCSV(
+      `popups-${new Date().toISOString().slice(0, 10)}.csv`,
+      ['Tipo', 'Texto', 'Páginas', 'Enlace', 'Desde', 'Hasta', 'Estado'],
+      popupsFiltrados.map((popup) => [
+        TIPO_LABELS[popup.tipo],
+        popup.texto,
+        popup.paginas,
+        popup.enlace ?? '',
+        formatDate(popup.fecha_inicio),
+        formatDate(popup.fecha_fin),
+        ESTADO_LABELS[popup.estado],
+      ]),
+    )
+  }, [popupsFiltrados])
+
+  /** Quita el rojo de los campos indicados en cuanto el usuario los corrige. */
+  const limpiarError = useCallback((...campos: CampoPopup[]) => {
+    setErrores((actuales) => {
+      const siguiente = { ...actuales }
+      for (const campo of campos) delete siguiente[campo]
+      return siguiente
+    })
+  }, [])
+
+  const cerrarFormulario = useCallback(() => {
     setIsFormOpen(false)
     setEditingPopup(null)
+    setErrores({})
     setFormError('')
-  }, [isSaving])
+    setConfirmandoDescarte(false)
+  }, [])
+
+  /**
+   * Cierra avisando si hay cambios. Se compara contra el estado con el que se abrió y no
+   * contra un formulario vacío: al editar, "sin cambios" significa igual al original.
+   */
+  const closeFormModal = useCallback(() => {
+    if (isSaving) return
+    if (JSON.stringify(form) !== JSON.stringify(formInicial.current)) {
+      setConfirmandoDescarte(true)
+      return
+    }
+    cerrarFormulario()
+  }, [cerrarFormulario, form, isSaving])
+
+  const abrirFormulario = useCallback((estado: PopupFormState) => {
+    setForm(estado)
+    formInicial.current = estado
+    setErrores({})
+    setFormError('')
+    setIsFormOpen(true)
+  }, [])
 
   const openCreateModal = useCallback(() => {
     setEditingPopup(null)
-    setForm({ ...EMPTY_FORM })
-    setFormError('')
-    setIsFormOpen(true)
-  }, [])
+    abrirFormulario({ ...EMPTY_FORM })
+  }, [abrirFormulario])
 
-  const openEditModal = useCallback((popup: PopupBackend) => {
-    setEditingPopup(popup)
-    setForm(toFormState(popup))
-    setFormError('')
-    setIsFormOpen(true)
-  }, [])
+  const openEditModal = useCallback(
+    (popup: PopupBackend) => {
+      setEditingPopup(popup)
+      abrirFormulario(toFormState(popup))
+    },
+    [abrirFormulario],
+  )
 
   const openWorkflowModal = useCallback((popup: PopupBackend, action: WorkflowAction) => {
     setPendingWorkflow({ popup, action })
@@ -320,108 +413,124 @@ export default function PopupsAdminPage() {
     setWorkflowError('')
   }, [isTransitioning])
 
+  /**
+   * Las transiciones que este usuario puede hacer sobre este popup.
+   *
+   * Antes cada rama devolvía sus propios botones y el resto de filas mostraban el texto
+   * "Sin acciones disponibles", que para la mayoría de roles era casi toda la tabla.
+   */
+  const accionesDe = useCallback(
+    (popup: PopupBackend): WorkflowAction[] => {
+      const esSuyo = popup.creado_por === user?.id
+      const editable = popup.estado === 'borrador' || popup.estado === 'rechazado'
+
+      if (isCreator && (esSuyo || isAdmin) && editable) return ['enviar']
+      if (isApprover && popup.estado === 'pendiente') return ['aprobar', 'rechazar']
+      if (isApprover && popup.estado === 'aprobado') return ['publicar']
+      if (isApprover && popup.estado === 'publicado') return ['finalizar']
+      return []
+    },
+    [isAdmin, isApprover, isCreator, user?.id],
+  )
+
+  const puedeEditar = useCallback(
+    (popup: PopupBackend) =>
+      isCreator &&
+      (popup.creado_por === user?.id || isAdmin) &&
+      (popup.estado === 'borrador' || popup.estado === 'rechazado'),
+    [isAdmin, isCreator, user?.id],
+  )
+
   const columns = useMemo<TableColumn<PopupBackend>[]>(() => {
     const baseColumns: TableColumn<PopupBackend>[] = [
       {
         key: 'tipo',
         header: 'Tipo',
+        sortValue: (popup) => TIPO_LABELS[popup.tipo],
         render: (popup) => TIPO_LABELS[popup.tipo],
       },
       {
         key: 'texto',
         header: 'Texto',
+        sortValue: (popup) => popup.texto,
         render: (popup) => (
-          <p className="min-w-64 max-w-sm" title={popup.texto}>
-            {truncateText(popup.texto)}
-          </p>
+          <div className="min-w-64 max-w-sm">
+            <p title={popup.texto}>{truncateText(popup.texto)}</p>
+            <p className="mt-0.5 truncate text-xs text-slate-500">{popup.paginas}</p>
+          </div>
         ),
       },
       {
         key: 'vigencia',
         header: 'Vigencia',
-        render: (popup) => (
-          <span className="whitespace-nowrap">
-            {formatDate(popup.fecha_inicio)} – {formatDate(popup.fecha_fin)}
-          </span>
-        ),
+        sortValue: (popup) => popup.fecha_inicio,
+        render: (popup) => {
+          const vigencia = vigenciaPopup(popup.fecha_inicio, popup.fecha_fin)
+          return (
+            <div className="whitespace-nowrap">
+              <p>
+                {formatDate(popup.fecha_inicio)} – {formatDate(popup.fecha_fin)}
+              </p>
+              {popup.estado === 'publicado' && vigencia !== 'vigente' && (
+                // Publicado pero fuera de fechas: el estado dice que sí y la web dice que no.
+                <p className="mt-0.5 text-xs font-semibold text-amber-700">
+                  {vigencia === 'vencido' ? 'Fuera de fecha: no se muestra' : 'Aún no empieza'}
+                </p>
+              )}
+            </div>
+          )
+        },
       },
       {
         key: 'estado',
         header: 'Estado',
-        render: (popup) => <StatusBadge estado={popup.estado} />,
+        sortValue: (popup) => ESTADO_LABELS[popup.estado],
+        render: (popup) => (
+          <div className="min-w-44">
+            <StatusBadge estado={popup.estado} />
+            <p className="mt-1 text-xs text-slate-500">{ESTADO_POPUP_SIGUIENTE[popup.estado]}</p>
+          </div>
+        ),
       },
     ]
 
     if (isCreator || isApprover) {
       baseColumns.push({
         key: 'acciones',
-        header: 'Acciones',
+        header: '',
+        headerClassName: 'w-12',
         render: (popup) => {
-          const isOwn = popup.creado_por === user?.id
-          const isEditable = popup.estado === 'borrador' || popup.estado === 'rechazado'
-
-          if (isCreator && (isOwn || isAdmin) && isEditable) {
-            return (
-              <div className="flex min-w-max flex-wrap items-center gap-2">
-                <Button size="sm" variant="ghost" onClick={() => openEditModal(popup)}>
-                  Editar
-                </Button>
-                <Button size="sm" onClick={() => openWorkflowModal(popup, 'enviar')}>
-                  Enviar a aprobación
-                </Button>
-              </div>
-            )
-          }
-
-          if (isApprover && popup.estado === 'pendiente') {
-            return (
-              <div className="flex min-w-max flex-wrap items-center gap-2">
-                <Button size="sm" onClick={() => openWorkflowModal(popup, 'aprobar')}>
-                  Aprobar
-                </Button>
-                <Button
-                  size="sm"
-                  variant="danger"
-                  onClick={() => openWorkflowModal(popup, 'rechazar')}
-                >
-                  Rechazar
-                </Button>
-              </div>
-            )
-          }
-
-          if (isApprover && popup.estado === 'aprobado') {
-            return (
-              <Button size="sm" onClick={() => openWorkflowModal(popup, 'publicar')}>
-                Publicar
-              </Button>
-            )
-          }
-
-          if (isApprover && popup.estado === 'publicado') {
-            return (
-              <Button
-                size="sm"
-                variant="danger"
-                onClick={() => openWorkflowModal(popup, 'finalizar')}
-              >
-                Finalizar
-              </Button>
-            )
-          }
-
-          return <span className="text-xs text-slate-400">Sin acciones disponibles</span>
+          const acciones = [
+            ...(puedeEditar(popup)
+              ? [{ etiqueta: 'Editar', onSelect: () => openEditModal(popup) }]
+              : []),
+            ...accionesDe(popup).map((accion) => ({
+              etiqueta: WORKFLOW_COPY[accion].menuLabel,
+              onSelect: () => openWorkflowModal(popup, accion),
+              destructiva: accion === 'rechazar' || accion === 'finalizar',
+            })),
+          ]
+          return (
+            <RowActions
+              acciones={acciones}
+              etiquetaAccesible={`Acciones del popup ${truncateText(popup.texto, 40)}`}
+            />
+          )
         },
       })
     }
 
     return baseColumns
-  }, [isAdmin, isApprover, isCreator, openEditModal, openWorkflowModal, user?.id])
+  }, [accionesDe, isApprover, isCreator, openEditModal, openWorkflowModal, puedeEditar])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setFormError('')
-    setFeedback('')
+
+    const nuevosErrores = validarPopup(form)
+    setErrores(nuevosErrores)
+    if (Object.keys(nuevosErrores).length > 0) return
+
     setIsSaving(true)
 
     try {
@@ -431,13 +540,12 @@ export default function PopupsAdminPage() {
         : await crearPopup(payload)
 
       syncPopup(saved)
-      setFeedback(
-        editingPopup
-          ? 'El popup se actualizó correctamente.'
-          : 'El popup se creó correctamente.',
+      addToast(
+        'success',
+        editingPopup ? 'Popup actualizado' : 'Popup creado',
+        `${TIPO_LABELS[saved.tipo]} · ${ESTADO_POPUP_SIGUIENTE[saved.estado]}`,
       )
-      setIsFormOpen(false)
-      setEditingPopup(null)
+      cerrarFormulario()
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
         logout()
@@ -452,13 +560,16 @@ export default function PopupsAdminPage() {
   const handleWorkflow = async () => {
     if (!pendingWorkflow) return
     setWorkflowError('')
-    setFeedback('')
     setIsTransitioning(true)
 
     try {
       const updated = await WORKFLOW_HANDLERS[pendingWorkflow.action](pendingWorkflow.popup.id)
       syncPopup(updated)
-      setFeedback(WORKFLOW_COPY[pendingWorkflow.action].success)
+      addToast(
+        pendingWorkflow.action === 'rechazar' ? 'info' : 'success',
+        WORKFLOW_COPY[pendingWorkflow.action].title,
+        `${WORKFLOW_COPY[pendingWorkflow.action].success} ${ESTADO_POPUP_SIGUIENTE[updated.estado]}`,
+      )
       setPendingWorkflow(null)
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
@@ -471,26 +582,61 @@ export default function PopupsAdminPage() {
     }
   }
 
-  const dateRangeWarning =
-    form.fecha_inicio && form.fecha_fin && form.fecha_inicio > form.fecha_fin
-      ? 'La fecha de inicio es posterior a la fecha de fin.'
-      : ''
   const workflowCopy = pendingWorkflow ? WORKFLOW_COPY[pendingWorkflow.action] : null
 
   return (
     <main className="min-h-screen bg-surface">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {!isLoading && !loadError && (
+          <dl className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+            {[
+              { etiqueta: 'Total', valor: resumen.total, destacado: true },
+              {
+                etiqueta: 'Esperando aprobación',
+                valor: resumen.pendientes,
+                alerta: resumen.pendientes > 0,
+              },
+              { etiqueta: 'Publicados', valor: resumen.publicados },
+              {
+                etiqueta: 'Publicados fuera de fecha',
+                valor: resumen.vencidos,
+                alerta: resumen.vencidos > 0,
+              },
+            ].map((dato) => (
+              <div
+                key={dato.etiqueta}
+                className={`rounded-xl border bg-white px-4 py-3 ${
+                  dato.alerta ? 'border-amber-200 bg-amber-50/50' : 'border-slate-200'
+                }`}
+              >
+                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  {dato.etiqueta}
+                </dt>
+                <dd
+                  className={`mt-1 text-2xl font-bold ${
+                    dato.alerta ? 'text-amber-700' : dato.destacado ? 'text-primary' : 'text-dark'
+                  }`}
+                >
+                  {dato.valor}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
+
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid w-full gap-4 sm:grid-cols-3 lg:max-w-3xl">
+            <Input
+              label="Buscar"
+              type="search"
+              value={busqueda}
+              onChange={(event) => setBusqueda(event.target.value)}
+              placeholder="Texto, página o enlace"
+            />
             <Select
               label="Filtrar por tipo"
               value={tipoFilter}
-              onChange={(event) => {
-                setIsLoading(true)
-                setLoadError('')
-                setTipoFilter(event.target.value as PopupTipo | 'todos')
-              }}
-              containerClassName="min-w-52"
+              onChange={(event) => setTipoFilter(event.target.value as PopupTipo | 'todos')}
             >
               <option value="todos">Todos los tipos</option>
               <option value="anuncio">Anuncio</option>
@@ -499,12 +645,7 @@ export default function PopupsAdminPage() {
             <Select
               label="Filtrar por estado"
               value={estadoFilter}
-              onChange={(event) => {
-                setIsLoading(true)
-                setLoadError('')
-                setEstadoFilter(event.target.value as PopupEstado | 'todos')
-              }}
-              containerClassName="min-w-52"
+              onChange={(event) => setEstadoFilter(event.target.value as PopupEstado | 'todos')}
             >
               <option value="todos">Todos los estados</option>
               <option value="borrador">Borrador</option>
@@ -515,27 +656,23 @@ export default function PopupsAdminPage() {
               <option value="finalizado">Finalizado</option>
             </Select>
           </div>
-          {isCreator && (
-            <Button size="lg" onClick={openCreateModal}>
-              Nuevo popup
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              variant="secondary"
+              onClick={exportar}
+              disabled={popupsFiltrados.length === 0}
+            >
+              Exportar CSV
             </Button>
-          )}
-        </div>
-
-        {feedback && (
-          <div
-            role="status"
-            className="mb-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
-          >
-            {feedback}
+            {isCreator && <Button onClick={openCreateModal}>Nuevo popup</Button>}
           </div>
-        )}
+        </div>
 
         {isLoading ? (
           <div className="grid min-h-72 place-items-center rounded-xl border border-slate-200 bg-white">
             <div className="text-center">
-              <div className="mx-auto mb-3 h-10 w-10 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
-              <p className="text-slate-600">Cargando popups...</p>
+              <LoadingSpinner />
+              <p className="mt-3 text-slate-600">Cargando popups…</p>
             </div>
           </div>
         ) : loadError ? (
@@ -556,15 +693,28 @@ export default function PopupsAdminPage() {
           </div>
         ) : (
           <>
-            <p className="mb-3 text-sm text-slate-600">
-              {popups.length} {popups.length === 1 ? 'popup' : 'popups'}
-            </p>
+            <div className="mb-3 flex flex-wrap items-center gap-3 text-sm text-slate-600">
+              <p>
+                {hayFiltrosActivos
+                  ? `${popupsFiltrados.length} de ${popups.length} popups`
+                  : `${popups.length} ${popups.length === 1 ? 'popup' : 'popups'}`}
+              </p>
+              {hayFiltrosActivos && (
+                <Button size="sm" variant="ghost" onClick={limpiarFiltros}>
+                  Quitar filtros
+                </Button>
+              )}
+            </div>
             <Table
               columns={columns}
-              data={popups}
+              data={popupsFiltrados}
               getRowKey={(popup) => popup.id}
               caption="Listado de popups administrativos"
-              emptyMessage="No hay popups que coincidan con los filtros seleccionados."
+              emptyMessage={
+                hayFiltrosActivos
+                  ? 'Ningún popup coincide con los filtros.'
+                  : 'Todavía no hay popups.'
+              }
             />
           </>
         )}
@@ -587,7 +737,14 @@ export default function PopupsAdminPage() {
           </>
         }
       >
-        <form id="popup-form" onSubmit={handleSubmit} className="grid gap-5 sm:grid-cols-2">
+        {/* noValidate: si valida el navegador, salta su globo nativo antes que nuestros
+            mensajes por campo y estos no llegan a verse nunca. */}
+        <form
+          id="popup-form"
+          onSubmit={handleSubmit}
+          noValidate
+          className="grid gap-5 sm:grid-cols-2"
+        >
           {formError && (
             <div
               role="alert"
@@ -621,16 +778,23 @@ export default function PopupsAdminPage() {
           <ImageUploadField
             label="Imagen"
             value={form.imagen_url}
-            onChange={(value) => setForm((current) => ({ ...current, imagen_url: value }))}
+            onChange={(value) => {
+              setForm((current) => ({ ...current, imagen_url: value }))
+              limpiarError('imagen_url')
+            }}
+            error={errores.imagen_url}
+            required
             disabled={isSaving}
           />
           <Textarea
             label="Texto"
             rows={4}
             value={form.texto}
-            onChange={(event) =>
+            onChange={(event) => {
               setForm((current) => ({ ...current, texto: event.target.value }))
-            }
+              limpiarError('texto')
+            }}
+            error={errores.texto}
             required
             disabled={isSaving}
             containerClassName="sm:col-span-2"
@@ -639,18 +803,24 @@ export default function PopupsAdminPage() {
             <Input
               label="URL de video (opcional)"
               value={form.video_url}
-              onChange={(event) =>
+              onChange={(event) => {
                 setForm((current) => ({ ...current, video_url: event.target.value }))
-              }
+                limpiarError('video_url')
+              }}
+              error={errores.video_url}
+              placeholder="https://..."
               disabled={isSaving}
             />
           )}
           <Input
             label="Enlace"
             value={form.enlace}
-            onChange={(event) =>
+            onChange={(event) => {
               setForm((current) => ({ ...current, enlace: event.target.value }))
-            }
+              limpiarError('enlace')
+            }}
+            error={errores.enlace}
+            placeholder="https://… o /ruta-interna"
             disabled={isSaving}
           />
           <Input
@@ -665,29 +835,31 @@ export default function PopupsAdminPage() {
             containerClassName="sm:col-span-2"
           />
           {form.tipo === 'descuento' && (
-            <Select
+            <SearchSelect
               label="Concepto de cobro (EDU-09)"
               value={form.concepto_cobro_id}
-              onChange={(event) => {
-                const conceptoId = event.target.value
+              onChange={(conceptoId) => {
                 const concepto = conceptosCarrera.find((item) => item.id === conceptoId)
-                const carrera = concepto?.programa_id ? carrerasById.get(concepto.programa_id) : undefined
+                const carrera = concepto?.programa_id
+                  ? carrerasById.get(concepto.programa_id)
+                  : undefined
                 setForm((current) => ({
                   ...current,
                   concepto_cobro_id: conceptoId,
+                  // La página donde se muestra el popup sale de la carrera del concepto:
+                  // el campo "Páginas" está deshabilitado precisamente por esto.
                   paginas: carrera ? `/programas-de-estudio/${carrera.slug}` : '',
                 }))
+                limpiarError('concepto_cobro_id')
               }}
+              options={opcionesConcepto}
+              error={errores.concepto_cobro_id}
               required
               disabled={isSaving}
-            >
-              <option value="">Selecciona un concepto activo</option>
-              {conceptosCarrera.map((concepto) => (
-                <option key={concepto.id} value={concepto.id}>
-                  {carrerasById.get(concepto.programa_id || '')?.nombre} · {concepto.descripcion || concepto.tipo} — S/ {Number(concepto.monto).toFixed(2)}
-                </option>
-              ))}
-            </Select>
+              placeholder="Busca la carrera…"
+              emptyMessage="No hay conceptos activos de carreras."
+              hint="Escribe el nombre de la carrera. Define también en qué página se muestra."
+            />
           )}
           {form.tipo === 'descuento' && (
             <>
@@ -713,9 +885,11 @@ export default function PopupsAdminPage() {
             label="Fecha de inicio"
             type="date"
             value={form.fecha_inicio}
-            onChange={(event) =>
+            onChange={(event) => {
               setForm((current) => ({ ...current, fecha_inicio: event.target.value }))
-            }
+              limpiarError('fecha_inicio', 'fecha_fin')
+            }}
+            error={errores.fecha_inicio}
             required
             disabled={isSaving}
           />
@@ -723,21 +897,36 @@ export default function PopupsAdminPage() {
             label="Fecha de fin"
             type="date"
             value={form.fecha_fin}
-            onChange={(event) =>
+            onChange={(event) => {
               setForm((current) => ({ ...current, fecha_fin: event.target.value }))
-            }
+              limpiarError('fecha_fin')
+            }}
+            error={errores.fecha_fin}
             required
             disabled={isSaving}
           />
-          {dateRangeWarning && (
-            <p
-              role="status"
-              className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 sm:col-span-2"
-            >
-              {dateRangeWarning}
-            </p>
-          )}
         </form>
+      </Modal>
+
+      <Modal
+        isOpen={confirmandoDescarte}
+        onClose={() => setConfirmandoDescarte(false)}
+        title="Cambios sin guardar"
+        size="sm"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setConfirmandoDescarte(false)}>
+              Seguir editando
+            </Button>
+            <Button variant="danger" onClick={cerrarFormulario}>
+              Descartar cambios
+            </Button>
+          </>
+        }
+      >
+        <p className="text-slate-700">
+          Hiciste cambios que todavía no se han guardado. Si cierras ahora se perderán.
+        </p>
       </Modal>
 
       <Modal
