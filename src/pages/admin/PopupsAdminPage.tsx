@@ -32,10 +32,9 @@ import {
   ESTADO_POPUP_LABELS as ESTADO_LABELS,
   ESTADO_POPUP_SIGUIENTE,
   TIPO_POPUP_LABELS as TIPO_LABELS,
-  formatFecha as formatDate,
   validarPopup,
-  vigenciaPopup,
 } from '@/utils/popup'
+import { estadoVigencia, formatFecha as formatDate } from '@/utils/vigencia'
 import type { CampoPopup, ErroresPopup } from '@/utils/popup'
 import { descargarCSV } from '@/utils/csv'
 import type {
@@ -308,7 +307,7 @@ export default function PopupsAdminPage() {
       // Un popup publicado fuera de sus fechas no se ve, pero sigue diciendo "Publicado":
       // sin esta cuenta, nadie se entera de que la campaña dejó de mostrarse.
       vencidos: publicados.filter(
-        (popup) => vigenciaPopup(popup.fecha_inicio, popup.fecha_fin) === 'vencido',
+        (popup) => estadoVigencia(popup.fecha_inicio, popup.fecha_fin) === 'vencido',
       ).length,
     }
   }, [popups])
@@ -465,7 +464,7 @@ export default function PopupsAdminPage() {
         header: 'Vigencia',
         sortValue: (popup) => popup.fecha_inicio,
         render: (popup) => {
-          const vigencia = vigenciaPopup(popup.fecha_inicio, popup.fecha_fin)
+          const vigencia = estadoVigencia(popup.fecha_inicio, popup.fecha_fin)
           return (
             <div className="whitespace-nowrap">
               <p>

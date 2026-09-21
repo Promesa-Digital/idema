@@ -105,25 +105,3 @@ export function validarPopup(datos: DatosPopup): ErroresPopup {
   return errores
 }
 
-/** "2026-03-09" -> "09/03/2026". */
-export function formatFecha(value: string): string {
-  const [year, month, day] = value.slice(0, 10).split('-')
-  return year && month && day ? `${day}/${month}/${year}` : value
-}
-
-/**
- * Un popup publicado puede estar fuera de sus fechas: sigue "Publicado" pero no se ve.
- * Compara solo la parte de fecha, en local, porque la vigencia se define por días.
- */
-export function vigenciaPopup(
-  fechaInicio: string,
-  fechaFin: string,
-  hoy = new Date(),
-): 'programado' | 'vigente' | 'vencido' {
-  const dia = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(
-    hoy.getDate(),
-  ).padStart(2, '0')}`
-  if (dia < fechaInicio.slice(0, 10)) return 'programado'
-  if (dia > fechaFin.slice(0, 10)) return 'vencido'
-  return 'vigente'
-}
