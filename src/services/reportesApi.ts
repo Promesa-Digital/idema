@@ -1,7 +1,9 @@
 import { apiRequest } from '@/services/apiClient'
 import type {
+  LeadOrigen,
   OrdenPagoEstado,
   OrdenPagoMedioPago,
+  ReporteLeadsBackend,
   ReporteOrdenesBackend,
   ReportePopupsBackend,
 } from '@/types/backend'
@@ -15,6 +17,10 @@ export interface RangoReporte {
 
 export interface ReportePopupsFiltros extends RangoReporte {
   popup_id?: string
+}
+
+export interface ReporteLeadsFiltros extends RangoReporte {
+  origen?: LeadOrigen
 }
 
 export interface ReporteOrdenesFiltros extends RangoReporte {
@@ -46,6 +52,18 @@ export function consultarReportePopups(
 export function exportarReportePopups(filtros: ReportePopupsFiltros): Promise<Blob> {
   const query = crearParametros(filtros)
   return descargarCsv(`${REPORTES_PATH}/popups/exportar?${query}`)
+}
+
+export function consultarReporteLeads(
+  filtros: ReporteLeadsFiltros,
+): Promise<ReporteLeadsBackend> {
+  const query = crearParametros(filtros)
+  return apiRequest<ReporteLeadsBackend>(`${REPORTES_PATH}/leads?${query}`)
+}
+
+export function exportarReporteLeads(filtros: ReporteLeadsFiltros): Promise<Blob> {
+  const query = crearParametros(filtros)
+  return descargarCsv(`${REPORTES_PATH}/leads/exportar?${query}`)
 }
 
 export function consultarReporteOrdenes(

@@ -481,6 +481,36 @@ export interface ReportePopupsBackend {
   items: ReportePopupItem[]
 }
 
+export interface ReporteLeadsDia {
+  fecha: string
+  total: number
+  nuevos: number
+  contactados: number
+  pago: number
+  descartados: number
+}
+
+export interface ReporteLeadsOrigen {
+  origen: LeadOrigen
+  total: number
+  pago: number
+  tasa_conversion: string
+}
+
+export interface ReporteLeadsBackend {
+  resumen: {
+    total: number
+    nuevos: number
+    contactados: number
+    pago: number
+    descartados: number
+    tasa_atencion: string
+    tasa_conversion: string
+  }
+  por_origen: ReporteLeadsOrigen[]
+  items: ReporteLeadsDia[]
+}
+
 export interface ReporteOrdenItem {
   orden_id: string
   fecha: string

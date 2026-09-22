@@ -5,11 +5,15 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
 import { useAuth } from '@/context/AuthContextType'
+import { REPORTE_LABELS, reportesDeRol, tasaFiable } from '@/utils/reportes'
+import type { ReporteTipo } from '@/utils/reportes'
 import { ApiError } from '@/services/apiClient'
 import { listarPopups } from '@/services/popupsApi'
 import {
+  consultarReporteLeads,
   consultarReporteOrdenes,
   consultarReportePopups,
+  exportarReporteLeads,
   exportarReporteOrdenes,
   exportarReportePopups,
 } from '@/services/reportesApi'
@@ -17,12 +21,12 @@ import type {
   OrdenPagoEstado,
   OrdenPagoMedioPago,
   PopupBackend,
+  LeadOrigen,
+  ReporteLeadsBackend,
   ReporteOrdenesBackend,
   ReportePopupsBackend,
   UsuarioRol,
 } from '@/types/backend'
-
-type ReporteTipo = 'popups' | 'ordenes'
 
 interface FormState {
   tipo: ReporteTipo
@@ -31,6 +35,12 @@ interface FormState {
   estado: OrdenPagoEstado | ''
   medio_pago: OrdenPagoMedioPago | ''
   popup_id: string
+  origen: LeadOrigen | ''
+}
+
+const ORIGEN_LEAD_LABELS: Record<LeadOrigen, string> = {
+  formulario: 'Formulario del sitio',
+  popup: 'Popup',
 }
 
 const ESTADO_LABELS: Record<OrdenPagoEstado, string> = {
@@ -79,17 +89,26 @@ function createInitialForm(role?: UsuarioRol): FormState {
   const monthAgo = new Date(today)
   monthAgo.setDate(today.getDate() - 29)
   return {
-    tipo: role === 'administracion' ? 'ordenes' : 'popups',
+    // El primero de los que puede ver: Administración entra al dinero, Ventas y
+    // Marketing a los leads. Sin rol, leads, que es el reporte más común.
+    tipo: reportesDeRol(role)[0] ?? 'leads',
     fecha_desde: inputDate(monthAgo),
     fecha_hasta: inputDate(today),
     estado: '',
     medio_pago: '',
     popup_id: '',
+    origen: '',
   }
 }
 
 function getErrorMessage(error: unknown): string {
   return error instanceof ApiError ? error.message : 'No se pudo generar el reporte.'
+}
+
+/** "2026-09-22" -> "22/09/2026". Sin hora: la fila es un día entero, no un instante. */
+function formatDia(value: string): string {
+  const [year, month, day] = value.slice(0, 10).split('-')
+  return year && month && day ? `${day}/${month}/${year}` : value
 }
 
 function formatDate(value: string | null): string {
@@ -131,6 +150,7 @@ export default function ReportesAdminPage() {
   const { user, logout } = useAuth()
   const [form, setForm] = useState<FormState>(() => createInitialForm(user?.rol))
   const [applied, setApplied] = useState<FormState>(() => createInitialForm(user?.rol))
+  const [leadReport, setLeadReport] = useState<ReporteLeadsBackend | null>(null)
   const [popupReport, setPopupReport] = useState<ReportePopupsBackend | null>(null)
   const [orderReport, setOrderReport] = useState<ReporteOrdenesBackend | null>(null)
   const [popups, setPopups] = useState<PopupBackend[]>([])
@@ -138,7 +158,10 @@ export default function ReportesAdminPage() {
   const [isExporting, setIsExporting] = useState(false)
   const [error, setError] = useState('')
 
-  const canChooseType = user?.rol === 'admin_sistema'
+  // Antes solo el administrador del sistema podía cambiar de reporte, así que Marketing
+  // se quedaba encerrado en la analítica de popups y nunca veía sus leads.
+  const reportesDisponibles = reportesDeRol(user?.rol)
+  const canChooseType = reportesDisponibles.length > 1
 
   useEffect(() => {
     if (user?.rol === 'administracion') return
@@ -158,24 +181,24 @@ export default function ReportesAdminPage() {
   useEffect(() => {
     let active = true
 
+    const rango = { fecha_desde: applied.fecha_desde, fecha_hasta: applied.fecha_hasta }
     const request =
-      applied.tipo === 'popups'
-        ? consultarReportePopups({
-            fecha_desde: applied.fecha_desde,
-            fecha_hasta: applied.fecha_hasta,
-            popup_id: applied.popup_id || undefined,
-          })
-        : consultarReporteOrdenes({
-            fecha_desde: applied.fecha_desde,
-            fecha_hasta: applied.fecha_hasta,
-            estado: applied.estado || undefined,
-            medio_pago: applied.medio_pago || undefined,
-          })
+      applied.tipo === 'leads'
+        ? consultarReporteLeads({ ...rango, origen: applied.origen || undefined })
+        : applied.tipo === 'popups'
+          ? consultarReportePopups({ ...rango, popup_id: applied.popup_id || undefined })
+          : consultarReporteOrdenes({
+              ...rango,
+              estado: applied.estado || undefined,
+              medio_pago: applied.medio_pago || undefined,
+            })
 
     request
       .then((data) => {
         if (!active) return
-        if (applied.tipo === 'popups') {
+        if (applied.tipo === 'leads') {
+          setLeadReport(data as ReporteLeadsBackend)
+        } else if (applied.tipo === 'popups') {
           setPopupReport(data as ReportePopupsBackend)
         } else {
           setOrderReport(data as ReporteOrdenesBackend)
@@ -213,10 +236,13 @@ export default function ReportesAdminPage() {
     setIsExporting(true)
     setError('')
     try {
-      if (applied.tipo === 'popups') {
+      const rango = { fecha_desde: applied.fecha_desde, fecha_hasta: applied.fecha_hasta }
+      if (applied.tipo === 'leads') {
+        const blob = await exportarReporteLeads({ ...rango, origen: applied.origen || undefined })
+        saveBlob(blob, 'reporte-leads.csv')
+      } else if (applied.tipo === 'popups') {
         const blob = await exportarReportePopups({
-          fecha_desde: applied.fecha_desde,
-          fecha_hasta: applied.fecha_hasta,
+          ...rango,
           popup_id: applied.popup_id || undefined,
         })
         saveBlob(blob, 'reporte-popups.csv')
@@ -255,8 +281,11 @@ export default function ReportesAdminPage() {
                 setForm((current) => ({ ...current, tipo: event.target.value as ReporteTipo }))
               }
             >
-              <option value="popups">Analítica de popups</option>
-              <option value="ordenes">Exportación de órdenes</option>
+              {reportesDisponibles.map((tipo) => (
+                <option key={tipo} value={tipo}>
+                  {REPORTE_LABELS[tipo]}
+                </option>
+              ))}
             </Select>
           )}
           <Input
@@ -277,6 +306,19 @@ export default function ReportesAdminPage() {
               setForm((current) => ({ ...current, fecha_hasta: event.target.value }))
             }
           />
+          {form.tipo === 'leads' && (
+            <Select
+              label="Origen"
+              value={form.origen}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, origen: event.target.value as LeadOrigen | '' }))
+              }
+            >
+              <option value="">Todos los orígenes</option>
+              <option value="formulario">Formulario del sitio</option>
+              <option value="popup">Popup</option>
+            </Select>
+          )}
           {form.tipo === 'popups' && (
             <Select
               label="Popup"
@@ -346,19 +388,105 @@ export default function ReportesAdminPage() {
           <section aria-live="polite">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-xl font-bold text-dark">
-                {applied.tipo === 'popups' ? 'Analítica de popups' : 'Reporte contable de órdenes'}
+                {applied.tipo === 'leads'
+                  ? 'Leads captados'
+                  : applied.tipo === 'popups'
+                    ? 'Analítica de popups'
+                    : 'Reporte contable de órdenes'}
               </h2>
               <Button variant="secondary" isLoading={isExporting} onClick={() => void handleExport()}>
                 Exportar CSV
               </Button>
             </div>
+            {applied.tipo === 'leads' && leadReport && (
+              <>
+                <div className="mb-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <SummaryCard label="Leads captados" value={leadReport.resumen.total} />
+                  <SummaryCard label="Sin atender" value={leadReport.resumen.nuevos} />
+                  {/* Atención mide al equipo y conversión mide la campaña: un lead sin
+                      tocar no es culpa del formulario que lo trajo. */}
+                  <SummaryCard
+                    label="Atendidos"
+                    value={tasaFiable(leadReport.resumen.tasa_atencion, leadReport.resumen.total)}
+                  />
+                  <SummaryCard
+                    label="Llegaron a pago"
+                    value={tasaFiable(leadReport.resumen.tasa_conversion, leadReport.resumen.total)}
+                  />
+                </div>
+
+                {leadReport.por_origen.length > 0 && (
+                  <div className="mb-5 grid gap-4 sm:grid-cols-2">
+                    {leadReport.por_origen.map((fila) => (
+                      <div
+                        key={fila.origen}
+                        className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm"
+                      >
+                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          {ORIGEN_LEAD_LABELS[fila.origen]}
+                        </p>
+                        <p className="mt-1 text-2xl font-bold text-dark">{fila.total}</p>
+                        <p className="mt-0.5 text-sm text-slate-500">
+                          {fila.pago} llegaron a pago ·{' '}
+                          {tasaFiable(fila.tasa_conversion, fila.total)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+                  <table className="min-w-full text-left text-sm">
+                    <caption className="sr-only">Leads captados por día</caption>
+                    <thead className="bg-dark text-white">
+                      <tr>
+                        <th className="px-4 py-3">Fecha</th>
+                        <th className="px-4 py-3">Total</th>
+                        <th className="px-4 py-3">Sin atender</th>
+                        <th className="px-4 py-3">Contactados</th>
+                        <th className="px-4 py-3">Pago</th>
+                        <th className="px-4 py-3">Descartados</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200">
+                      {leadReport.items.map((item) => (
+                        <tr key={item.fecha}>
+                          <td className="whitespace-nowrap px-4 py-3">{formatDia(item.fecha)}</td>
+                          <td className="px-4 py-3 font-semibold text-dark">{item.total}</td>
+                          <td className="px-4 py-3">
+                            {item.nuevos > 0 ? (
+                              <span className="font-semibold text-amber-700">{item.nuevos}</span>
+                            ) : (
+                              item.nuevos
+                            )}
+                          </td>
+                          <td className="px-4 py-3">{item.contactados}</td>
+                          <td className="px-4 py-3">{item.pago}</td>
+                          <td className="px-4 py-3">{item.descartados}</td>
+                        </tr>
+                      ))}
+                      {leadReport.items.length === 0 && (
+                        <tr>
+                          <td colSpan={6} className="px-4 py-10 text-center text-slate-500">
+                            No entró ningún lead en este periodo.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
             {applied.tipo === 'popups' && popupReport && (
               <>
                 <div className="mb-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   <SummaryCard label="Popups" value={popupReport.resumen.total_popups} />
                   <SummaryCard label="Vistas" value={popupReport.resumen.vistas} />
                   <SummaryCard label="Clics" value={popupReport.resumen.clics} />
-                  <SummaryCard label="Tasa de clics" value={`${popupReport.resumen.tasa_clics}%`} />
+                  <SummaryCard
+                    label="Tasa de clics"
+                    value={tasaFiable(popupReport.resumen.tasa_clics, popupReport.resumen.vistas)}
+                  />
                 </div>
                 <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
                   <table className="min-w-full text-left text-sm">
@@ -379,7 +507,7 @@ export default function ReportesAdminPage() {
                           <td className="px-4 py-3 capitalize">{item.tipo}</td>
                           <td className="px-4 py-3">{item.vistas}</td>
                           <td className="px-4 py-3">{item.clics}</td>
-                          <td className="px-4 py-3">{item.tasa_clics}%</td>
+                          <td className="px-4 py-3">{tasaFiable(item.tasa_clics, item.vistas)}</td>
                         </tr>
                       ))}
                       {popupReport.items.length === 0 && (

@@ -100,7 +100,13 @@ export const ADMIN_MODULES: AdminModule[] = [
     description: 'Indicadores y exportaciones operativas.',
     icon: FiBarChart2,
     group: 'general',
-    allowedRoles: ['marketing', 'director_marketing', 'administracion', 'admin_sistema'],
+    allowedRoles: [
+      'marketing',
+      'director_marketing',
+      'ventas',
+      'administracion',
+      'admin_sistema',
+    ],
   },
 
   {
