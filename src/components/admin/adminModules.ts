@@ -243,6 +243,23 @@ export function getAdminModuleSections(role?: UsuarioRol): AdminModuleSection[] 
   })).filter((section) => section.modules.length > 0)
 }
 
+/**
+ * Los roles que pueden entrar a una ruta del panel.
+ *
+ * Existe para que las rutas de App.tsx no repitan la lista que ya declara cada modulo.
+ * Cuando estaban duplicadas se desincronizaron: Ventas veia "Reportes" en la barra y al
+ * pulsar recibia "No tienes permiso".
+ */
+export function rolesDeRuta(path: string): UsuarioRol[] {
+  const modulo = ADMIN_MODULES.find((m) => m.path === path)
+  if (!modulo) {
+    // Una ruta sin modulo no deberia existir. Si aparece, se cierra a quien lo administra
+    // todo en vez de quedarse abierta por descuido.
+    return ['admin_sistema']
+  }
+  return modulo.allowedRoles
+}
+
 export function getAdminModule(pathname: string): AdminModule {
   return (
     ADMIN_MODULES.find(

@@ -5,6 +5,7 @@ import {
   getAdminModule,
   getAdminModuleSections,
   getAvailableAdminModules,
+  rolesDeRuta,
 } from './adminModules'
 
 describe('agrupación de módulos', () => {
@@ -87,5 +88,33 @@ describe('getAdminModule', () => {
 
   it('cae en Inicio para una ruta desconocida, en vez de romperse', () => {
     expect(getAdminModule('/admin/lo-que-sea').label).toBe('Inicio')
+  })
+})
+
+describe('rolesDeRuta', () => {
+  it('devuelve los mismos roles que declara el módulo', () => {
+    for (const modulo of ADMIN_MODULES) {
+      expect(rolesDeRuta(modulo.path), modulo.label).toEqual(modulo.allowedRoles)
+    }
+  })
+
+  it('Ventas entra a Reportes: los leads son su trabajo', () => {
+    // La barra y la ruta se habían desincronizado justo aquí: Ventas veía el módulo
+    // y al pulsarlo recibía "No tienes permiso".
+    expect(rolesDeRuta('/admin/reportes')).toContain('ventas')
+  })
+
+  it('una ruta desconocida se cierra en vez de quedarse abierta', () => {
+    expect(rolesDeRuta('/admin/lo-que-sea')).toEqual(['admin_sistema'])
+  })
+
+  it('quien ve el módulo puede entrar a su ruta, y solo ese', () => {
+    for (const rol of ALL_ADMIN_ROLES) {
+      const visibles = new Set(getAvailableAdminModules(rol).map((m) => m.path))
+      for (const modulo of ADMIN_MODULES) {
+        const puedeEntrar = rolesDeRuta(modulo.path).includes(rol)
+        expect(puedeEntrar, `${rol} → ${modulo.label}`).toBe(visibles.has(modulo.path))
+      }
+    }
   })
 })

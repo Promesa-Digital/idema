@@ -6,7 +6,7 @@ import Layout from './components/Layout'
 import LoadingSpinner from './components/ui/LoadingSpinner'
 import ProtectedRoute from './components/admin/ProtectedRoute'
 import AdminLayout from './components/admin/AdminLayout'
-import { ALL_ADMIN_ROLES } from './components/admin/adminModules'
+import { ALL_ADMIN_ROLES, rolesDeRuta } from './components/admin/adminModules'
 import AlumnoProtectedRoute from './components/alumno/AlumnoProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
 import { AlumnoAuthProvider } from './context/AlumnoAuthContext'
@@ -141,7 +141,7 @@ function App() {
           <Route
             path="programas"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/programas')}>
                 <ProgramasAdminPage />
               </ProtectedRoute>
             }
@@ -149,9 +149,7 @@ function App() {
           <Route
             path="popups"
             element={
-              <ProtectedRoute
-                allowedRoles={['marketing', 'ventas', 'director_marketing', 'admin_sistema']}
-              >
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/popups')}>
                 <PopupsAdminPage />
               </ProtectedRoute>
             }
@@ -159,7 +157,7 @@ function App() {
           <Route
             path="combos"
             element={
-              <ProtectedRoute allowedRoles={['ventas', 'marketing', 'admin_sistema']}>
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/combos')}>
                 <CombosAdminPage />
               </ProtectedRoute>
             }
@@ -167,7 +165,7 @@ function App() {
           <Route
             path="descuentos"
             element={
-              <ProtectedRoute allowedRoles={['ventas', 'admin_sistema']}>
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/descuentos')}>
                 <DescuentosAdminPage />
               </ProtectedRoute>
             }
@@ -175,7 +173,7 @@ function App() {
           <Route
             path="ordenes"
             element={
-              <ProtectedRoute allowedRoles={['administracion', 'admin_sistema']}>
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/ordenes')}>
                 <OrdenesAdminPage />
               </ProtectedRoute>
             }
@@ -183,7 +181,7 @@ function App() {
           <Route
             path="comprobantes"
             element={
-              <ProtectedRoute allowedRoles={['administracion', 'admin_sistema']}>
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/comprobantes')}>
                 <ComprobantesAdminPage />
               </ProtectedRoute>
             }
@@ -191,15 +189,7 @@ function App() {
           <Route
             path="leads"
             element={
-              <ProtectedRoute
-                allowedRoles={[
-                  'marketing',
-                  'director_marketing',
-                  'ventas',
-                  'administracion',
-                  'admin_sistema',
-                ]}
-              >
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/leads')}>
                 <LeadsAdminPage />
               </ProtectedRoute>
             }
@@ -207,7 +197,7 @@ function App() {
           <Route
             path="usuarios"
             element={
-              <ProtectedRoute allowedRoles={['admin_sistema']}>
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/usuarios')}>
                 <UsuariosAdminPage />
               </ProtectedRoute>
             }
@@ -215,9 +205,7 @@ function App() {
           <Route
             path="conceptos-cobro"
             element={
-              <ProtectedRoute
-                allowedRoles={['academico', 'administracion', 'ventas', 'admin_sistema']}
-              >
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/conceptos-cobro')}>
                 <ConceptosAdminPage />
               </ProtectedRoute>
             }
@@ -225,7 +213,7 @@ function App() {
           <Route
             path="matriculas"
             element={
-              <ProtectedRoute allowedRoles={['academico', 'administracion', 'admin_sistema']}>
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/matriculas')}>
                 <MatriculasAdminPage />
               </ProtectedRoute>
             }
@@ -233,7 +221,7 @@ function App() {
           <Route
             path="electivos"
             element={
-              <ProtectedRoute allowedRoles={['academico', 'administracion', 'admin_sistema']}>
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/electivos')}>
                 <ElectivosAdminPage />
               </ProtectedRoute>
             }
@@ -241,14 +229,7 @@ function App() {
           <Route
             path="reportes"
             element={
-              <ProtectedRoute
-                allowedRoles={[
-                  'marketing',
-                  'director_marketing',
-                  'administracion',
-                  'admin_sistema',
-                ]}
-              >
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/reportes')}>
                 <ReportesAdminPage />
               </ProtectedRoute>
             }
@@ -256,7 +237,7 @@ function App() {
           <Route
             path="conciliaciones"
             element={
-              <ProtectedRoute allowedRoles={['administracion', 'admin_sistema']}>
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/conciliaciones')}>
                 <ConciliacionesAdminPage />
               </ProtectedRoute>
             }
@@ -264,9 +245,7 @@ function App() {
           <Route
             path="alumnos"
             element={
-              <ProtectedRoute
-                allowedRoles={['ventas', 'academico', 'administracion', 'admin_sistema']}
-              >
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/alumnos')}>
                 <CuentasAlumnoAdminPage />
               </ProtectedRoute>
             }
