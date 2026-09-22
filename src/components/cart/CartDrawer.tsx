@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { FaTimes, FaTrash, FaMinus, FaPlus, FaShoppingCart, FaWhatsapp, FaCheckCircle, FaCreditCard } from 'react-icons/fa'
 import { MdArrowBack, MdSend } from 'react-icons/md'
 import { useCart } from '../../hooks/useCart'
+import { submitLead } from '../../utils/leadIntake'
 
 type Step = 'cart' | 'form' | 'success'
 
@@ -35,7 +36,7 @@ export default function CartDrawer() {
 
   const [step, setStep] = useState<Step>('cart')
   const [sending, setSending] = useState(false)
-  const [form, setForm] = useState({ nombre: '', email: '', telefono: '' })
+  const [form, setForm] = useState({ nombre: '', email: '', telefono: '', acepta: false })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitFeedback, setSubmitFeedback] = useState<string | null>(null)
 
@@ -49,28 +50,21 @@ export default function CartDrawer() {
     if (!form.nombre.trim()) e.nombre = 'Ingresa tu nombre'
     if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Email inválido'
     if (!form.telefono.trim()) e.telefono = 'Ingresa tu teléfono'
+    // 9 dígitos: es lo que el asesor necesita para poder llamar. Antes entraba
+    // cualquier cosa y el lead llegaba a la bandeja sin un teléfono marcable.
+    else if (form.telefono.replace(/\D/g, '').length < 9) e.telefono = 'El teléfono debe tener 9 dígitos'
+    if (!form.acepta) e.acepta = 'Acepta la política de privacidad para continuar'
     setErrors(e)
     return Object.keys(e).length === 0
   }
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    setSubmitFeedback(null)
-    if (!validate()) return
-
-    const itemsList = items.map(i => `• ${i.product.title} — S/.${(i.price * i.quantity).toFixed(2)}`).join('\n')
-    const mensaje = `Solicitud de inscripción / pago pendiente de validación:\n\n${itemsList}\n\nTotal: S/.${totalPrice.toFixed(2)}`
+  /** Aviso a la bandeja interna. Devuelve si llegó; nunca lanza. */
+  const enviarCorreoInterno = async (itemsList: string, mensaje: string): Promise<boolean> => {
+    const accessKey = import.meta.env.VITE_WEB3FORMS_KEY
+    if (!accessKey) return false
 
     try {
-      setSending(true)
       const body = new FormData()
-      const accessKey = import.meta.env.VITE_WEB3FORMS_KEY
-
-      if (!accessKey) {
-        setSubmitFeedback('No se pudo enviar en este momento. Falta configurar el formulario.')
-        return
-      }
-
       body.append('access_key', accessKey)
       body.append('subject', `💳 Pago pendiente – ${form.nombre} | ${items.map(i => i.product.shortTitle || i.product.title).join(', ')}`)
       body.append('from_name', 'IDEMA Carrito Web')
@@ -83,15 +77,50 @@ export default function CartDrawer() {
 
       const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body })
       const data = await res.json()
+      return Boolean(data.success)
+    } catch {
+      return false
+    }
+  }
 
-      if (data.success) {
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    setSubmitFeedback(null)
+    if (!validate()) return
+
+    const itemsList = items.map(i => `• ${i.product.title} — S/.${(i.price * i.quantity).toFixed(2)}`).join('\n')
+    const mensaje = `Solicitud de inscripción / pago pendiente de validación:\n\n${itemsList}\n\nTotal: S/.${totalPrice.toFixed(2)}`
+
+    setSending(true)
+    try {
+      // Quien llena el carrito es el lead más caliente que hay: estaba a punto de pagar.
+      // Antes solo llegaba a una bandeja de correo y nunca al panel, así que no se podía
+      // hacer seguimiento ni saber cuántos se quedaron a medias.
+      const [primerNombre, ...resto] = form.nombre.trim().split(/\s+/)
+      const lead = await submitLead({
+        firstName: primerNombre ?? '',
+        lastName: resto.join(' '),
+        phone: form.telefono,
+        email: form.email,
+        // El sistema antiguo solo conoce dos formularios; el mensaje ya identifica que
+        // este viene del carrito.
+        form: 2,
+        message: mensaje,
+        consent: form.acepta,
+      })
+
+      const correoEnviado = await enviarCorreoInterno(itemsList, mensaje)
+
+      // Basta con que uno de los dos haya llegado: el lead en nuestra base es el
+      // registro que perdura, y el correo es el aviso inmediato. Antes, si el servicio
+      // de correo fallaba, la inscripción se perdía entera.
+      if (lead.ok || correoEnviado) {
         setStep('success')
         clearCart()
-      } else {
-        setSubmitFeedback('Error al enviar. Intenta de nuevo.')
+        return
       }
-    } catch {
-      setSubmitFeedback('Error de conexión. Intenta más tarde.')
+
+      setSubmitFeedback(lead.error || 'No pudimos registrar tu solicitud. Intenta de nuevo.')
     } finally {
       setSending(false)
     }
@@ -286,6 +315,25 @@ export default function CartDrawer() {
                       className="w-full border border-deep/20 rounded-lg px-3 py-2.5 text-sm text-deep placeholder-deep/40 focus:outline-none focus:border-primary"
                     />
                     {errors.telefono && <p className="text-xs text-cta mt-1">{errors.telefono}</p>}
+                  </div>
+
+                  <div>
+                    <label className="flex items-start gap-2 text-xs text-deep/70 leading-snug">
+                      <input
+                        type="checkbox"
+                        checked={form.acepta}
+                        onChange={e => setForm(f => ({ ...f, acepta: e.target.checked }))}
+                        className="mt-0.5 h-4 w-4 flex-shrink-0 accent-primary"
+                      />
+                      <span>
+                        Acepto la{' '}
+                        <a href="/politica-privacidad" target="_blank" rel="noopener noreferrer" className="underline">
+                          política de privacidad
+                        </a>{' '}
+                        y que un asesor me contacte.
+                      </span>
+                    </label>
+                    {errors.acepta && <p className="text-xs text-cta mt-1">{errors.acepta}</p>}
                   </div>
 
                   <motion.button
