@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { FaTimes } from 'react-icons/fa'
-import { listarPopupsPublicos } from '@/services/popupsApi'
+import { listarPopupsPublicos, registrarInteraccionPopup } from '@/services/popupsApi'
 import type { PopupPublicoBackend, PopupTipo } from '@/types/backend'
 
 const STORAGE_PREFIX = 'idema:popup:'
@@ -113,6 +113,21 @@ export default function AnnouncementModal() {
   const previouslyFocused = useRef<HTMLElement | null>(null)
   const dialogRef = useRef<HTMLDivElement | null>(null)
   const prefersReducedMotion = useReducedMotion()
+  /**
+   * Popups cuya vista ya se contó.
+   *
+   * En desarrollo StrictMode ejecuta el efecto dos veces, y una vista contada doble
+   * falsea justo la métrica para la que existe el registro.
+   */
+  const vistasContadas = useRef<Set<string>>(new Set())
+
+  /** Registrar la interacción nunca puede romper el popup: si falla, se pierde el dato. */
+  const registrar = useCallback(
+    (id: string, tipo: 'vista' | 'clic') => {
+      void registrarInteraccionPopup(id, tipo, pathname).catch(() => {})
+    },
+    [pathname],
+  )
 
   useEffect(() => {
     let active = true
@@ -125,6 +140,10 @@ export default function AnnouncementModal() {
         }
         setPopup(selected)
         setOpen(Boolean(selected))
+        if (selected && !vistasContadas.current.has(selected.id)) {
+          vistasContadas.current.add(selected.id)
+          registrar(selected.id, 'vista')
+        }
       })
       .catch(() => {
         if (!active) return
@@ -134,7 +153,7 @@ export default function AnnouncementModal() {
     return () => {
       active = false
     }
-  }, [pathname])
+  }, [pathname, registrar])
 
   useEffect(() => {
     if (!open || popup?.tipo !== 'descuento') return
@@ -257,7 +276,12 @@ export default function AnnouncementModal() {
                 href={popup.enlace}
                 target={/^https?:\/\//.test(popup.enlace) ? '_blank' : undefined}
                 rel={/^https?:\/\//.test(popup.enlace) ? 'noopener noreferrer' : undefined}
-                onClick={handleClose}
+                onClick={() => {
+                  // Antes de cerrar y navegar. registrarInteraccionPopup usa keepalive
+                  // para que la petición sobreviva al cambio de página.
+                  registrar(popup.id, 'clic')
+                  handleClose()
+                }}
                 className="mx-auto mt-4 flex min-h-11 w-fit items-center justify-center rounded-full bg-gradient-to-r from-[var(--color-cta)] to-[var(--color-accent)] px-7 py-3 font-semibold text-white shadow-lg transition hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 Ver más
