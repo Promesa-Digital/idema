@@ -159,11 +159,13 @@ export async function submitLead(input: LeadPayload): Promise<LeadResult> {
     }
 
     if (res.status === 409) {
+      // El backend ya anotó en la ficha existente lo que la persona escribió al volver,
+      // así que no se ha perdido nada: solo no se crea un segundo lead.
       return {
         ok: false,
         status: 409,
         duplicate: true,
-        error: 'Ya estás registrado en nuestro sistema.',
+        error: await mensajeDeError(res),
       }
     }
 

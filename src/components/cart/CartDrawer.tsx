@@ -114,7 +114,12 @@ export default function CartDrawer() {
       // Basta con que uno de los dos haya llegado: el lead en nuestra base es el
       // registro que perdura, y el correo es el aviso inmediato. Antes, si el servicio
       // de correo fallaba, la inscripción se perdía entera.
-      if (lead.ok || correoEnviado) {
+      //
+      // `duplicate` también vale: significa que esta persona ya estaba registrada y el
+      // backend anotó su intención de compra en la ficha que ya existe. Para quien está
+      // comprando no hay nada que corregir, así que decirle "ya estás registrado" sería
+      // un error donde no lo hay.
+      if (lead.ok || lead.duplicate || correoEnviado) {
         setStep('success')
         clearCart()
         return
