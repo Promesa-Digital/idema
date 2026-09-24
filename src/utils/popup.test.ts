@@ -97,3 +97,25 @@ describe('validarPopup: enlaces', () => {
     expect(validarPopup({ ...DESCUENTO, video_url: 'youtube' }).video_url).toBeUndefined()
   })
 })
+
+describe('destinoValido: redirecciones abiertas', () => {
+  it('rechaza la ruta protocolo-relativa "//dominio"', () => {
+    // El navegador la lee como "https://evil.com": parece interna y no lo es.
+    expect(destinoValido('//evil.com')).toBe(false)
+    expect(destinoValido('//attacker.test/promo')).toBe(false)
+  })
+
+  it('rechaza la variante con barra invertida', () => {
+    expect(destinoValido('/\\evil.com')).toBe(false)
+  })
+
+  it('sigue aceptando las rutas internas de verdad', () => {
+    expect(destinoValido('/programas-de-estudio')).toBe(true)
+    expect(destinoValido('/')).toBe(true)
+  })
+
+  it('un popup no puede colar un destino externo disfrazado', () => {
+    expect(validarPopup({ ...ANUNCIO, enlace: '//evil.com' }).enlace).toBeTruthy()
+    expect(validarPopup({ ...ANUNCIO, video_url: '//evil.com' }).video_url).toBeTruthy()
+  })
+})

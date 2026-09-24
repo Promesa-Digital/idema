@@ -55,11 +55,16 @@ export interface DatosPopup {
 }
 
 /**
- * Acepta una URL absoluta http(s) o una ruta interna que empiece por "/".
+ * Acepta una URL absoluta http(s) o una ruta interna del sitio.
  * Un enlace suelto como "promociones" no lleva a ninguna parte desde un popup.
  */
 export function destinoValido(valor: string): boolean {
-  if (valor.startsWith('/')) return true
+  if (valor.startsWith('/')) {
+    // "//evil.com" y "/\\evil.com" empiezan por "/" pero el navegador las lee como
+    // dominio externo: parecen internas y sacan al visitante del sitio. Es la
+    // redirección abierta de GHSA-2j2x-hqr9-3h42 y GHSA-wrjc-x8rr-h8h6.
+    return !valor.startsWith('//') && !valor.startsWith('/\\')
+  }
   try {
     const url = new URL(valor)
     return url.protocol === 'http:' || url.protocol === 'https:'
