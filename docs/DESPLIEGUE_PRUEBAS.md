@@ -97,10 +97,17 @@ semilla usa una conocida y el sitio será público.
 En local, con la URL real del backend:
 
 ```bash
-VITE_API_URL=https://pruebas.instituto-idema.org/api \
+VITE_API_URL=/ \
 VITE_LEADS_LEGACY=false \
 npm run build
 ```
+
+**`VITE_API_URL=/` no es un descuido.** `apiClient.ts` le quita la barra final
+(`.replace(/\/$/, '')`), de modo que la base queda vacía y las llamadas salen como
+`/api/v1/...`, que es lo que espera la regla del `.htaccess`
+(`RewriteRule ^api/(.*)$ http://127.0.0.1:8001/api/$1 [P]`). Con `/api` saldrían como
+`/api/api/v1/...` y el proxy devolvería 404. Con la cadena vacía cae al valor por
+defecto `http://localhost:8000` y no funciona en el navegador.
 
 Subir **el contenido** de `dist/` a `public_html` de la cuenta nueva. El `.htaccess` ya va
 dentro del build y resuelve el enrutado de la SPA, HTTPS forzado y las cabeceras.
@@ -109,10 +116,10 @@ dentro del build y resuelve el enrutado de la SPA, HTTPS forzado y las cabeceras
 
 ```bash
 # El backend responde
-curl https://pruebas.instituto-idema.org/api/api/v1/health
+curl https://pruebas.instituto-idema.org/api/v1/health
 
 # La captura pública funciona
-curl -X POST https://pruebas.instituto-idema.org/api/api/v1/leads/ \
+curl -X POST https://pruebas.instituto-idema.org/api/v1/leads/ \
   -H 'Content-Type: application/json' \
   -d '{"nombre":"Prueba Uno","correo":"prueba1@example.com","telefono":"987654321","origen":"formulario","consentimiento":true}'
 # -> 201
