@@ -10,6 +10,7 @@ import Textarea from '@/components/ui/Textarea'
 import ImageUploadField from '@/components/admin/ImageUploadField'
 import { ListEditor, PairListEditor } from '@/components/admin/ListEditor'
 import { generarSlug } from '@/utils/slug'
+import { ANIO_MAXIMO, ANIO_MINIMO, validarRangos } from '@/utils/programa'
 import { descargarCSV } from '@/utils/csv'
 import { siguienteCodigo } from '@/utils/codigoPrograma'
 import RowActions from '@/components/ui/RowActions'
@@ -669,6 +670,15 @@ export default function ProgramasAdminPage() {
       return
     }
 
+    // Rango de los numericos. Sin esto, un ano de 1800 o unas lecciones negativas solo
+    // los paraba el backend, con el mensaje en ingles y sin decir de que campo hablaba.
+    const fueraDeRango = validarRangos(form)
+    if (fueraDeRango) {
+      setSeccionActiva('basicos')
+      setFormError(fueraDeRango.mensaje)
+      return
+    }
+
     setIsSaving(true)
 
     const payload: ProgramaCreate = {
@@ -1145,7 +1155,8 @@ export default function ProgramasAdminPage() {
           <Input
             label="Año"
             type="number"
-            min={1}
+            min={ANIO_MINIMO}
+            max={ANIO_MAXIMO}
             step={1}
             value={form.anio}
             onChange={(event) => setForm((current) => ({ ...current, anio: event.target.value }))}

@@ -1,4 +1,5 @@
 import type { PopupEstado, PopupTipo } from '@/types/backend'
+import { estadoVigencia } from './vigencia'
 
 export const TIPO_POPUP_LABELS: Record<PopupTipo, string> = {
   anuncio: 'Anuncio',
@@ -110,3 +111,27 @@ export function validarPopup(datos: DatosPopup): ErroresPopup {
   return errores
 }
 
+
+/**
+ * Aviso, no error: crear una campaña con la vigencia ya pasada no incumple ninguna regla
+ * y el backend nunca la mostrará ("la web pública solo recibe registros publicados y
+ * vigentes"). Pero deja recorrer todo el circuito —crear, enviar, aprobar, publicar—
+ * para algo que no se verá, y un popup no se desactiva: se finaliza, que es definitivo.
+ * Mejor decirlo antes de gastar el viaje.
+ */
+export function avisoDeVigencia(
+  fechaInicio: string,
+  fechaFin: string,
+  hoy = new Date(),
+): string | null {
+  if (!fechaInicio || !fechaFin) return null
+
+  const estado = estadoVigencia(fechaInicio, fechaFin, hoy)
+  if (estado === 'vencido') {
+    return 'Estas fechas ya pasaron: el popup no se mostrará a nadie aunque lo publiques.'
+  }
+  if (estado === 'programado') {
+    return 'El popup empezará a mostrarse en la fecha de inicio, no al publicarlo.'
+  }
+  return null
+}

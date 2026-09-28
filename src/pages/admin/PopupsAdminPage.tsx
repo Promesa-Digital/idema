@@ -32,6 +32,7 @@ import {
   ESTADO_POPUP_LABELS as ESTADO_LABELS,
   ESTADO_POPUP_SIGUIENTE,
   TIPO_POPUP_LABELS as TIPO_LABELS,
+  avisoDeVigencia,
   validarPopup,
 } from '@/utils/popup'
 import { estadoVigencia, formatFecha as formatDate } from '@/utils/vigencia'
@@ -581,6 +582,8 @@ export default function PopupsAdminPage() {
     }
   }
 
+  // Aviso, no error: no bloquea el guardado. Ver avisoDeVigencia().
+  const avisoVigencia = avisoDeVigencia(form.fecha_inicio, form.fecha_fin)
   const workflowCopy = pendingWorkflow ? WORKFLOW_COPY[pendingWorkflow.action] : null
 
   return (
@@ -904,6 +907,14 @@ export default function PopupsAdminPage() {
             required
             disabled={isSaving}
           />
+          {avisoVigencia && !errores.fecha_fin && (
+            <p
+              role="status"
+              className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 sm:col-span-2"
+            >
+              {avisoVigencia}
+            </p>
+          )}
         </form>
       </Modal>
 

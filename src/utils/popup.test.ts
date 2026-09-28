@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { DatosPopup } from './popup'
-import { destinoValido, validarPopup } from './popup'
+import { avisoDeVigencia, destinoValido, validarPopup } from './popup'
 
 const ANUNCIO: DatosPopup = {
   tipo: 'anuncio',
@@ -117,5 +117,27 @@ describe('destinoValido: redirecciones abiertas', () => {
   it('un popup no puede colar un destino externo disfrazado', () => {
     expect(validarPopup({ ...ANUNCIO, enlace: '//evil.com' }).enlace).toBeTruthy()
     expect(validarPopup({ ...ANUNCIO, video_url: '//evil.com' }).video_url).toBeTruthy()
+  })
+})
+
+describe('avisoDeVigencia', () => {
+  const hoy = new Date(2026, 2, 15) // 15 de marzo de 2026
+
+  it('avisa de una vigencia ya pasada, sin bloquear', () => {
+    const aviso = avisoDeVigencia('2026-01-01', '2026-02-01', hoy)
+    expect(aviso).toMatch(/ya pasaron/)
+  })
+
+  it('avisa de que una campaña futura no arranca al publicarla', () => {
+    expect(avisoDeVigencia('2026-06-01', '2026-06-30', hoy)).toMatch(/fecha de inicio/)
+  })
+
+  it('calla si la campaña está vigente', () => {
+    expect(avisoDeVigencia('2026-03-01', '2026-03-31', hoy)).toBeNull()
+  })
+
+  it('calla mientras falten fechas: aún no hay nada que avisar', () => {
+    expect(avisoDeVigencia('', '2026-03-31', hoy)).toBeNull()
+    expect(avisoDeVigencia('2026-03-01', '', hoy)).toBeNull()
   })
 })
