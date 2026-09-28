@@ -179,7 +179,13 @@ export default function ConceptosAdminPage() {
   )
 
   const programasOrdenados = useMemo(
-    () => [...programas].sort((first, second) => first.nombre.localeCompare(second.nombre, 'es')),
+    () =>
+      programas
+        // Los archivados se excluyen: apuntar un cobro a un programa retirado crea un
+        // precio que nadie puede pagar. El que ya este elegido se conserva aparte, mas
+        // abajo, para no vaciar el campo al editar un concepto antiguo.
+        .filter((programa) => programa.estado !== 'archivado')
+        .sort((first, second) => first.nombre.localeCompare(second.nombre, 'es')),
     [programas],
   )
 
@@ -191,7 +197,14 @@ export default function ConceptosAdminPage() {
   const opcionesDestino = useMemo<SearchSelectOption[]>(
     () =>
       form.destinoTipo === 'programa'
-        ? programasOrdenados.map((programa) => ({
+        ? [
+            ...programasOrdenados,
+            // Si el concepto que se edita apunta a un programa ya archivado, se anade
+            // para que el campo no aparezca vacio y parezca que se perdio el dato.
+            ...programas.filter(
+              (p) => p.id === form.destinoId && p.estado === 'archivado',
+            ),
+          ].map((programa) => ({
             value: programa.id,
             label: programa.nombre,
             hint: programa.codigo,
@@ -202,7 +215,7 @@ export default function ConceptosAdminPage() {
             label: combo.nombre,
             hint: `${combo.programa_ids.length} programa(s)`,
           })),
-    [combosOrdenados, form.destinoTipo, programasOrdenados],
+    [combosOrdenados, form.destinoId, form.destinoTipo, programas, programasOrdenados],
   )
 
   const getDestinoNombre = useCallback(

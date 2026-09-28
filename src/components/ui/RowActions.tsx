@@ -1,4 +1,5 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { FiMoreVertical } from 'react-icons/fi'
 import type { ReactNode } from 'react'
 
@@ -26,14 +27,47 @@ interface RowActionsProps {
  */
 export default function RowActions({ acciones, etiquetaAccesible }: RowActionsProps) {
   const [abierto, setAbierto] = useState(false)
+  const [posicion, setPosicion] = useState({ top: 0, right: 0 })
   const contenedor = useRef<HTMLDivElement>(null)
+  const boton = useRef<HTMLButtonElement>(null)
+  const menu = useRef<HTMLDivElement>(null)
   const menuId = useId()
+
+  /**
+   * El menu se dibuja fuera de la tabla, en un portal, y se posiciona a mano.
+   *
+   * Dentro no cabe: el contenedor de la tabla lleva `overflow-hidden` y el envoltorio
+   * `overflow-x-auto`, y los dos recortan a un hijo posicionado en absoluto. Con una o
+   * dos filas solo se veian unos pixeles del menu y sus opciones eran inalcanzables.
+   */
+  useLayoutEffect(() => {
+    if (!abierto || !boton.current) return
+    const caja = boton.current.getBoundingClientRect()
+    setPosicion({ top: caja.bottom + 4, right: window.innerWidth - caja.right })
+  }, [abierto])
+
+  // Al desplazar la pagina el menu quedaria flotando lejos de su fila: se cierra.
+  useEffect(() => {
+    if (!abierto) return
+    const cerrar = () => setAbierto(false)
+    window.addEventListener('scroll', cerrar, true)
+    window.addEventListener('resize', cerrar)
+    return () => {
+      window.removeEventListener('scroll', cerrar, true)
+      window.removeEventListener('resize', cerrar)
+    }
+  }, [abierto])
 
   useEffect(() => {
     if (!abierto) return
 
     const alPulsarFuera = (evento: MouseEvent) => {
-      if (!contenedor.current?.contains(evento.target as Node)) setAbierto(false)
+      const destino = evento.target as Node
+      // El menu vive en un portal, fuera de `contenedor`: si no se comprueba aparte,
+      // pulsar una opcion cuenta como "fuera", el menu se desmonta en el mousedown y
+      // el clic nunca llega al boton.
+      if (contenedor.current?.contains(destino) || menu.current?.contains(destino)) return
+      setAbierto(false)
     }
     const alPulsarEscape = (evento: KeyboardEvent) => {
       if (evento.key === 'Escape') setAbierto(false)
@@ -52,6 +86,7 @@ export default function RowActions({ acciones, etiquetaAccesible }: RowActionsPr
   return (
     <div ref={contenedor} className="relative">
       <button
+        ref={boton}
         type="button"
         onClick={() => setAbierto((valor) => !valor)}
         aria-haspopup="menu"
@@ -63,12 +98,15 @@ export default function RowActions({ acciones, etiquetaAccesible }: RowActionsPr
         <FiMoreVertical aria-hidden />
       </button>
 
-      {abierto && (
-        <div
-          id={menuId}
-          role="menu"
-          className="absolute right-0 z-20 mt-1 min-w-44 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 shadow-lg"
-        >
+      {abierto &&
+        createPortal(
+          <div
+            ref={menu}
+            id={menuId}
+            role="menu"
+            style={{ top: posicion.top, right: posicion.right }}
+            className="fixed z-50 min-w-44 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 shadow-lg"
+          >
           {acciones.map((accion) => (
             <button
               key={accion.etiqueta}
@@ -88,9 +126,10 @@ export default function RowActions({ acciones, etiquetaAccesible }: RowActionsPr
               {accion.icono}
               {accion.etiqueta}
             </button>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>,
+          document.body,
+        )}
     </div>
   )
 }

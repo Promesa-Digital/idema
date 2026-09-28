@@ -19,6 +19,10 @@ const sizeClasses = {
   xl: 'max-w-5xl',
 }
 
+const FOCUSABLES =
+  'button:not([disabled]), input:not([disabled]), select:not([disabled]), ' +
+  'textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+
 export default function Modal({
   isOpen,
   onClose,
@@ -31,6 +35,14 @@ export default function Modal({
   const titleId = useId()
   const dialogRef = useRef<HTMLDivElement>(null)
 
+  /**
+   * Foco y bloqueo del scroll. Depende SOLO de `isOpen`.
+   *
+   * Antes iba junto al manejador de teclado, que necesita `onClose`, y compartian
+   * dependencias. Como el `onClose` de los paneles compara el formulario actual para
+   * avisar de cambios sin guardar, cambia de identidad en cada tecla: el efecto se
+   * reejecutaba, devolvia el foco al boton de cerrar y solo sobrevivia la primera letra.
+   */
   useEffect(() => {
     if (!isOpen) return
 
@@ -38,10 +50,18 @@ export default function Modal({
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
 
-    const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
-      'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
-    )
-    focusable?.[0]?.focus()
+    dialogRef.current?.querySelector<HTMLElement>(FOCUSABLES)?.focus()
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      previousFocus?.focus()
+    }
+  }, [isOpen])
+
+  // El manejador de teclado si necesita `onClose`, y puede recrearse sin consecuencias:
+  // solo cambia que listener esta registrado, no donde esta el foco.
+  useEffect(() => {
+    if (!isOpen) return
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -51,9 +71,7 @@ export default function Modal({
       }
       if (event.key !== 'Tab' || !dialogRef.current) return
 
-      const elements = dialogRef.current.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
-      )
+      const elements = dialogRef.current.querySelectorAll<HTMLElement>(FOCUSABLES)
       if (elements.length === 0) return
 
       const first = elements[0]
@@ -68,11 +86,7 @@ export default function Modal({
     }
 
     document.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = previousOverflow
-      previousFocus?.focus()
-    }
+    return () => document.removeEventListener('keydown', handleKeyDown)
   }, [isOpen, onClose])
 
   if (!isOpen) return null
