@@ -25,10 +25,3 @@ export function cambiarEstadoLead(id: string, estado: LeadEstado): Promise<LeadB
     body: { estado },
   })
 }
-
-export function asignarAsesor(id: string, asesorId: string): Promise<LeadBackend> {
-  return apiRequest<LeadBackend>(`${LEADS_PATH}/${encodeURIComponent(id)}/asignar`, {
-    method: 'PATCH',
-    body: { asesor_asignado_id: asesorId },
-  })
-}

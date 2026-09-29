@@ -311,6 +311,11 @@ export interface LeadBackend {
   origen: LeadOrigen
   estado: LeadEstado
   asesor_asignado_id: string | null
+  // Envío al CRM: notificado_at nulo con intentos > 0 significa que el lead está guardado
+  // pero nunca llegó al CRM. Sin intentos, el envío está apagado o aún no se intentó.
+  notificado_at?: string | null
+  notificacion_intentos?: number
+  notificacion_error?: string | null
   created_at: string
   updated_at: string
 }

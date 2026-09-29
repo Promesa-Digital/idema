@@ -9,7 +9,6 @@ import type { TableColumn } from '@/components/ui/Table'
 import { useAuth } from '@/context/AuthContextType'
 import { ApiError } from '@/services/apiClient'
 import {
-  asignarAsesor,
   cambiarEstadoLead,
   listarLeads,
   obtenerLead,
@@ -20,22 +19,12 @@ import type {
   LeadEstado,
   LeadOrigen,
   UsuarioDirectorio,
-  UsuarioRol,
 } from '@/types/backend'
 
 interface DetailItemProps {
   label: string
   children: ReactNode
   fullWidth?: boolean
-}
-
-const ROL_LABELS: Record<UsuarioRol, string> = {
-  marketing: 'Marketing',
-  director_marketing: 'Director de marketing',
-  ventas: 'Ventas',
-  academico: 'Académico',
-  administracion: 'Administración',
-  admin_sistema: 'Administrador del sistema',
 }
 
 const ORIGEN_LABELS: Record<LeadOrigen, string> = {
@@ -88,6 +77,18 @@ function DetailItem({ label, children, fullWidth = false }: DetailItemProps) {
   )
 }
 
+function CrmBadge({ lead }: { lead: LeadBackend }) {
+  if (lead.notificado_at) return <Badge variant="emerald">En el CRM</Badge>
+  if ((lead.notificacion_intentos ?? 0) > 0) {
+    return (
+      <span title={lead.notificacion_error ?? undefined}>
+        <Badge variant="red">No llegó</Badge>
+      </span>
+    )
+  }
+  return <Badge variant="slate">Sin enviar</Badge>
+}
+
 function EstadoBadge({ estado }: { estado: LeadEstado }) {
   return <Badge variant={ESTADO_BADGES[estado]}>{ESTADO_LABELS[estado]}</Badge>
 }
@@ -102,7 +103,6 @@ export default function LeadsAdminPage() {
   const [feedback, setFeedback] = useState('')
 
   const [usuarios, setUsuarios] = useState<UsuarioDirectorio[]>([])
-  const [isUsuariosLoading, setIsUsuariosLoading] = useState(true)
   const [usuariosError, setUsuariosError] = useState('')
   const [usuariosReloadKey, setUsuariosReloadKey] = useState(0)
 
@@ -116,11 +116,6 @@ export default function LeadsAdminPage() {
   const [nextEstado, setNextEstado] = useState<LeadEstado>('nuevo')
   const [estadoError, setEstadoError] = useState('')
   const [isChangingEstado, setIsChangingEstado] = useState(false)
-
-  const [leadToAssign, setLeadToAssign] = useState<LeadBackend | null>(null)
-  const [selectedAsesorId, setSelectedAsesorId] = useState('')
-  const [asignacionError, setAsignacionError] = useState('')
-  const [isAssigning, setIsAssigning] = useState(false)
 
   useEffect(() => {
     let isActive = true
@@ -161,19 +156,11 @@ export default function LeadsAdminPage() {
         }
         setUsuariosError(getErrorMessage(error, 'No se pudo cargar el directorio de usuarios.'))
       })
-      .finally(() => {
-        if (isActive) setIsUsuariosLoading(false)
-      })
 
     return () => {
       isActive = false
     }
   }, [logout, usuariosReloadKey])
-
-  const usuariosOrdenados = useMemo(
-    () => [...usuarios].sort((first, second) => first.nombre.localeCompare(second.nombre, 'es')),
-    [usuarios],
-  )
 
   const usuariosPorId = useMemo(
     () => new Map(usuarios.map((usuario) => [usuario.id, usuario])),
@@ -245,26 +232,6 @@ export default function LeadsAdminPage() {
     setEstadoError('')
   }, [isChangingEstado])
 
-  const openAsignacion = useCallback(
-    (lead: LeadBackend) => {
-      setLeadToAssign(lead)
-      setSelectedAsesorId(
-        lead.asesor_asignado_id && usuariosPorId.has(lead.asesor_asignado_id)
-          ? lead.asesor_asignado_id
-          : '',
-      )
-      setAsignacionError('')
-    },
-    [usuariosPorId],
-  )
-
-  const closeAsignacion = useCallback(() => {
-    if (isAssigning) return
-    setLeadToAssign(null)
-    setSelectedAsesorId('')
-    setAsignacionError('')
-  }, [isAssigning])
-
   const columns = useMemo<TableColumn<LeadBackend>[]>(
     () => [
       {
@@ -309,6 +276,11 @@ export default function LeadsAdminPage() {
         ),
       },
       {
+        key: 'crm',
+        header: 'CRM',
+        render: (lead) => <CrmBadge lead={lead} />,
+      },
+      {
         key: 'acciones',
         header: 'Acciones',
         render: (lead) => (
@@ -319,14 +291,11 @@ export default function LeadsAdminPage() {
             <Button size="sm" variant="secondary" onClick={() => openEstado(lead)}>
               Cambiar estado
             </Button>
-            <Button size="sm" onClick={() => openAsignacion(lead)}>
-              Asignar asesor
-            </Button>
           </div>
         ),
       },
     ],
-    [getAsesorLabel, openAsignacion, openDetail, openEstado],
+    [getAsesorLabel, openDetail, openEstado],
   )
 
   const handleEstadoChange = async (event: FormEvent<HTMLFormElement>) => {
@@ -355,37 +324,6 @@ export default function LeadsAdminPage() {
     }
   }
 
-  const handleAsignacion = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (!leadToAssign) return
-    if (!selectedAsesorId) {
-      setAsignacionError('Selecciona un asesor.')
-      return
-    }
-
-    setAsignacionError('')
-    setFeedback('')
-    setIsAssigning(true)
-
-    try {
-      const updated = await asignarAsesor(leadToAssign.id, selectedAsesorId)
-      syncLead(updated)
-      setFeedback(
-        `${getLeadName(updated)} fue asignado a ${getAsesorLabel(updated.asesor_asignado_id)}.`,
-      )
-      setLeadToAssign(null)
-      setSelectedAsesorId('')
-    } catch (error) {
-      if (error instanceof ApiError && error.status === 401) {
-        logout()
-        return
-      }
-      setAsignacionError(getErrorMessage(error, 'No se pudo asignar el asesor.'))
-    } finally {
-      setIsAssigning(false)
-    }
-  }
-
   const handleRetry = () => {
     setIsLoading(true)
     setLoadError('')
@@ -393,7 +331,6 @@ export default function LeadsAdminPage() {
   }
 
   const handleUsuariosRetry = () => {
-    setIsUsuariosLoading(true)
     setUsuariosError('')
     setUsuariosReloadKey((current) => current + 1)
   }
@@ -405,7 +342,7 @@ export default function LeadsAdminPage() {
           <div>
             <h2 className="text-xl font-semibold text-dark">Leads registrados</h2>
             <p className="mt-1 text-sm text-slate-600">
-              Consulta los datos, actualiza el seguimiento y asigna responsables.
+              Respaldo de lo capturado en el sitio web.
             </p>
           </div>
           <Select
@@ -425,6 +362,12 @@ export default function LeadsAdminPage() {
             <option value="pago">Pago</option>
             <option value="descartado">Descartado</option>
           </Select>
+        </div>
+
+        <div className="mb-5 rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-800">
+          Los leads del sitio se envían al CRM, que los asigna a los asesores. Aquí queda el
+          respaldo de lo capturado. Un lead marcado como <strong>No llegó</strong> está guardado
+          pero aún no está en el CRM.
         </div>
 
         {feedback && (
@@ -597,93 +540,6 @@ export default function LeadsAdminPage() {
         </form>
       </Modal>
 
-      <Modal
-        isOpen={Boolean(leadToAssign)}
-        onClose={closeAsignacion}
-        title="Asignar asesor"
-        size="sm"
-        closeOnBackdrop={!isAssigning}
-        footer={
-          <>
-            <Button variant="ghost" onClick={closeAsignacion} disabled={isAssigning}>
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              form="assign-lead-advisor-form"
-              isLoading={isAssigning}
-              disabled={
-                isUsuariosLoading || Boolean(usuariosError) || !selectedAsesorId || isAssigning
-              }
-            >
-              Asignar
-            </Button>
-          </>
-        }
-      >
-        <form id="assign-lead-advisor-form" onSubmit={handleAsignacion}>
-          <p className="mb-4 text-sm text-slate-600">
-            Selecciona el responsable del seguimiento de{' '}
-            <span className="font-semibold text-dark">
-              {leadToAssign ? getLeadName(leadToAssign) : ''}
-            </span>
-            .
-          </p>
-          <Select
-            label="Asesor"
-            value={selectedAsesorId}
-            onChange={(event) => {
-              setSelectedAsesorId(event.target.value)
-              setAsignacionError('')
-            }}
-            hint={
-              isUsuariosLoading
-                ? 'Cargando usuarios...'
-                : usuariosOrdenados.length === 0 && !usuariosError
-                  ? 'No hay usuarios disponibles.'
-                  : undefined
-            }
-            disabled={isAssigning || isUsuariosLoading || Boolean(usuariosError)}
-            required
-          >
-            <option value="">
-              {isUsuariosLoading ? 'Cargando...' : 'Selecciona un asesor'}
-            </option>
-            {usuariosOrdenados.map((usuario) => (
-              <option key={usuario.id} value={usuario.id}>
-                {usuario.nombre} ({ROL_LABELS[usuario.rol]})
-                {usuario.estado === 'inactivo' ? ' · Inactivo' : ''}
-              </option>
-            ))}
-          </Select>
-
-          {usuariosError && (
-            <div
-              role="alert"
-              className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-            >
-              <p>{usuariosError}</p>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="mt-2 text-red-700 hover:bg-red-100"
-                onClick={handleUsuariosRetry}
-              >
-                Reintentar
-              </Button>
-            </div>
-          )}
-
-          {asignacionError && (
-            <div
-              role="alert"
-              className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-            >
-              {asignacionError}
-            </div>
-          )}
-        </form>
-      </Modal>
     </main>
   )
 }

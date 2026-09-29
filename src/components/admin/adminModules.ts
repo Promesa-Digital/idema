@@ -140,7 +140,7 @@ export const ADMIN_MODULES: AdminModule[] = [
   {
     label: 'Leads',
     path: '/admin/leads',
-    description: 'Prospectos, asignación y seguimiento comercial.',
+    description: 'Respaldo de los prospectos captados en el sitio web.',
     icon: FiZap,
     group: 'comercial',
     allowedRoles: [
