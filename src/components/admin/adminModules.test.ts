@@ -5,6 +5,7 @@ import {
   getAdminModule,
   getAdminModuleSections,
   getAvailableAdminModules,
+  getEnabledAdminModules,
   rolesDeRuta,
 } from './adminModules'
 
@@ -48,6 +49,18 @@ describe('agrupación de módulos', () => {
 })
 
 describe('integridad del registro', () => {
+  it('bloquea los módulos que todavía están en desarrollo', () => {
+    expect(ADMIN_MODULES.filter((modulo) => modulo.enDesarrollo).map((modulo) => modulo.path)).toEqual([
+      '/admin/electivos',
+      '/admin/matriculas',
+      '/admin/alumnos',
+      '/admin/ordenes',
+      '/admin/comprobantes',
+      '/admin/conciliaciones',
+    ])
+    expect(getEnabledAdminModules('admin_sistema').every((modulo) => !modulo.enDesarrollo)).toBe(true)
+  })
+
   it('no repite rutas', () => {
     const rutas = ADMIN_MODULES.map((m) => m.path)
     expect(new Set(rutas).size).toBe(rutas.length)

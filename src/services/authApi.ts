@@ -13,6 +13,23 @@ export function getMe(token: string): Promise<UsuarioBackend> {
   return apiRequest<UsuarioBackend>('/api/v1/auth/me', { token })
 }
 
+export function actualizarMiPerfil(nombre: string): Promise<UsuarioBackend> {
+  return apiRequest<UsuarioBackend>('/api/v1/auth/me/perfil', {
+    method: 'PATCH',
+    body: { nombre },
+  })
+}
+
+export function actualizarMiPassword(
+  passwordActual: string,
+  passwordNueva: string,
+): Promise<{ mensaje: string }> {
+  return apiRequest<{ mensaje: string }>('/api/v1/auth/me/password', {
+    method: 'PATCH',
+    body: { password_actual: passwordActual, password_nueva: passwordNueva },
+  })
+}
+
 export function solicitarRecuperacionPassword(correo: string): Promise<{ mensaje: string }> {
   return apiRequest<{ mensaje: string }>('/api/v1/auth/password/solicitar', {
     method: 'POST',

@@ -70,7 +70,6 @@ export default function AlumnoLoginPage() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <Input label="Correo electrónico" type="email" autoComplete="username" value={correo} onChange={(event) => setCorreo(event.target.value)} required disabled={isSubmitting} />
           <Input label="Contraseña" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required disabled={isSubmitting} />
-          <div className="-mt-2 text-right"><Link to="/recuperar-password" className="text-sm font-semibold text-primary hover:underline">¿Olvidaste tu contraseña?</Link></div>
           {error && <div role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
           <Button type="submit" size="lg" fullWidth isLoading={isSubmitting}>Iniciar sesión</Button>
         </form>

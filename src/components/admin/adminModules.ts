@@ -58,6 +58,7 @@ export interface AdminModule {
   icon: IconType
   group: AdminModuleGroup
   allowedRoles: UsuarioRol[]
+  enDesarrollo?: boolean
 }
 
 export interface AdminModuleSection {
@@ -124,6 +125,7 @@ export const ADMIN_MODULES: AdminModule[] = [
     icon: FiGift,
     group: 'oferta',
     allowedRoles: ['academico', 'administracion', 'admin_sistema'],
+    enDesarrollo: true,
   },
   {
     // Es tarifa, pero se define al armar el programa y no al cobrarlo: vive con el catálogo.
@@ -181,6 +183,7 @@ export const ADMIN_MODULES: AdminModule[] = [
     icon: FiUserCheck,
     group: 'estudiantes',
     allowedRoles: ['academico', 'administracion', 'admin_sistema'],
+    enDesarrollo: true,
   },
   {
     label: 'Cuentas de alumnos',
@@ -189,6 +192,7 @@ export const ADMIN_MODULES: AdminModule[] = [
     icon: FiUsers,
     group: 'estudiantes',
     allowedRoles: ['ventas', 'academico', 'administracion', 'admin_sistema'],
+    enDesarrollo: true,
   },
 
   {
@@ -198,6 +202,7 @@ export const ADMIN_MODULES: AdminModule[] = [
     icon: FiCreditCard,
     group: 'finanzas',
     allowedRoles: ['administracion', 'admin_sistema'],
+    enDesarrollo: true,
   },
   {
     label: 'Comprobantes',
@@ -206,6 +211,7 @@ export const ADMIN_MODULES: AdminModule[] = [
     icon: FiFileText,
     group: 'finanzas',
     allowedRoles: ['administracion', 'admin_sistema'],
+    enDesarrollo: true,
   },
   {
     label: 'Conciliación de pagos',
@@ -214,6 +220,7 @@ export const ADMIN_MODULES: AdminModule[] = [
     icon: FiRefreshCw,
     group: 'finanzas',
     allowedRoles: ['administracion', 'admin_sistema'],
+    enDesarrollo: true,
   },
 
   {
@@ -231,6 +238,10 @@ export const ADMIN_MODULES: AdminModule[] = [
 export function getAvailableAdminModules(role?: UsuarioRol): AdminModule[] {
   if (!role) return []
   return ADMIN_MODULES.filter((module) => module.allowedRoles.includes(role))
+}
+
+export function getEnabledAdminModules(role?: UsuarioRol): AdminModule[] {
+  return getAvailableAdminModules(role).filter((module) => !module.enDesarrollo)
 }
 
 /** Los módulos del rol, ya repartidos en secciones. Las secciones vacías no se devuelven. */

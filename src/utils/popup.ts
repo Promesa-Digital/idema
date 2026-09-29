@@ -74,7 +74,7 @@ export function destinoValido(valor: string): boolean {
   }
 }
 
-export function validarPopup(datos: DatosPopup): ErroresPopup {
+export function validarPopup(datos: DatosPopup, hoy = new Date()): ErroresPopup {
   const errores: ErroresPopup = {}
 
   if (!datos.texto.trim()) errores.texto = 'Escribe el texto del popup.'
@@ -106,19 +106,14 @@ export function validarPopup(datos: DatosPopup): ErroresPopup {
   // que terminaban antes de empezar, y no se mostraban nunca sin decir por qué.
   if (datos.fecha_inicio && datos.fecha_fin && datos.fecha_inicio > datos.fecha_fin) {
     errores.fecha_fin = 'La fecha de fin no puede ser anterior a la de inicio.'
+  } else if (datos.fecha_fin && estadoVigencia(datos.fecha_inicio || datos.fecha_fin, datos.fecha_fin, hoy) === 'vencido') {
+    errores.fecha_fin = 'La fecha de fin no puede ser anterior a hoy.'
   }
 
   return errores
 }
 
 
-/**
- * Aviso, no error: crear una campaña con la vigencia ya pasada no incumple ninguna regla
- * y el backend nunca la mostrará ("la web pública solo recibe registros publicados y
- * vigentes"). Pero deja recorrer todo el circuito —crear, enviar, aprobar, publicar—
- * para algo que no se verá, y un popup no se desactiva: se finaliza, que es definitivo.
- * Mejor decirlo antes de gastar el viaje.
- */
 export function avisoDeVigencia(
   fechaInicio: string,
   fechaFin: string,
@@ -127,9 +122,6 @@ export function avisoDeVigencia(
   if (!fechaInicio || !fechaFin) return null
 
   const estado = estadoVigencia(fechaInicio, fechaFin, hoy)
-  if (estado === 'vencido') {
-    return 'Estas fechas ya pasaron: el popup no se mostrará a nadie aunque lo publiques.'
-  }
   if (estado === 'programado') {
     return 'El popup empezará a mostrarse en la fecha de inicio, no al publicarlo.'
   }

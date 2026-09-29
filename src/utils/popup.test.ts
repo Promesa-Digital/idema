@@ -10,8 +10,8 @@ const ANUNCIO: DatosPopup = {
   enlace: '',
   concepto_cobro_id: '',
   texto_superior: '',
-  fecha_inicio: '2026-03-01',
-  fecha_fin: '2026-03-31',
+  fecha_inicio: '2099-03-01',
+  fecha_fin: '2099-03-31',
 }
 
 const DESCUENTO: DatosPopup = {
@@ -45,12 +45,28 @@ describe('validarPopup: campos obligatorios', () => {
 
 describe('validarPopup: vigencia al revés', () => {
   it('rechaza que el fin sea anterior al inicio', () => {
-    const errores = validarPopup({ ...ANUNCIO, fecha_inicio: '2026-03-31', fecha_fin: '2026-03-01' })
+    const errores = validarPopup({ ...ANUNCIO, fecha_inicio: '2099-03-31', fecha_fin: '2099-03-01' })
     expect(errores.fecha_fin).toMatch(/anterior a la de inicio/)
   })
 
   it('acepta que empiece y acabe el mismo día', () => {
-    const errores = validarPopup({ ...ANUNCIO, fecha_inicio: '2026-03-10', fecha_fin: '2026-03-10' })
+    const errores = validarPopup({ ...ANUNCIO, fecha_inicio: '2099-03-10', fecha_fin: '2099-03-10' })
+    expect(errores.fecha_fin).toBeUndefined()
+  })
+
+  it('rechaza una fecha de fin anterior a hoy', () => {
+    const errores = validarPopup(
+      { ...ANUNCIO, fecha_inicio: '2026-03-01', fecha_fin: '2026-03-14' },
+      new Date(2026, 2, 15),
+    )
+    expect(errores.fecha_fin).toMatch(/anterior a hoy/)
+  })
+
+  it('acepta que la vigencia termine hoy', () => {
+    const errores = validarPopup(
+      { ...ANUNCIO, fecha_inicio: '2026-03-01', fecha_fin: '2026-03-15' },
+      new Date(2026, 2, 15),
+    )
     expect(errores.fecha_fin).toBeUndefined()
   })
 })
@@ -122,11 +138,6 @@ describe('destinoValido: redirecciones abiertas', () => {
 
 describe('avisoDeVigencia', () => {
   const hoy = new Date(2026, 2, 15) // 15 de marzo de 2026
-
-  it('avisa de una vigencia ya pasada, sin bloquear', () => {
-    const aviso = avisoDeVigencia('2026-01-01', '2026-02-01', hoy)
-    expect(aviso).toMatch(/ya pasaron/)
-  })
 
   it('avisa de que una campaña futura no arranca al publicarla', () => {
     expect(avisoDeVigencia('2026-06-01', '2026-06-30', hoy)).toMatch(/fecha de inicio/)

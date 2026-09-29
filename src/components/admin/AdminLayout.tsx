@@ -14,7 +14,10 @@ export default function AdminLayout() {
   const location = useLocation()
   const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const currentModule = getAdminModule(location.pathname)
+  const currentModule =
+    location.pathname === '/admin/perfil'
+      ? { label: 'Mi perfil', description: 'Datos personales y seguridad de tu cuenta.' }
+      : getAdminModule(location.pathname)
 
   const handleLogout = () => {
     logout()

@@ -218,6 +218,7 @@ export default function PopupsAdminPage() {
   const [workflowError, setWorkflowError] = useState('')
   const [isTransitioning, setIsTransitioning] = useState(false)
   const isCreator = user?.rol === 'marketing' || user?.rol === 'ventas' || user?.rol === 'admin_sistema'
+  const hoy = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`
   const isApprover = user?.rol === 'director_marketing' || user?.rol === 'admin_sistema'
   const isAdmin = user?.rol === 'admin_sistema'
   const { addToast } = useToast()
@@ -582,7 +583,6 @@ export default function PopupsAdminPage() {
     }
   }
 
-  // Aviso, no error: no bloquea el guardado. Ver avisoDeVigencia().
   const avisoVigencia = avisoDeVigencia(form.fecha_inicio, form.fecha_fin)
   const workflowCopy = pendingWorkflow ? WORKFLOW_COPY[pendingWorkflow.action] : null
 
@@ -898,6 +898,7 @@ export default function PopupsAdminPage() {
           <Input
             label="Fecha de fin"
             type="date"
+            min={hoy}
             value={form.fecha_fin}
             onChange={(event) => {
               setForm((current) => ({ ...current, fecha_fin: event.target.value }))

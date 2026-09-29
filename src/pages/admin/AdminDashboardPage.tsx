@@ -9,7 +9,7 @@ import {
   FiRefreshCw,
 } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
-import { getAdminModule, getAvailableAdminModules } from '@/components/admin/adminModules'
+import { getAdminModule, getEnabledAdminModules } from '@/components/admin/adminModules'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { describirPendientes, useAdminPendientes } from '@/context/AdminPendientesContextType'
 import { useAuth } from '@/context/AuthContextType'
@@ -51,7 +51,7 @@ export default function AdminDashboardPage() {
   const [recarga, setRecarga] = useState(0)
 
   const rutasVisibles = useMemo(
-    () => new Set(getAvailableAdminModules(user?.rol).map((modulo) => modulo.path)),
+    () => new Set(getEnabledAdminModules(user?.rol).map((modulo) => modulo.path)),
     [user?.rol],
   )
 

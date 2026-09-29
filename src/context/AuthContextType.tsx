@@ -6,6 +6,7 @@ export interface AuthContextType {
   token: string | null
   isLoading: boolean
   login: (correo: string, password: string) => Promise<void>
+  refreshUser: () => Promise<void>
   logout: () => void
 }
 

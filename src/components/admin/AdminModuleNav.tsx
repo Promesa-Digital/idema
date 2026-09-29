@@ -39,6 +39,21 @@ export default function AdminModuleNav({ role, onNavigate }: AdminModuleNavProps
             {seccion.modules.map((module) => {
               const Icon = module.icon
               const pendientes = porRuta[module.path]
+              if (module.enDesarrollo) {
+                return (
+                  <div
+                    key={module.path}
+                    aria-disabled="true"
+                    className="flex min-h-11 cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-white/35 lg:min-h-10"
+                  >
+                    <Icon aria-hidden="true" className="h-5 w-5 shrink-0" />
+                    <span className="flex-1 truncate">{module.label}</span>
+                    <span className="shrink-0 rounded-full border border-white/10 px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide">
+                      En desarrollo
+                    </span>
+                  </div>
+                )
+              }
               return (
                 <NavLink
                   key={module.path}

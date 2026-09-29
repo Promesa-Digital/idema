@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
-import { FiChevronDown, FiLogOut } from 'react-icons/fi'
+import { FiChevronDown, FiLogOut, FiUser } from 'react-icons/fi'
+import { Link } from 'react-router-dom'
 import type { UsuarioBackend } from '@/types/backend'
 import { ROLE_LABELS } from './adminModules'
 
@@ -84,6 +85,15 @@ export default function AdminUserMenu({ user, onLogout }: AdminUserMenuProps) {
               {ROLE_LABELS[user.rol]}
             </p>
           </div>
+          <Link
+            to="/admin/perfil"
+            role="menuitem"
+            onClick={() => setAbierto(false)}
+            className="flex min-h-11 w-full items-center gap-3 px-4 text-sm font-semibold text-dark transition hover:bg-slate-50"
+          >
+            <FiUser aria-hidden="true" className="h-4 w-4 shrink-0" />
+            Mi perfil
+          </Link>
           <button
             type="button"
             role="menuitem"

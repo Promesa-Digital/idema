@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { getAvailableAdminModules } from '@/components/admin/adminModules'
+import { getEnabledAdminModules } from '@/components/admin/adminModules'
 import { listarComprobantes } from '@/services/comprobantesApi'
 import { listarConciliaciones } from '@/services/conciliacionesApi'
 import { listarLeads } from '@/services/leadsApi'
@@ -72,7 +72,7 @@ export function AdminPendientesProvider({ role, children }: AdminPendientesProvi
   // Permisos: se derivan del propio registro de módulos. Si el rol no ve el módulo,
   // no se pide su conteo, y así no se dispara un 403 por cada carga del panel.
   const aplicables = useMemo(() => {
-    const visibles = new Set(getAvailableAdminModules(role).map((m) => m.path))
+    const visibles = new Set(getEnabledAdminModules(role).map((m) => m.path))
     return CONTADORES.filter((c) => visibles.has(c.ruta))
   }, [role])
 

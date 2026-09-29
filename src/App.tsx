@@ -6,6 +6,7 @@ import Layout from './components/Layout'
 import LoadingSpinner from './components/ui/LoadingSpinner'
 import ProtectedRoute from './components/admin/ProtectedRoute'
 import AdminLayout from './components/admin/AdminLayout'
+import ModuleUnderDevelopmentPage from './pages/admin/ModuleUnderDevelopmentPage'
 import { ALL_ADMIN_ROLES, rolesDeRuta } from './components/admin/adminModules'
 import AlumnoProtectedRoute from './components/alumno/AlumnoProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
@@ -64,20 +65,15 @@ const NoticiasPage = lazy(() => import('./pages/NoticiasPage'))
 const ProgramasPage = lazy(() => import('./pages/programs/ProgramasPage'))
 const LoginPage = lazy(() => import('./pages/admin/LoginPage'))
 const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'))
+const MiPerfilAdminPage = lazy(() => import('./pages/admin/MiPerfilAdminPage'))
 const ProgramasAdminPage = lazy(() => import('./pages/admin/ProgramasAdminPage'))
 const PopupsAdminPage = lazy(() => import('./pages/admin/PopupsAdminPage'))
 const CombosAdminPage = lazy(() => import('./pages/admin/CombosAdminPage'))
 const DescuentosAdminPage = lazy(() => import('./pages/admin/DescuentosAdminPage'))
-const OrdenesAdminPage = lazy(() => import('./pages/admin/OrdenesAdminPage'))
-const ComprobantesAdminPage = lazy(() => import('./pages/admin/ComprobantesAdminPage'))
 const LeadsAdminPage = lazy(() => import('./pages/admin/LeadsAdminPage'))
 const UsuariosAdminPage = lazy(() => import('./pages/admin/UsuariosAdminPage'))
 const ConceptosAdminPage = lazy(() => import('./pages/admin/ConceptosAdminPage'))
-const MatriculasAdminPage = lazy(() => import('./pages/admin/MatriculasAdminPage'))
-const ElectivosAdminPage = lazy(() => import('./pages/admin/ElectivosAdminPage'))
 const ReportesAdminPage = lazy(() => import('./pages/admin/ReportesAdminPage'))
-const ConciliacionesAdminPage = lazy(() => import('./pages/admin/ConciliacionesAdminPage'))
-const CuentasAlumnoAdminPage = lazy(() => import('./pages/admin/CuentasAlumnoAdminPage'))
 const AlumnoLoginPage = lazy(() => import('./pages/alumno/AlumnoLoginPage'))
 const AlumnoRegistroPage = lazy(() => import('./pages/alumno/AlumnoRegistroPage'))
 const MiCuentaPage = lazy(() => import('./pages/alumno/MiCuentaPage'))
@@ -138,6 +134,7 @@ function App() {
             }
           >
           <Route index element={<AdminDashboardPage />} />
+          <Route path="perfil" element={<MiPerfilAdminPage />} />
           <Route
             path="programas"
             element={
@@ -174,7 +171,7 @@ function App() {
             path="ordenes"
             element={
               <ProtectedRoute allowedRoles={rolesDeRuta('/admin/ordenes')}>
-                <OrdenesAdminPage />
+                <ModuleUnderDevelopmentPage />
               </ProtectedRoute>
             }
           />
@@ -182,7 +179,7 @@ function App() {
             path="comprobantes"
             element={
               <ProtectedRoute allowedRoles={rolesDeRuta('/admin/comprobantes')}>
-                <ComprobantesAdminPage />
+                <ModuleUnderDevelopmentPage />
               </ProtectedRoute>
             }
           />
@@ -214,7 +211,7 @@ function App() {
             path="matriculas"
             element={
               <ProtectedRoute allowedRoles={rolesDeRuta('/admin/matriculas')}>
-                <MatriculasAdminPage />
+                <ModuleUnderDevelopmentPage />
               </ProtectedRoute>
             }
           />
@@ -222,7 +219,7 @@ function App() {
             path="electivos"
             element={
               <ProtectedRoute allowedRoles={rolesDeRuta('/admin/electivos')}>
-                <ElectivosAdminPage />
+                <ModuleUnderDevelopmentPage />
               </ProtectedRoute>
             }
           />
@@ -238,7 +235,7 @@ function App() {
             path="conciliaciones"
             element={
               <ProtectedRoute allowedRoles={rolesDeRuta('/admin/conciliaciones')}>
-                <ConciliacionesAdminPage />
+                <ModuleUnderDevelopmentPage />
               </ProtectedRoute>
             }
           />
@@ -246,7 +243,7 @@ function App() {
             path="alumnos"
             element={
               <ProtectedRoute allowedRoles={rolesDeRuta('/admin/alumnos')}>
-                <CuentasAlumnoAdminPage />
+                <ModuleUnderDevelopmentPage />
               </ProtectedRoute>
             }
           />
