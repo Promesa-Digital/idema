@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { FaTrash, FaExclamationTriangle } from 'react-icons/fa'
-import { useToast } from '../hooks/useToast'
+import { useToast } from '../../hooks/useToast'
 
 export default function EliminarCuentaPage() {
   const [email, setEmail] = useState('')

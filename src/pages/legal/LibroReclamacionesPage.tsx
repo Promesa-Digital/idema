@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { FaBook, FaExclamationTriangle } from 'react-icons/fa'
-import { useToast } from '../hooks/useToast'
+import { useToast } from '../../hooks/useToast'
 
 interface ReclamacionForm {
   tipoDocumento: string
