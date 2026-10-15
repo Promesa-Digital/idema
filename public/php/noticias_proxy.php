@@ -13,6 +13,8 @@
 
 declare(strict_types=1);
 
+@set_time_limit(60);
+
 // ---- Headers ----------------------------------------------------------------
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
@@ -138,7 +140,7 @@ function fetch_og_image(string $url): ?string {
     }
     // Normaliza relativos
     if ($img !== null && !preg_match('#^https?://#i', $img)) {
-        $img = 'https://website.instituto-idema.org' . (str_starts_with($img, '/') ? $img : '/' . $img);
+        $img = 'https://website.instituto-idema.org' . ((substr($img, 0, 1) === '/') ? $img : '/' . $img);
     }
 
     @file_put_contents($key, $img ?? '__NONE__', LOCK_EX);
@@ -263,6 +265,16 @@ function write_cache(string $path, string $json): void {
 }
 
 // ---- Main -------------------------------------------------------------------
+set_exception_handler(function (Throwable $e): void {
+    $stale = read_cache(CACHE_FILE, CACHE_STALE_OK);
+    if ($stale !== null) {
+        header('X-Cache: STALE-ERROR');
+        echo $stale;
+        return;
+    }
+    json_fail(502, 'Error procesando el feed de noticias');
+});
+
 $forceRefresh = isset($_GET['refresh']);
 
 if (!$forceRefresh) {

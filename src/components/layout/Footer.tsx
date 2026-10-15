@@ -251,6 +251,25 @@ export default function Footer() {
             </Link>
           </div>
         </motion.div>
+
+        <motion.div
+          variants={itemVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="mt-6 flex justify-center"
+        >
+          <a
+            href="https://promesa.tech/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Powered by Promesa.tech"
+            className="inline-flex items-center gap-2 text-white/70 hover:text-white text-xs transition-colors"
+          >
+            <span>Powered by</span>
+            <img src="/assets/img/promesa-tech.webp" alt="Promesa.tech" className="h-8 w-auto" loading="lazy" decoding="async" />
+          </a>
+        </motion.div>
       </div>
     </footer>
   )
