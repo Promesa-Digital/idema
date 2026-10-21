@@ -19,6 +19,9 @@ function toFormFields(popup: Popup) {
     paginas: popup.paginas,
     fecha_inicio: popup.fecha_inicio,
     fecha_fin: popup.fecha_fin,
+    monto_descuento: popup.monto_descuento?.toString() ?? '',
+    duracion_temporizador: popup.duracion_temporizador?.toString() ?? '',
+    texto_superior: popup.texto_superior ?? '',
   }
 }
 
