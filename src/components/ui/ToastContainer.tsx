@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useContext } from 'react'
 import { FaCheck, FaTimes, FaExclamationTriangle, FaInfoCircle } from 'react-icons/fa'
-import { ToastContext } from '../../context/ToastContext'
+import { ToastContext } from '../../context/ToastContextType'
 
 const iconMap = {
   success: FaCheck,
@@ -41,14 +41,22 @@ const colorMap = {
   },
 }
 
-export default function ToastContainer() {
+interface ToastContainerProps {
+  /**
+   * Separación desde el borde superior. El panel administrativo tiene una cabecera
+   * fija, y con el valor por defecto los avisos caían encima de ella.
+   */
+  offsetClassName?: string
+}
+
+export default function ToastContainer({ offsetClassName = 'top-4' }: ToastContainerProps = {}) {
   const context = useContext(ToastContext)
   if (!context) return null
 
   const { toasts, removeToast } = context
 
   return (
-    <div className="fixed top-4 right-4 z-50 pointer-events-none">
+    <div className={`fixed right-4 z-50 pointer-events-none ${offsetClassName}`}>
       <AnimatePresence mode="popLayout">
         {toasts.map(toast => {
           const Icon = iconMap[toast.type]

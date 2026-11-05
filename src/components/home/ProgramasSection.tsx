@@ -5,7 +5,7 @@ import { MdArrowForward } from 'react-icons/md'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay, Pagination, Navigation } from 'swiper/modules'
 import { programCategories, type ProgramCategory } from '../../data/programs/categories'
-import { cursos as cursosEstaticos } from '../../data/programs/cursos'
+import { usePublicCatalog } from '@/hooks/usePublicCatalog'
 
 import 'swiper/swiper-bundle.css'
 
@@ -22,7 +22,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
 }
 
-function CategoriaCard({ titulo, descripcion, imagen, ruta, cantidad, duracion, modalidad, certificaciones, titulacion, imagenIzquierda }: Omit<ProgramCategory, 'key' | 'badge'>) {
+function CategoriaCard({ titulo, descripcion, imagen, ruta, cantidad, duracion, modalidad, certificaciones, titulacion, imagenIzquierda }: Omit<ProgramCategory, 'key'>) {
   const imgBlock = (
     <div className="relative md:w-2/5 h-48 md:h-auto overflow-hidden flex-shrink-0">
       <img
@@ -88,6 +88,14 @@ function CategoriaCard({ titulo, descripcion, imagen, ruta, cantidad, duracion, 
 }
 
 export default function ProgramasSection() {
+  const { programs } = usePublicCatalog()
+  const cursos = programs.filter((program) => program.category === 'curso')
+  const typeByCategory: Record<ProgramCategory['key'], string> = {
+    carreras: 'carrera',
+    auxiliares: 'auxiliar',
+    especializaciones: 'especializacion',
+    cursos: 'curso',
+  }
   const { ref, inView } = useInView({ triggerOnce: true })
   const cursos = cursosEstaticos
 
@@ -188,8 +196,12 @@ export default function ProgramasSection() {
           animate={inView ? 'visible' : 'hidden'}
           className="flex flex-col gap-6 sm:gap-8 max-w-3xl mx-auto"
         >
-          {programCategories.map(({ key, ...category }) => (
-            <CategoriaCard key={key} {...category} />
+          {programCategories.map(({ key, ...cat }) => (
+            <CategoriaCard
+              key={key}
+              {...cat}
+              cantidad={programs.filter((program) => program.category === typeByCategory[key]).length}
+            />
           ))}
         </motion.div>
 

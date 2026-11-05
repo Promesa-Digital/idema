@@ -150,7 +150,7 @@ export default function ServicioPage() {
 
       {/* Hero Section */}
       <div className="relative h-96 md:h-[500px] overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.jpeg')" }} />
+        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.webp')" }} />
         <div className="absolute inset-0 bg-gradient-to-r from-dark/85 via-dark/60 to-transparent" />
 
         <motion.div

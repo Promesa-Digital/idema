@@ -1,63 +1,89 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { tokenStorage } from '../api/tokenStorage'
-import { AUTH_LOGOUT_EVENT } from '../api/authEvents'
-import { decodeJwtPayload } from '../utils/jwt'
+import { getMe, loginStaff } from '@/services/authApi'
+import { API_TOKEN_STORAGE_KEY } from '@/services/apiClient'
+import type { UsuarioBackend } from '@/types/backend'
 import { AuthContext } from './AuthContextType'
-import type { AuthUser, UserRole } from '../types/auth'
 
-interface AccessTokenPayload {
-  sub: string
-  rol: UserRole
-  nombre?: string
+function readStoredToken(): string | null {
+  try {
+    return localStorage.getItem(API_TOKEN_STORAGE_KEY)
+  } catch {
+    return null
+  }
 }
 
-/**
- * El backend siempre firma el claim de rol como `rol` (español) con el valor real
- * ('ventas', 'admin_sistema', etc.) — antes esto se colapsaba a un 'staff' genérico,
- * lo que hacía imposible construir un menú de administración específico por rol.
- */
-function readUserFromToken(): AuthUser | null {
-  const accessToken = tokenStorage.getAccessToken()
-  if (!accessToken) return null
-
-  const payload = decodeJwtPayload<AccessTokenPayload>(accessToken)
-  if (!payload?.sub || !payload?.rol) return null
-
-  return { id: payload.sub, role: payload.rol, nombre: payload.nombre }
+function persistToken(token: string | null) {
+  try {
+    if (token) {
+      localStorage.setItem(API_TOKEN_STORAGE_KEY, token)
+    } else {
+      localStorage.removeItem(API_TOKEN_STORAGE_KEY)
+    }
+  } catch {
+    return
+  }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(() => readUserFromToken())
-
-  const login = useCallback((accessToken: string, refreshToken: string) => {
-    tokenStorage.setTokens(accessToken, refreshToken)
-    const nextUser = readUserFromToken()
-    setUser(nextUser)
-    return nextUser
-  }, [])
+  const [token, setToken] = useState<string | null>(() => readStoredToken())
+  const [user, setUser] = useState<UsuarioBackend | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   const logout = useCallback(() => {
-    tokenStorage.clearTokens()
+    persistToken(null)
+    setToken(null)
     setUser(null)
   }, [])
 
   useEffect(() => {
-    const handleAuthLogout = () => setUser(null)
-    window.addEventListener(AUTH_LOGOUT_EVENT, handleAuthLogout)
-    return () => window.removeEventListener(AUTH_LOGOUT_EVENT, handleAuthLogout)
+    let isActive = true
+
+    async function restoreSession() {
+      if (!token) {
+        setIsLoading(false)
+        return
+      }
+
+      try {
+        const currentUser = await getMe(token)
+        if (isActive) setUser(currentUser)
+      } catch {
+        if (isActive) logout()
+      } finally {
+        if (isActive) setIsLoading(false)
+      }
+    }
+
+    void restoreSession()
+
+    return () => {
+      isActive = false
+    }
+  }, [logout, token])
+
+  const login = useCallback(async (correo: string, password: string) => {
+    setIsLoading(true)
+    try {
+      const session = await loginStaff(correo, password)
+      const currentUser = await getMe(session.access_token)
+      persistToken(session.access_token)
+      setToken(session.access_token)
+      setUser(currentUser)
+    } finally {
+      setIsLoading(false)
+    }
   }, [])
 
+  const refreshUser = useCallback(async () => {
+    if (!token) return
+    setUser(await getMe(token))
+  }, [token])
+
   const value = useMemo(
-    () => ({ user, isAuthenticated: user !== null, login, logout }),
-    [user, login, logout],
+    () => ({ user, token, isLoading, login, refreshUser, logout }),
+    [isLoading, login, logout, refreshUser, token, user],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext)
-  if (!context) throw new Error('useAuth must be used within AuthProvider')
-  return context
 }

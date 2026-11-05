@@ -1,53 +1,133 @@
-import { useEffect } from 'react'
-import type { ReactNode } from 'react'
-import { FiX } from 'react-icons/fi'
+import { useEffect, useId, useRef } from 'react'
+import type { MouseEvent, ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 
-interface ModalProps {
+export interface ModalProps {
   isOpen: boolean
   onClose: () => void
   title: string
   children: ReactNode
-  maxWidthClassName?: string
+  footer?: ReactNode
+  size?: 'sm' | 'md' | 'lg' | 'xl'
+  closeOnBackdrop?: boolean
 }
 
-/** Contenedor de diálogo genérico (selectores, formularios, detalle) — distinto de
- * ConfirmModal, que es específicamente para confirmaciones sí/no. */
-export default function Modal({ isOpen, onClose, title, children, maxWidthClassName = 'max-w-lg' }: ModalProps) {
+const sizeClasses = {
+  sm: 'max-w-md',
+  md: 'max-w-xl',
+  lg: 'max-w-3xl',
+  xl: 'max-w-5xl',
+}
+
+const FOCUSABLES =
+  'button:not([disabled]), input:not([disabled]), select:not([disabled]), ' +
+  'textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+
+export default function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+  footer,
+  size = 'md',
+  closeOnBackdrop = true,
+}: ModalProps) {
+  const titleId = useId()
+  const dialogRef = useRef<HTMLDivElement>(null)
+
+  /**
+   * Foco y bloqueo del scroll. Depende SOLO de `isOpen`.
+   *
+   * Antes iba junto al manejador de teclado, que necesita `onClose`, y compartian
+   * dependencias. Como el `onClose` de los paneles compara el formulario actual para
+   * avisar de cambios sin guardar, cambia de identidad en cada tecla: el efecto se
+   * reejecutaba, devolvia el foco al boton de cerrar y solo sobrevivia la primera letra.
+   */
   useEffect(() => {
     if (!isOpen) return
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+
+    const previousFocus = document.activeElement as HTMLElement | null
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    dialogRef.current?.querySelector<HTMLElement>(FOCUSABLES)?.focus()
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      previousFocus?.focus()
     }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen])
+
+  // El manejador de teclado si necesita `onClose`, y puede recrearse sin consecuencias:
+  // solo cambia que listener esta registrado, no donde esta el foco.
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        onClose()
+        return
+      }
+      if (event.key !== 'Tab' || !dialogRef.current) return
+
+      const elements = dialogRef.current.querySelectorAll<HTMLElement>(FOCUSABLES)
+      if (elements.length === 0) return
+
+      const first = elements[0]
+      const last = elements[elements.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
   }, [isOpen, onClose])
 
   if (!isOpen) return null
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4" role="dialog" aria-modal="true">
-      <div className="idema-admin-overlay-in absolute inset-0 bg-[#001F2A]/50" onClick={onClose} aria-hidden />
+  const handleBackdropClick = (event: MouseEvent<HTMLDivElement>) => {
+    if (closeOnBackdrop && event.target === event.currentTarget) onClose()
+  }
 
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm"
+      onMouseDown={handleBackdropClick}
+    >
       <div
-        className={`idema-admin-modal-in relative w-full ${maxWidthClassName} max-h-[85vh] overflow-y-auto rounded-[var(--admin-radius-lg)] bg-[var(--admin-color-surface)] p-6 shadow-[var(--admin-shadow-lg)]`}
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className={`flex max-h-[calc(100dvh-2rem)] w-full flex-col overflow-hidden rounded-2xl bg-white shadow-2xl ${sizeClasses[size]}`}
       >
-        <div className="mb-4 flex items-start justify-between gap-4">
-          <h2 className="text-lg font-bold" style={{ color: 'var(--admin-color-text-primary)' }}>
+        <div className="flex items-center justify-between gap-4 border-b border-slate-200 px-5 py-4 sm:px-6">
+          <h2 id={titleId} className="text-xl font-semibold text-dark">
             {title}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="shrink-0 rounded-lg p-1.5 transition-colors hover:bg-[var(--admin-color-bg)]"
-            style={{ color: 'var(--admin-color-text-secondary)' }}
-            aria-label="Cerrar"
+            aria-label="Cerrar modal"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-2xl leading-none text-slate-500 transition hover:bg-slate-100 hover:text-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
-            <FiX className="h-5 w-5" />
+            <span aria-hidden="true">×</span>
           </button>
         </div>
-
-        {children}
+        <div className="overflow-y-auto px-5 py-5 sm:px-6">{children}</div>
+        {footer && (
+          <div className="flex flex-wrap justify-end gap-3 border-t border-slate-200 bg-slate-50 px-5 py-4 sm:px-6">
+            {footer}
+          </div>
+        )}
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }

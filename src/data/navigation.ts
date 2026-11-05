@@ -16,6 +16,7 @@ export const mainNavLinks: NavLink[] = [
 ]
 
 export const accederDropdown: DropdownItem[] = [
+  { label: 'Mi cuenta de alumno', href: '/alumno/login', icon: 'FaUserCircle' },
   { label: 'Oferta Educativa', href: '/programas-de-estudio', icon: 'FaSitemap' },
   { label: 'Noticias IDEMA', href: 'https://website.instituto-idema.org/', icon: 'FaNewspaper', external: true },
   { label: 'Campus Virtual', href: 'https://aprende.instituto-idema.org/', icon: 'FaGraduationCap', external: true },

@@ -1,67 +1,28 @@
-type BadgeColor = 'green' | 'yellow' | 'red' | 'blue' | 'gray'
+import type { ReactNode } from 'react'
 
-const STATUS_COLOR: Record<string, BadgeColor> = {
-  // Verde
-  activo: 'green',
-  pagada: 'green',
-  publicado: 'green',
-  aprobado: 'green',
-  activa: 'green',
-  emitido: 'green',
-  completado: 'green',
-  cerrada: 'green',
-  // Amarillo
-  pendiente: 'yellow',
-  borrador: 'yellow',
-  en_revision: 'yellow',
-  pendiente_confirmacion: 'yellow',
-  nuevo: 'yellow',
-  activado: 'yellow',
-  // Rojo
-  anulada: 'red',
-  anulado: 'red',
-  fallida: 'red',
-  rechazado: 'red',
-  inactivo: 'red',
-  inactiva: 'red',
-  archivado: 'red',
-  observado: 'red',
-  cancelado: 'red',
-  // Azul
-  contactado: 'blue',
-  retorno: 'blue',
-  en_curso: 'blue',
-  // Gris
-  descartado: 'gray',
-  finalizado: 'gray',
-  no_publicado: 'gray',
+type BadgeVariant = 'slate' | 'amber' | 'sky' | 'red' | 'emerald' | 'violet'
+
+export interface BadgeProps {
+  children: ReactNode
+  variant?: BadgeVariant
+  className?: string
 }
 
-const COLOR_CLASSES: Record<BadgeColor, string> = {
-  green: 'bg-[#DCFCE7] text-[#16A34A]',
-  yellow: 'bg-[#FEF9C3] text-[#CA8A04]',
-  red: 'bg-[#FEE2E2] text-[#DC2626]',
-  blue: 'bg-[#DBEAFE] text-[#1D4ED8]',
-  gray: 'bg-[#F3F4F6] text-[#6B7280]',
+const variantClasses: Record<BadgeVariant, string> = {
+  slate: 'bg-slate-200 text-slate-700',
+  amber: 'bg-amber-100 text-amber-800',
+  sky: 'bg-sky-100 text-sky-800',
+  red: 'bg-red-100 text-red-800',
+  emerald: 'bg-emerald-100 text-emerald-800',
+  violet: 'bg-violet-100 text-violet-800',
 }
 
-interface BadgeProps {
-  value: string
-  /** Texto a mostrar en vez de `value` (p. ej. "Estudiante Activo" en vez de "activa").
-   * El color sigue derivándose de `value`, no del label. */
-  label?: string
-}
-
-export default function Badge({ value, label }: BadgeProps) {
-  const key = value.toLowerCase()
-  const color = STATUS_COLOR[key] ?? 'gray'
-
+export default function Badge({ children, variant = 'slate', className = '' }: BadgeProps) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-[10px] py-[2px] text-xs font-semibold capitalize ${COLOR_CLASSES[color]}`}
-      style={{ fontFamily: 'var(--font-body)' }}
+      className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-bold ${variantClasses[variant]} ${className}`}
     >
-      {label ?? value.replace(/_/g, ' ')}
+      {children}
     </span>
   )
 }

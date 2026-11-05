@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import type { ChangeEvent, ComponentType, FocusEvent, FormEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, useLocation } from 'react-router-dom'
@@ -15,10 +15,12 @@ import {
   FaBriefcase,
   FaUsers,
   FaUserPlus,
+  FaUserCircle,
   FaCertificate,
   FaRobot,
 } from 'react-icons/fa'
 import { mainNavLinks, accederDropdown, countryCodes } from '../../data/navigation'
+import { useCart } from '../../hooks/useCart'
 import { validateNamePart, validatePhone, validateEmail, validateComment } from '../../utils/validation'
 import { submitLead } from '../../utils/leadIntake'
 import SuccessCheck from '../ui/SuccessCheck'
@@ -33,6 +35,7 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   FaBriefcase,
   FaUsers,
   FaUserPlus,
+  FaUserCircle,
   FaCertificate,
   FaRobot,
 }
@@ -67,11 +70,19 @@ export default function Navbar() {
   // Check if we're on the home page (hero has dark bg, so transparent works)
   const isHome = location.pathname === '/'
 
-  const closeNavigationState = () => {
+  const closeContactForm = useCallback(() => {
+    setShowContactForm(false)
+    setSubmittedLead(null)
+    setFormErrors({})
+    setSubmitFeedback(null)
+    setIsSubmitting(false)
+  }, [])
+
+  const closeNavigationState = useCallback(() => {
     setIsMobileOpen(false)
     setOpenDropdown(null)
-    setShowContactForm(false)
-  }
+    closeContactForm()
+  }, [closeContactForm])
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 80)
@@ -80,12 +91,10 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Close mobile menu on route change
-  useLayoutEffect(() => {
-    setIsMobileOpen(false)
-    setOpenDropdown(null)
-    setShowContactForm(false)
-  }, [location.pathname])
+  useEffect(() => {
+    const timeoutId = window.setTimeout(closeNavigationState, 0)
+    return () => window.clearTimeout(timeoutId)
+  }, [closeNavigationState, location.pathname])
 
   // Close only the dropdown when clicking outside the navbar.
   // The popup has its own overlay click handler — and ahora vive en un Portal,
@@ -100,22 +109,12 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // Reset al cerrar el popup (por overlay, X, o cambio de ruta)
-  useEffect(() => {
-    if (!showContactForm) {
-      setSubmittedLead(null)
-      setFormErrors({})
-      setSubmitFeedback(null)
-      setIsSubmitting(false)
-    }
-  }, [showContactForm])
-
   // Auto-cerrar el popup luego de mostrar el éxito unos segundos
   useEffect(() => {
     if (!submittedLead) return
-    const t = setTimeout(() => setShowContactForm(false), 6000)
+    const t = setTimeout(closeContactForm, 6000)
     return () => clearTimeout(t)
-  }, [submittedLead])
+  }, [closeContactForm, submittedLead])
 
   // Calcula la posición del popup según el botón "¡Contáctanos!".
   // En mobile (<lg) el botón vive dentro del menú móvil y se cierra al abrir
@@ -156,11 +155,11 @@ export default function Navbar() {
   useEffect(() => {
     if (!showContactForm) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setShowContactForm(false)
+      if (e.key === 'Escape') closeContactForm()
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [showContactForm])
+  }, [closeContactForm, showContactForm])
 
   const handleFormChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target
@@ -237,6 +236,9 @@ export default function Navbar() {
       email: formData.email,
       form: 1,
       message: formData.comment,
+      // La casilla ya se validaba, pero su valor no salía del navegador. El backend
+      // la exige y la guarda con fecha y versión de la política.
+      consent: formData.acceptPolicies,
     })
     setIsSubmitting(false)
 
@@ -288,8 +290,9 @@ export default function Navbar() {
           {/* Logo */}
           <Link to="/" onClick={closeNavigationState} className="flex-shrink-0 flex items-center gap-3">
             <img
-              src="/assets/img/idema-white.png"
+              src="/assets/img/idema-white.webp"
               alt="IDEMA"
+              decoding="async"
               className="transition-all duration-300"
               style={{ height: isScrolled ? '36px' : '44px' }}
             />
@@ -359,7 +362,7 @@ export default function Navbar() {
               <button
                 ref={contactBtnRef}
                 onClick={() => {
-                  if (showContactForm) setShowContactForm(false)
+                  if (showContactForm) closeContactForm()
                   else openContactForm()
                 }}
                 className="bg-primary text-white px-5 py-2 rounded-full text-sm font-semibold hover:shadow-[0_4px_25px_rgba(13,202,240,0.5)] transition-all duration-300 flex items-center gap-2"
@@ -460,7 +463,7 @@ export default function Navbar() {
             {/* Click-outside invisible catcher (sin dim del fondo) */}
             <div
               className="fixed inset-0 z-[100]"
-              onClick={() => setShowContactForm(false)}
+              onClick={closeContactForm}
               aria-hidden
             />
             <motion.div
@@ -511,7 +514,7 @@ export default function Navbar() {
                     )}
                   </div>
                   <button
-                    onClick={() => setShowContactForm(false)}
+                    onClick={closeContactForm}
                     className="text-white/50 hover:text-white transition-colors p-1.5 -m-1.5 rounded-full hover:bg-white/10"
                     aria-label="Cerrar"
                   >
@@ -547,7 +550,7 @@ export default function Navbar() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 1, duration: 0.4 }}
-                      onClick={() => setShowContactForm(false)}
+                      onClick={closeContactForm}
                       className="mt-6 px-7 py-2.5 rounded-full text-sm font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/15 transition-colors"
                     >
                       Cerrar

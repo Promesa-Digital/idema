@@ -20,20 +20,20 @@ const questions: Question[] = [
     id: 1,
     text: '¿Cuál de estas áreas te atrae más?',
     answers: [
-      { text: 'Naturaleza y animales', careers: ['agropecuaria', 'veterinaria', 'agronomia'] },
+      { text: 'Naturaleza y animales', careers: ['agropecuaria'] },
       { text: 'Salud y cuidado de personas', careers: ['enfermeria', 'farmacia'] },
-      { text: 'Negocios y dinero', careers: ['administracion', 'contabilidad', 'administracion-bancaria'] },
-      { text: 'Tecnología e innovación', careers: ['administracion', 'contabilidad'] }
+      { text: 'Negocios y dinero', careers: ['contabilidad'] },
+      { text: 'Tecnología e innovación', careers: ['contabilidad', 'agropecuaria'] }
     ]
   },
   {
     id: 2,
     text: '¿Prefieres trabajar principalmente con...?',
     answers: [
-      { text: 'Personas', careers: ['enfermeria', 'farmacia', 'administracion', 'administracion-bancaria'] },
-      { text: 'Números y datos', careers: ['contabilidad', 'administracion-bancaria', 'administracion'] },
-      { text: 'Plantas y animales', careers: ['agropecuaria', 'veterinaria', 'agronomia'] },
-      { text: 'Maquinaria y herramientas', careers: ['agropecuaria', 'administracion'] }
+      { text: 'Personas', careers: ['enfermeria', 'farmacia'] },
+      { text: 'Números y datos', careers: ['contabilidad'] },
+      { text: 'Plantas y animales', careers: ['agropecuaria'] },
+      { text: 'Maquinaria y herramientas', careers: ['agropecuaria'] }
     ]
   },
   {
@@ -60,7 +60,7 @@ const questions: Question[] = [
     id: 5,
     text: '¿Cuánto tiempo puedes dedicar a estudiar?',
     answers: [
-      { text: 'Medio tiempo (3 años)', careers: ['agropecuaria', 'enfermeria', 'contabilidad', 'administracion', 'administracion-bancaria'] },
+      { text: 'Medio tiempo (3 años)', careers: carreras.map(c => c.slug) },
       { text: 'Tiempo completo', careers: carreras.map(c => c.slug) },
       { text: 'Solo fines de semana', careers: carreras.map(c => c.slug) },
       { text: 'Cursos cortos (4 semanas)', careers: carreras.map(c => c.slug) }
@@ -70,9 +70,9 @@ const questions: Question[] = [
     id: 6,
     text: '¿Te interesa tener contacto directo con clientes o público?',
     answers: [
-      { text: 'Sí, me encanta interactuar', careers: ['enfermeria', 'farmacia', 'administracion', 'administracion-bancaria'] },
+      { text: 'Sí, me encanta interactuar', careers: ['enfermeria', 'farmacia'] },
       { text: 'A veces está bien', careers: carreras.map(c => c.slug) },
-      { text: 'Prefiero trabajo más técnico', careers: ['agropecuaria', 'contabilidad', 'administracion'] },
+      { text: 'Prefiero trabajo más técnico', careers: ['agropecuaria', 'contabilidad'] },
       { text: 'No tengo preferencia', careers: carreras.map(c => c.slug) }
     ]
   },
@@ -81,8 +81,8 @@ const questions: Question[] = [
     text: '¿Cuál es tu expectativa salarial?',
     answers: [
       { text: 'Moderada (para empezar)', careers: carreras.map(c => c.slug) },
-      { text: 'Media a alta', careers: ['contabilidad', 'administracion', 'administracion-bancaria', 'enfermeria'] },
-      { text: 'Alto potencial de crecimiento', careers: ['administracion', 'administracion-bancaria'] },
+      { text: 'Media a alta', careers: ['contabilidad', 'enfermeria'] },
+      { text: 'Alto potencial de crecimiento', careers: ['contabilidad', 'agropecuaria'] },
       { text: 'Vocacional (no es prioridad)', careers: carreras.map(c => c.slug) }
     ]
   },
@@ -90,19 +90,19 @@ const questions: Question[] = [
     id: 8,
     text: '¿Visualizas tu carrera en...',
     answers: [
-      { text: 'Sector privado empresarial', careers: ['administracion', 'administracion-bancaria', 'contabilidad'] },
+      { text: 'Sector privado empresarial', careers: ['contabilidad'] },
       { text: 'Sector salud', careers: ['enfermeria', 'farmacia'] },
-      { text: 'Sector agrícola y ganadero', careers: ['agropecuaria', 'veterinaria', 'agronomia'] },
-      { text: 'Emprendimiento propio', careers: ['administracion', 'agropecuaria', 'contabilidad'] }
+      { text: 'Sector agrícola y ganadero', careers: ['agropecuaria'] },
+      { text: 'Emprendimiento propio', careers: ['agropecuaria', 'contabilidad'] }
     ]
   },
   {
     id: 9,
     text: '¿Te interesa la investigación y desarrollo?',
     answers: [
-      { text: 'Mucho', careers: ['agropecuaria', 'farmacia', 'administracion'] },
+      { text: 'Mucho', careers: ['agropecuaria', 'farmacia'] },
       { text: 'Algo', careers: carreras.map(c => c.slug) },
-      { text: 'Poco', careers: ['administracion-bancaria', 'enfermeria'] },
+      { text: 'Poco', careers: ['contabilidad', 'enfermeria'] },
       { text: 'No me atrae', careers: carreras.map(c => c.slug) }
     ]
   },
@@ -110,10 +110,10 @@ const questions: Question[] = [
     id: 10,
     text: '¿Qué te motivaría más en tu carrera?',
     answers: [
-      { text: 'Ayudar a otras personas', careers: ['enfermeria', 'farmacia', 'administracion'] },
-      { text: 'Resolver problemas complejos', careers: ['contabilidad', 'administracion-bancaria', 'agropecuaria'] },
-      { text: 'Generar ingresos y éxito económico', careers: ['administracion', 'administracion-bancaria', 'contabilidad'] },
-      { text: 'Estar en contacto con la naturaleza', careers: ['agropecuaria', 'veterinaria', 'agronomia'] }
+      { text: 'Ayudar a otras personas', careers: ['enfermeria', 'farmacia'] },
+      { text: 'Resolver problemas complejos', careers: ['contabilidad', 'agropecuaria'] },
+      { text: 'Generar ingresos y éxito económico', careers: ['contabilidad'] },
+      { text: 'Estar en contacto con la naturaleza', careers: ['agropecuaria'] }
     ]
   }
 ]
@@ -161,7 +161,7 @@ export default function OrientacionVocacionalPage() {
 
       {/* Hero Section */}
       <div className="relative h-80 md:h-96 overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.jpeg')" }} />
+        <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: "url('/assets/img/hero/desktop/PRINCIPAL_1.webp')" }} />
         <div className="absolute inset-0 bg-gradient-to-r from-dark/85 via-dark/60 to-transparent" />
 
         <motion.div

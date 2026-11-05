@@ -9,6 +9,14 @@ interface Props {
 }
 
 export default function ProgramCard({ program, basePath, index = 0 }: Props) {
+  const discount = [
+    program.discountPercent,
+    program.discountVirtualPercent,
+    program.discountSemipresencialPercent,
+    program.discountPresencialPercent,
+    program.discountMatriculaPercent,
+  ].find((value) => value !== undefined)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -25,11 +33,17 @@ export default function ProgramCard({ program, basePath, index = 0 }: Props) {
               alt={program.title}
               className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
+              decoding="async"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <span className="absolute bottom-3 left-3 bg-white/90 text-deep text-xs font-bold px-3 py-1 rounded-full backdrop-blur-sm">
               {program.duration}
             </span>
+            {discount !== undefined && (
+              <span className="absolute bottom-3 right-3 rounded-full bg-cta px-3 py-1 text-xs font-black text-white shadow-lg">
+                Oferta -{discount}%
+              </span>
+            )}
             <div className="absolute top-3 right-3 flex items-center gap-1.5">
               {program.category === 'curso' && (
                 <div className="bg-primary/90 backdrop-blur-sm rounded-full px-2 h-6 flex items-center">
@@ -38,7 +52,7 @@ export default function ProgramCard({ program, basePath, index = 0 }: Props) {
               )}
               {program.convenio && (
                 <div className="bg-white/90 backdrop-blur-sm rounded-full px-2 py-1">
-                  <img src={program.convenio.logo} alt={program.convenio.name} className="h-4 w-auto object-contain" />
+                  <img src={program.convenio.logo} alt={program.convenio.name} className="h-4 w-auto object-contain" loading="lazy" decoding="async" />
                 </div>
               )}
             </div>

@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet-async'
 import Hero from '../../components/home/Hero'
 import Features from '../../components/home/Features'
 import ProgramasSection from '../../components/home/ProgramasSection'
+import CombosSection from '../../components/home/CombosSection'
 import NewsSection from '../../components/home/NewsSection'
 import ValuesSection from '../../components/home/ValuesSection'
 import TestimonialsSection from '../../components/home/TestimonialsSection'
@@ -18,6 +19,7 @@ export default function Home() {
       <Hero />
       <Features />
       <ProgramasSection />
+      <CombosSection />
       <NewsSection />
       <ValuesSection />
       <TestimonialsSection />

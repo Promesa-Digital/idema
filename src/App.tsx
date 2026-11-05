@@ -1,26 +1,49 @@
-import { Routes, Route, Navigate, useParams } from 'react-router-dom'
+import { Routes, Route, Navigate, Outlet, useParams } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
+import type { ReactNode } from 'react'
+import { Helmet } from 'react-helmet-async'
 import Layout from './components/Layout'
 import AdminLayout from './components/layout/AdminLayout'
 import PortalLayout from './components/layout/PortalLayout'
 import LoadingSpinner from './components/ui/LoadingSpinner'
-import PrivateRoute from './components/auth/PrivateRoute'
-import type { UserRole } from './types/auth'
-
-/** Cualquier rol no-alumno puede entrar al shell de /admin; qué ve en el sidebar
- * y a qué secciones concretas tiene acceso ya lo decide cada guard más específico. */
-const ROLES_STAFF: UserRole[] = [
-  'admin_sistema',
-  'academico',
-  'marketing',
-  'director_marketing',
-  'ventas',
-  'administracion',
-]
+import ProtectedRoute from './components/admin/ProtectedRoute'
+import AdminLayout from './components/admin/AdminLayout'
+import ModuleUnderDevelopmentPage from './pages/admin/ModuleUnderDevelopmentPage'
+import { ALL_ADMIN_ROLES, rolesDeRuta } from './components/admin/adminModules'
+import AlumnoProtectedRoute from './components/alumno/AlumnoProtectedRoute'
+import { AuthProvider } from './context/AuthContext'
+import { AlumnoAuthProvider } from './context/AlumnoAuthContext'
 
 function RedirectToProgramaSlug() {
   const { slug } = useParams<{ slug: string }>()
   return <Navigate to={`/programas-de-estudio/${slug}`} replace />
+}
+
+function AdminRoutes() {
+  return (
+    <AuthProvider>
+      <Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>
+      <Outlet />
+    </AuthProvider>
+  )
+}
+
+function AlumnoRoutes() {
+  return (
+    <AlumnoAuthProvider>
+      <Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>
+      <Outlet />
+    </AlumnoAuthProvider>
+  )
+}
+
+function NoIndexPage({ children }: { children: ReactNode }) {
+  return (
+    <>
+      <Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>
+      {children}
+    </>
+  )
 }
 
 // Lazy load pages for code splitting
@@ -42,6 +65,23 @@ const CursosGratisPage = lazy(() => import('./pages/CursosGratisPage'))
 const OrientacionVocacionalPage = lazy(() => import('./pages/OrientacionVocacionalPage'))
 const NoticiasPage = lazy(() => import('./pages/NoticiasPage'))
 const ProgramasPage = lazy(() => import('./pages/programs/ProgramasPage'))
+const LoginPage = lazy(() => import('./pages/admin/LoginPage'))
+const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'))
+const MiPerfilAdminPage = lazy(() => import('./pages/admin/MiPerfilAdminPage'))
+const ProgramasAdminPage = lazy(() => import('./pages/admin/ProgramasAdminPage'))
+const PopupsAdminPage = lazy(() => import('./pages/admin/PopupsAdminPage'))
+const CombosAdminPage = lazy(() => import('./pages/admin/CombosAdminPage'))
+const DescuentosAdminPage = lazy(() => import('./pages/admin/DescuentosAdminPage'))
+const LeadsAdminPage = lazy(() => import('./pages/admin/LeadsAdminPage'))
+const UsuariosAdminPage = lazy(() => import('./pages/admin/UsuariosAdminPage'))
+const ConceptosAdminPage = lazy(() => import('./pages/admin/ConceptosAdminPage'))
+const ReportesAdminPage = lazy(() => import('./pages/admin/ReportesAdminPage'))
+const AlumnoLoginPage = lazy(() => import('./pages/alumno/AlumnoLoginPage'))
+const AlumnoRegistroPage = lazy(() => import('./pages/alumno/AlumnoRegistroPage'))
+const MiCuentaPage = lazy(() => import('./pages/alumno/MiCuentaPage'))
+const RecuperarPasswordPage = lazy(() => import('./pages/auth/RecuperarPasswordPage'))
+const RestablecerPasswordPage = lazy(() => import('./pages/auth/RestablecerPasswordPage'))
+const VerificarCorreoPage = lazy(() => import('./pages/auth/VerificarCorreoPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const RegistroPage = lazy(() => import('./pages/RegistroPage'))
@@ -113,63 +153,146 @@ function App() {
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
         </Route>
-
-        {/* Portal del alumno: shell propio (PortalLayout), sin navbar/footer público */}
-        <Route element={<PrivateRoute allowedRoles={['alumno']} />}>
-          <Route element={<PortalLayout />}>
-            <Route path="portal" element={<DashboardPage />} />
-            <Route path="portal/matriculas" element={<MatriculasPage />} />
-            <Route path="portal/checkout" element={<CheckoutPage />} />
-            <Route path="portal/electivos" element={<ElectivosPage />} />
-            <Route path="portal/pagos" element={<PagosPage />} />
-            <Route path="portal/comprobantes" element={<ComprobantesPage />} />
-            <Route path="portal/mi-cuenta" element={<MiCuentaPage />} />
+        <Route path="/recuperar-password" element={<NoIndexPage><RecuperarPasswordPage /></NoIndexPage>} />
+        <Route path="/restablecer-password" element={<NoIndexPage><RestablecerPasswordPage /></NoIndexPage>} />
+        <Route path="/verificar-correo" element={<NoIndexPage><VerificarCorreoPage /></NoIndexPage>} />
+        <Route path="/admin" element={<AdminRoutes />}>
+          <Route path="login" element={<LoginPage />} />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={ALL_ADMIN_ROLES}>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+          <Route index element={<AdminDashboardPage />} />
+          <Route path="perfil" element={<MiPerfilAdminPage />} />
+          <Route
+            path="programas"
+            element={
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/programas')}>
+                <ProgramasAdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="popups"
+            element={
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/popups')}>
+                <PopupsAdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="combos"
+            element={
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/combos')}>
+                <CombosAdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="descuentos"
+            element={
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/descuentos')}>
+                <DescuentosAdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="ordenes"
+            element={
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/ordenes')}>
+                <ModuleUnderDevelopmentPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="comprobantes"
+            element={
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/comprobantes')}>
+                <ModuleUnderDevelopmentPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="leads"
+            element={
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/leads')}>
+                <LeadsAdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="usuarios"
+            element={
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/usuarios')}>
+                <UsuariosAdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="conceptos-cobro"
+            element={
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/conceptos-cobro')}>
+                <ConceptosAdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="matriculas"
+            element={
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/matriculas')}>
+                <ModuleUnderDevelopmentPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="electivos"
+            element={
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/electivos')}>
+                <ModuleUnderDevelopmentPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="reportes"
+            element={
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/reportes')}>
+                <ReportesAdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="conciliaciones"
+            element={
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/conciliaciones')}>
+                <ModuleUnderDevelopmentPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="alumnos"
+            element={
+              <ProtectedRoute allowedRoles={rolesDeRuta('/admin/alumnos')}>
+                <ModuleUnderDevelopmentPage />
+              </ProtectedRoute>
+            }
+          />
           </Route>
         </Route>
-
-        {/* Panel admin: shell propio (AdminLayout), sin navbar/footer público */}
-        <Route element={<PrivateRoute allowedRoles={ROLES_STAFF} />}>
-          <Route element={<AdminLayout />}>
-            <Route path="admin" element={<AdminDashboardPage />} />
-            <Route element={<PrivateRoute allowedRoles={['academico', 'admin_sistema']} />}>
-              <Route path="admin/programas" element={<ProgramasAdminPage />} />
-              <Route path="admin/programas/nuevo" element={<ProgramaNuevoPage />} />
-              <Route path="admin/programas/:id/editar" element={<ProgramaEditarPage />} />
-            </Route>
-            <Route element={<PrivateRoute allowedRoles={['marketing', 'director_marketing', 'admin_sistema']} />}>
-              <Route path="admin/popups" element={<PopupsAdminPage />} />
-              <Route path="admin/popups/nuevo" element={<PopupNuevoPage />} />
-              <Route path="admin/popups/:id/editar" element={<PopupEditarPage />} />
-            </Route>
-            <Route element={<PrivateRoute allowedRoles={['admin_sistema']} />}>
-              <Route path="admin/usuarios" element={<UsuariosAdminPage />} />
-              <Route path="admin/conceptos-cobro" element={<AdminResourcePage />} />
-            </Route>
-            <Route element={<PrivateRoute allowedRoles={['ventas', 'marketing', 'director_marketing', 'admin_sistema']} />}>
-              <Route path="admin/combos" element={<AdminResourcePage />} />
-              <Route path="admin/descuentos" element={<AdminResourcePage />} />
-            </Route>
-            <Route element={<PrivateRoute allowedRoles={['ventas', 'marketing', 'director_marketing', 'administracion', 'admin_sistema']} />}>
-              <Route path="admin/leads" element={<LeadsAdminPage />} />
-            </Route>
-            <Route element={<PrivateRoute allowedRoles={['admin_sistema', 'administracion']} />}>
-              <Route path="admin/cuentas-alumnos" element={<CuentasAlumnosAdminPage />} />
-              <Route path="admin/ordenes" element={<OrdenesAdminPage />} />
-              <Route path="admin/comprobantes" element={<ComprobantesAdminPage />} />
-            </Route>
-            <Route element={<PrivateRoute allowedRoles={['administracion']} />}>
-              <Route path="admin/matriculas" element={<AdminResourcePage />} />
-            </Route>
-            <Route element={<PrivateRoute allowedRoles={['administracion', 'admin_sistema']} />}>
-              <Route path="admin/conciliaciones" element={<ConciliacionesAdminPage />} />
-            </Route>
-            <Route element={<PrivateRoute allowedRoles={['academico', 'administracion']} />}>
-              <Route path="admin/electivos" element={<AdminResourcePage />} />
-            </Route>
-            <Route element={<PrivateRoute allowedRoles={['marketing', 'director_marketing', 'administracion', 'admin_sistema']} />}>
-              <Route path="admin/reportes" element={<AdminReportsPage />} />
-            </Route>
-          </Route>
+        <Route path="/alumno" element={<AlumnoRoutes />}>
+          <Route index element={<Navigate to="/alumno/mi-cuenta" replace />} />
+          <Route path="login" element={<AlumnoLoginPage />} />
+          <Route path="registro" element={<AlumnoRegistroPage />} />
+          <Route
+            path="mi-cuenta"
+            element={
+              <AlumnoProtectedRoute>
+                <MiCuentaPage />
+              </AlumnoProtectedRoute>
+            }
+          />
         </Route>
       </Routes>
     </Suspense>

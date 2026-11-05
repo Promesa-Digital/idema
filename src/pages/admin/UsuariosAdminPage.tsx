@@ -1,284 +1,503 @@
-import { useState } from 'react'
-import { Helmet } from 'react-helmet-async'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { FiEdit2, FiUserCheck, FiUserX } from 'react-icons/fi'
-import { getUsuarios, createUsuario, updateUsuario, deleteUsuario } from '../../api/usuarios'
-import type { Usuario, UsuarioRol } from '../../types'
-import { ROLE_LABELS } from '../../types/auth'
-import Badge from '../../components/ui/Badge'
-import PageHeader from '../../components/ui/PageHeader'
-import DataTable, { type DataTableColumn } from '../../components/ui/DataTable'
-import Modal from '../../components/ui/Modal'
-import ConfirmModal from '../../components/ui/ConfirmModal'
-import Button from '../../components/ui/Button'
-import { iconButtonClasses } from '../../components/ui/buttonVariants'
-import FormInput from '../../components/ui/FormInput'
-import { useToast } from '../../hooks/useToast'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import type { FormEvent } from 'react'
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Input from '@/components/ui/Input'
+import Modal from '@/components/ui/Modal'
+import Select from '@/components/ui/Select'
+import Table from '@/components/ui/Table'
+import type { TableColumn } from '@/components/ui/Table'
+import { useAuth } from '@/context/AuthContextType'
+import { ApiError } from '@/services/apiClient'
+import {
+  actualizarUsuario,
+  crearUsuario,
+  eliminarUsuario,
+  listarUsuarios,
+} from '@/services/usuariosApi'
+import type {
+  UsuarioCreate,
+  UsuarioDirectorio,
+  UsuarioRol,
+  UsuarioUpdate,
+} from '@/types/backend'
 
-const USUARIOS_QUERY_KEY = ['admin', 'usuarios'] as const
+interface UsuarioFormState {
+  nombre: string
+  correo: string
+  password: string
+  rol: UsuarioRol
+  estado: UsuarioDirectorio['estado']
+}
 
-/** El rol "alumno" existe en UserRole pero nunca es un rol de staff: se excluye a propósito. */
-const USUARIO_ROLES: UsuarioRol[] = ['marketing', 'director_marketing', 'ventas', 'academico', 'administracion', 'admin_sistema']
+const EMPTY_FORM: UsuarioFormState = {
+  nombre: '',
+  correo: '',
+  password: '',
+  rol: 'marketing',
+  estado: 'activo',
+}
 
-const selectClass =
-  'w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-[14px] py-[10px] text-sm text-[var(--color-text-main)] outline-none transition-colors focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_rgba(0,175,240,0.1)]'
+const ROL_LABELS: Record<UsuarioRol, string> = {
+  marketing: 'Marketing',
+  director_marketing: 'Director de marketing',
+  ventas: 'Ventas',
+  academico: 'Académico',
+  administracion: 'Administración',
+  admin_sistema: 'Administrador del sistema',
+}
+
+const ROL_OPTIONS = Object.entries(ROL_LABELS) as Array<[UsuarioRol, string]>
+
+const ESTADO_LABELS: Record<UsuarioDirectorio['estado'], string> = {
+  activo: 'Activo',
+  inactivo: 'Inactivo',
+}
+
+const ESTADO_BADGE_VARIANTS = {
+  activo: 'emerald',
+  inactivo: 'slate',
+} as const
+
+function getErrorMessage(error: unknown, fallback: string): string {
+  return error instanceof ApiError ? error.message : fallback
+}
+
+function toFormState(usuario: UsuarioDirectorio): UsuarioFormState {
+  return {
+    nombre: usuario.nombre,
+    correo: '',
+    password: '',
+    rol: usuario.rol,
+    estado: usuario.estado,
+  }
+}
 
 export default function UsuariosAdminPage() {
-  const { addToast } = useToast()
-  const queryClient = useQueryClient()
+  const { logout } = useAuth()
+  const [usuarios, setUsuarios] = useState<UsuarioDirectorio[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
+  const [reloadKey, setReloadKey] = useState(0)
+  const [feedback, setFeedback] = useState('')
+  const [editingUsuario, setEditingUsuario] = useState<UsuarioDirectorio | null>(null)
+  const [isFormOpen, setIsFormOpen] = useState(false)
+  const [form, setForm] = useState<UsuarioFormState>({ ...EMPTY_FORM })
+  const [formError, setFormError] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
+  const [usuarioToDeactivate, setUsuarioToDeactivate] = useState<UsuarioDirectorio | null>(null)
+  const [deactivateError, setDeactivateError] = useState('')
+  const [isDeactivating, setIsDeactivating] = useState(false)
 
-  const [editando, setEditando] = useState<Usuario | null>(null)
-  const [paraCambiarEstado, setParaCambiarEstado] = useState<Usuario | null>(null)
-  const [mostrarNuevo, setMostrarNuevo] = useState(false)
+  useEffect(() => {
+    let isActive = true
 
-  const { data, isLoading, isError } = useQuery({ queryKey: USUARIOS_QUERY_KEY, queryFn: getUsuarios })
-  const usuarios = data ?? []
-
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: USUARIOS_QUERY_KEY })
-
-  const estadoMutation = useMutation({
-    mutationFn: (usuario: Usuario) =>
-      usuario.estado === 'activo' ? deleteUsuario(usuario.id) : updateUsuario(usuario.id, { estado: 'activo' }),
-    onSuccess: (_data, usuario) => {
-      invalidate()
-      setParaCambiarEstado(null)
-      addToast('success', usuario.estado === 'activo' ? 'Usuario desactivado' : 'Usuario activado', 'El cambio se guardó correctamente.')
-    },
-    onError: () => addToast('error', 'No se pudo actualizar el estado', 'Inténtalo nuevamente en unos segundos.'),
-  })
-
-  const columns: DataTableColumn<Usuario>[] = [
-    { header: 'Nombre', accessor: 'nombre' },
-    { header: 'Correo', accessor: 'correo' },
-    { header: 'Rol', accessor: 'rol', render: (u) => <Badge value={u.rol} /> },
-    { header: 'Estado', accessor: 'estado', render: (u) => <Badge value={u.estado} /> },
-    {
-      header: 'Acciones',
-      accessor: 'id',
-      render: (usuario) => (
-        <div className="flex items-center justify-end gap-2">
-          <button type="button" onClick={() => setEditando(usuario)} className={iconButtonClasses('ghost')} title="Editar">
-            <FiEdit2 />
-          </button>
-          <button
-            type="button"
-            onClick={() => setParaCambiarEstado(usuario)}
-            className={iconButtonClasses(usuario.estado === 'activo' ? 'destructive' : 'primary')}
-            title={usuario.estado === 'activo' ? 'Desactivar' : 'Activar'}
-          >
-            {usuario.estado === 'activo' ? <FiUserX /> : <FiUserCheck />}
-          </button>
-        </div>
-      ),
-    },
-  ]
-
-  return (
-    <>
-      <Helmet>
-        <title>Usuarios - Panel admin - IDEMA</title>
-      </Helmet>
-
-      <PageHeader
-        title="Usuarios"
-        subtitle="Gestiona las cuentas de staff y sus roles."
-        action={<Button variant="primary" onClick={() => setMostrarNuevo(true)}>Crear usuario</Button>}
-      />
-
-      {isError ? (
-        <p className="py-16 text-center text-sm text-[var(--color-error)]">No se pudieron cargar los usuarios. Intenta de nuevo.</p>
-      ) : (
-        <DataTable
-          columns={columns}
-          data={usuarios}
-          isLoading={isLoading}
-          emptyMessage="No hay usuarios registrados."
-          getRowKey={(u) => u.id}
-        />
-      )}
-
-      {editando && (
-        <EditarUsuarioModal
-          usuario={editando}
-          onClose={() => setEditando(null)}
-          onCambiarEstado={(usuario) => setParaCambiarEstado(usuario)}
-        />
-      )}
-
-      <NuevoUsuarioModal isOpen={mostrarNuevo} onClose={() => setMostrarNuevo(false)} />
-
-      <ConfirmModal
-        isOpen={!!paraCambiarEstado}
-        title={paraCambiarEstado?.estado === 'activo' ? 'Desactivar usuario' : 'Activar usuario'}
-        message={
-          paraCambiarEstado?.estado === 'activo'
-            ? `${paraCambiarEstado?.nombre} perderá acceso al panel administrativo. Su historial se conserva.`
-            : `${paraCambiarEstado?.nombre} volverá a tener acceso al panel administrativo.`
+    listarUsuarios()
+      .then((data) => {
+        if (isActive) setUsuarios(data)
+      })
+      .catch((error: unknown) => {
+        if (!isActive) return
+        if (error instanceof ApiError && error.status === 401) {
+          logout()
+          return
         }
-        variant={paraCambiarEstado?.estado === 'activo' ? 'destructive' : 'default'}
-        confirmText={paraCambiarEstado?.estado === 'activo' ? 'Desactivar' : 'Activar'}
-        isConfirming={estadoMutation.isPending}
-        onCancel={() => setParaCambiarEstado(null)}
-        onConfirm={() => paraCambiarEstado && estadoMutation.mutate(paraCambiarEstado)}
-      />
-    </>
+        setLoadError(getErrorMessage(error, 'No se pudieron cargar los usuarios.'))
+      })
+      .finally(() => {
+        if (isActive) setIsLoading(false)
+      })
+
+    return () => {
+      isActive = false
+    }
+  }, [logout, reloadKey])
+
+  const usuariosOrdenados = useMemo(
+    () => [...usuarios].sort((first, second) => first.nombre.localeCompare(second.nombre, 'es')),
+    [usuarios],
   )
-}
 
-function EditarUsuarioModal({
-  usuario,
-  onClose,
-  onCambiarEstado,
-}: {
-  usuario: Usuario
-  onClose: () => void
-  onCambiarEstado: (usuario: Usuario) => void
-}) {
-  const { addToast } = useToast()
-  const queryClient = useQueryClient()
-  const [nombre, setNombre] = useState(usuario.nombre)
-  const [rol, setRol] = useState<UsuarioRol>(usuario.rol)
-  const [error, setError] = useState<string | null>(null)
+  const syncUsuario = useCallback((updated: UsuarioDirectorio) => {
+    setUsuarios((current) => {
+      const exists = current.some((usuario) => usuario.id === updated.id)
+      return exists
+        ? current.map((usuario) => (usuario.id === updated.id ? updated : usuario))
+        : [updated, ...current]
+    })
+  }, [])
 
-  const mutation = useMutation({
-    mutationFn: () => updateUsuario(usuario.id, { nombre, rol }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: USUARIOS_QUERY_KEY })
-      addToast('success', 'Usuario actualizado', 'Los cambios se guardaron correctamente.')
-      onClose()
-    },
-    onError: () => setError('No se pudo guardar los cambios. Intenta nuevamente.'),
-  })
+  const closeFormModal = useCallback(() => {
+    if (isSaving) return
+    setIsFormOpen(false)
+    setEditingUsuario(null)
+    setFormError('')
+  }, [isSaving])
+
+  const openCreateModal = useCallback(() => {
+    setEditingUsuario(null)
+    setForm({ ...EMPTY_FORM })
+    setFormError('')
+    setIsFormOpen(true)
+  }, [])
+
+  const openEditModal = useCallback((usuario: UsuarioDirectorio) => {
+    setEditingUsuario(usuario)
+    setForm(toFormState(usuario))
+    setFormError('')
+    setIsFormOpen(true)
+  }, [])
+
+  const openDeactivateModal = useCallback((usuario: UsuarioDirectorio) => {
+    setUsuarioToDeactivate(usuario)
+    setDeactivateError('')
+  }, [])
+
+  const closeDeactivateModal = useCallback(() => {
+    if (isDeactivating) return
+    setUsuarioToDeactivate(null)
+    setDeactivateError('')
+  }, [isDeactivating])
+
+  const columns = useMemo<TableColumn<UsuarioDirectorio>[]>(
+    () => [
+      {
+        key: 'nombre',
+        header: 'Nombre',
+        render: (usuario) => <span className="font-semibold text-dark">{usuario.nombre}</span>,
+      },
+      {
+        key: 'correo',
+        header: 'Correo',
+        render: (usuario) => usuario.correo,
+      },
+      {
+        key: 'rol',
+        header: 'Rol',
+        render: (usuario) => ROL_LABELS[usuario.rol],
+      },
+      {
+        key: 'estado',
+        header: 'Estado',
+        render: (usuario) => (
+          <Badge variant={ESTADO_BADGE_VARIANTS[usuario.estado]}>
+            {ESTADO_LABELS[usuario.estado]}
+          </Badge>
+        ),
+      },
+      {
+        key: 'acciones',
+        header: 'Acciones',
+        render: (usuario) => (
+          <div className="flex min-w-max flex-wrap items-center gap-2">
+            <Button size="sm" variant="ghost" onClick={() => openEditModal(usuario)}>
+              Editar
+            </Button>
+            {usuario.estado === 'activo' && (
+              <Button size="sm" variant="danger" onClick={() => openDeactivateModal(usuario)}>
+                Desactivar
+              </Button>
+            )}
+          </div>
+        ),
+      },
+    ],
+    [openDeactivateModal, openEditModal],
+  )
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setFormError('')
+    setFeedback('')
+
+    const nombre = form.nombre.trim()
+    const correo = form.correo.trim()
+    const password = form.password
+
+    if (!nombre) {
+      setFormError('Ingresa el nombre del usuario.')
+      return
+    }
+    if (!editingUsuario && !correo) {
+      setFormError('Ingresa el correo del usuario.')
+      return
+    }
+    if ((!editingUsuario || password) && password.length < 8) {
+      setFormError('La contraseña debe tener al menos 8 caracteres.')
+      return
+    }
+
+    setIsSaving(true)
+
+    try {
+      let saved: UsuarioDirectorio
+
+      if (editingUsuario) {
+        const payload: UsuarioUpdate = {
+          nombre,
+          rol: form.rol,
+          estado: form.estado,
+        }
+        if (password) payload.password = password
+        saved = await actualizarUsuario(editingUsuario.id, payload)
+      } else {
+        const payload: UsuarioCreate = {
+          nombre,
+          correo,
+          password,
+          rol: form.rol,
+        }
+        saved = await crearUsuario(payload)
+      }
+
+      syncUsuario(saved)
+      setFeedback(
+        editingUsuario
+          ? `${saved.nombre} se actualizó correctamente.`
+          : `${saved.nombre} se creó correctamente.`,
+      )
+      setIsFormOpen(false)
+      setEditingUsuario(null)
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        logout()
+        return
+      }
+      setFormError(getErrorMessage(error, 'No se pudo guardar el usuario.'))
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleDeactivate = async () => {
+    if (!usuarioToDeactivate) return
+    setDeactivateError('')
+    setFeedback('')
+    setIsDeactivating(true)
+
+    try {
+      const deactivated = await eliminarUsuario(usuarioToDeactivate.id)
+      syncUsuario(deactivated)
+      setFeedback(`${deactivated.nombre} fue desactivado.`)
+      setUsuarioToDeactivate(null)
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        logout()
+        return
+      }
+      setDeactivateError(getErrorMessage(error, 'No se pudo desactivar el usuario.'))
+    } finally {
+      setIsDeactivating(false)
+    }
+  }
+
+  const handleRetry = () => {
+    setIsLoading(true)
+    setLoadError('')
+    setReloadKey((current) => current + 1)
+  }
 
   return (
-    <Modal isOpen onClose={onClose} title="Editar usuario">
-      <form
-        className="space-y-4"
-        onSubmit={(e) => {
-          e.preventDefault()
-          setError(null)
-          mutation.mutate()
-        }}
-      >
-        {error && <p className="rounded-[var(--radius-sm)] bg-[#FEE2E2] p-3 text-sm text-[var(--color-error)]">{error}</p>}
-
-        <FormInput label="Nombre" value={nombre} onChange={setNombre} />
-        <FormInput label="Correo" value={usuario.correo} onChange={() => {}} readonly hint="El correo no se puede modificar." />
-
-        <div style={{ fontFamily: 'var(--font-body)' }}>
-          <label className="mb-1.5 block text-[13px] font-semibold text-[var(--color-text-secondary)]" htmlFor="usuario-rol">
-            Rol
-          </label>
-          <select id="usuario-rol" value={rol} onChange={(e) => setRol(e.target.value as UsuarioRol)} className={selectClass}>
-            {USUARIO_ROLES.map((value) => (
-              <option key={value} value={value}>{ROLE_LABELS[value]}</option>
-            ))}
-          </select>
+    <main className="min-h-screen bg-surface">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-dark">Usuarios registrados</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Administra el acceso, los roles y el estado del equipo de IDEMA.
+            </p>
+          </div>
+          <Button size="lg" onClick={openCreateModal}>
+            Nuevo usuario
+          </Button>
         </div>
 
-        <div>
-          <p className="mb-1.5 text-[13px] font-semibold text-[var(--color-text-secondary)]" style={{ fontFamily: 'var(--font-body)' }}>
-            Estado
-          </p>
-          <div className="flex items-center gap-3">
-            <Badge value={usuario.estado} />
-            <Button
-              type="button"
-              variant={usuario.estado === 'activo' ? 'destructive' : 'primary'}
-              className="px-3 py-1.5 text-xs"
-              onClick={() => {
-                onCambiarEstado(usuario)
-                onClose()
-              }}
-            >
-              {usuario.estado === 'activo' ? 'Desactivar' : 'Activar'}
+        {feedback && (
+          <div
+            role="status"
+            className="mb-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+          >
+            {feedback}
+          </div>
+        )}
+
+        {isLoading ? (
+          <div className="grid min-h-72 place-items-center rounded-xl border border-slate-200 bg-white">
+            <div className="text-center">
+              <div className="mx-auto mb-3 h-10 w-10 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
+              <p className="text-slate-600">Cargando usuarios...</p>
+            </div>
+          </div>
+        ) : loadError ? (
+          <div className="rounded-xl border border-red-200 bg-white p-8 text-center">
+            <p role="alert" className="mb-4 text-red-700">
+              {loadError}
+            </p>
+            <Button variant="secondary" onClick={handleRetry}>
+              Reintentar
             </Button>
           </div>
-        </div>
+        ) : (
+          <>
+            <p className="mb-3 text-sm text-slate-600">
+              {usuariosOrdenados.length}{' '}
+              {usuariosOrdenados.length === 1 ? 'usuario disponible' : 'usuarios disponibles'}
+            </p>
+            <Table
+              columns={columns}
+              data={usuariosOrdenados}
+              getRowKey={(usuario) => usuario.id}
+              caption="Listado de usuarios"
+              emptyMessage="No hay usuarios registrados."
+            />
+          </>
+        )}
+      </div>
 
-        <div className="flex justify-end gap-3 border-t border-[var(--color-border)] pt-4">
-          <Button type="button" variant="ghost" onClick={onClose} disabled={mutation.isPending}>
-            Cancelar
-          </Button>
-          <Button type="submit" variant="primary" disabled={mutation.isPending}>
-            {mutation.isPending ? 'Guardando...' : 'Guardar cambios'}
-          </Button>
-        </div>
-      </form>
-    </Modal>
-  )
-}
-
-const emptyNuevoUsuario = { nombre: '', correo: '', password: '', rol: 'marketing' as UsuarioRol }
-
-function NuevoUsuarioModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const { addToast } = useToast()
-  const queryClient = useQueryClient()
-  const [values, setValues] = useState(emptyNuevoUsuario)
-  const [error, setError] = useState<string | null>(null)
-
-  const mutation = useMutation({
-    mutationFn: () => createUsuario(values),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: USUARIOS_QUERY_KEY })
-      addToast('success', 'Usuario creado', 'La cuenta se creó correctamente.')
-      setValues(emptyNuevoUsuario)
-      onClose()
-    },
-    onError: () => setError('No se pudo crear el usuario. Verifica los datos e intenta nuevamente.'),
-  })
-
-  if (!isOpen) return null
-
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Crear usuario">
-      <form
-        className="space-y-4"
-        onSubmit={(e) => {
-          e.preventDefault()
-          setError(null)
-          mutation.mutate()
-        }}
+      <Modal
+        isOpen={isFormOpen}
+        onClose={closeFormModal}
+        title={editingUsuario ? 'Editar usuario' : 'Nuevo usuario'}
+        size="lg"
+        closeOnBackdrop={!isSaving}
+        footer={
+          <>
+            <Button variant="ghost" onClick={closeFormModal} disabled={isSaving}>
+              Cancelar
+            </Button>
+            <Button type="submit" form="usuario-form" isLoading={isSaving}>
+              {editingUsuario ? 'Guardar cambios' : 'Crear usuario'}
+            </Button>
+          </>
+        }
       >
-        {error && <p className="rounded-[var(--radius-sm)] bg-[#FEE2E2] p-3 text-sm text-[var(--color-error)]">{error}</p>}
+        <form
+          id="usuario-form"
+          onSubmit={handleSubmit}
+          noValidate
+          className="grid gap-5 sm:grid-cols-2"
+        >
+          {formError && (
+            <div
+              role="alert"
+              className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 sm:col-span-2"
+            >
+              {formError}
+            </div>
+          )}
 
-        <FormInput label="Nombre" value={values.nombre} onChange={(nombre) => setValues((v) => ({ ...v, nombre }))} required />
-        <FormInput label="Correo" type="email" value={values.correo} onChange={(correo) => setValues((v) => ({ ...v, correo }))} required />
-        <FormInput
-          label="Contraseña"
-          type="password"
-          value={values.password}
-          onChange={(password) => setValues((v) => ({ ...v, password }))}
-          hint="Mínimo 8 caracteres."
-          minLength={8}
-          required
-        />
+          <Input
+            label="Nombre"
+            value={form.nombre}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, nombre: event.target.value }))
+            }
+            maxLength={255}
+            autoComplete="name"
+            required
+            disabled={isSaving}
+            containerClassName="sm:col-span-2"
+          />
 
-        <div style={{ fontFamily: 'var(--font-body)' }}>
-          <label className="mb-1.5 block text-[13px] font-semibold text-[var(--color-text-secondary)]" htmlFor="nuevo-usuario-rol">
-            Rol
-          </label>
-          <select
-            id="nuevo-usuario-rol"
-            value={values.rol}
-            onChange={(e) => setValues((v) => ({ ...v, rol: e.target.value as UsuarioRol }))}
-            className={selectClass}
+          {!editingUsuario && (
+            <Input
+              label="Correo"
+              type="email"
+              value={form.correo}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, correo: event.target.value }))
+              }
+              autoComplete="email"
+              required
+              disabled={isSaving}
+            />
+          )}
+
+          <Input
+            label={editingUsuario ? 'Nueva contraseña' : 'Contraseña'}
+            type="password"
+            minLength={8}
+            value={form.password}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, password: event.target.value }))
+            }
+            autoComplete="new-password"
+            required={!editingUsuario}
+            hint={
+              editingUsuario
+                ? 'Déjala en blanco para mantener la contraseña actual.'
+                : 'Mínimo 8 caracteres.'
+            }
+            disabled={isSaving}
+          />
+
+          <Select
+            label="Rol"
+            value={form.rol}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, rol: event.target.value as UsuarioRol }))
+            }
+            required
+            disabled={isSaving}
           >
-            {USUARIO_ROLES.map((value) => (
-              <option key={value} value={value}>{ROLE_LABELS[value]}</option>
+            {ROL_OPTIONS.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
             ))}
-          </select>
-        </div>
+          </Select>
 
-        <div className="flex justify-end gap-3 border-t border-[var(--color-border)] pt-4">
-          <Button type="button" variant="ghost" onClick={onClose} disabled={mutation.isPending}>
-            Cancelar
-          </Button>
-          <Button type="submit" variant="primary" disabled={mutation.isPending}>
-            {mutation.isPending ? 'Creando...' : 'Crear usuario'}
-          </Button>
-        </div>
-      </form>
-    </Modal>
+          {editingUsuario && (
+            <Select
+              label="Estado"
+              value={form.estado}
+              onChange={(event) =>
+                setForm((current) => ({
+                  ...current,
+                  estado: event.target.value as UsuarioDirectorio['estado'],
+                }))
+              }
+              required
+              disabled={isSaving}
+            >
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
+            </Select>
+          )}
+        </form>
+      </Modal>
+
+      <Modal
+        isOpen={Boolean(usuarioToDeactivate)}
+        onClose={closeDeactivateModal}
+        title="Desactivar usuario"
+        size="sm"
+        closeOnBackdrop={!isDeactivating}
+        footer={
+          <>
+            <Button variant="ghost" onClick={closeDeactivateModal} disabled={isDeactivating}>
+              Cancelar
+            </Button>
+            <Button variant="danger" onClick={handleDeactivate} isLoading={isDeactivating}>
+              Sí, desactivar
+            </Button>
+          </>
+        }
+      >
+        <p className="text-slate-700">
+          ¿Confirmas que deseas desactivar a{' '}
+          <strong>{usuarioToDeactivate?.nombre}</strong>? El usuario perderá el acceso, pero su
+          registro se conservará.
+        </p>
+        {deactivateError && (
+          <div
+            role="alert"
+            className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          >
+            {deactivateError}
+          </div>
+        )}
+      </Modal>
+    </main>
   )
 }

@@ -1,31 +1,32 @@
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { FaBullseye, FaLightbulb, FaAward, FaGraduationCap, FaBuilding, FaMapMarkerAlt, FaPhone, FaEnvelope, FaCertificate, FaBookOpen } from 'react-icons/fa'
+import { carreras } from '@/data/programs/carreras'
 
 export default function NosotrosPage() {
   const stats = [
     { icon: FaAward, label: 'Años de Experiencia', value: '+30' },
-    { icon: FaBuilding, label: 'Programas de Estudio', value: '3' },
+    { icon: FaBuilding, label: 'Programas de Estudio', value: String(carreras.length) },
     { icon: FaBookOpen, label: 'Cursos Online', value: '+250' },
   ]
 
   const staff = [
-    { name: 'Mg. Raúl Herrera Flores', role: 'Gerente General', image: '/assets/img/team/GerenteGeneral.webp' },
-    { name: 'Mg. Máximo Vidal Falcón Bellido', role: 'Director', image: '/assets/img/team/maximo-falcon.jpeg' },
-    { name: 'Ing. Mario Ezequiel Chávez Cáceres', role: 'Coordinador Agropecuaria', image: '/assets/img/team/mario-chavez.jpeg' },
-    { name: 'Ing. Jaime Santiago Pino Mansilla', role: 'Coordinador Prácticas Agropecuaria', image: '/assets/img/team/jaime-pino.jpeg' },
-    { name: 'Lic. Deisy Huerta Huerta', role: 'Coordinador Prácticas Avanzadas', image: '/assets/img/team/deisy-huerta.jpeg' },
-    { name: 'Ing. Julio Calcina', role: 'Coordinador de Gestión de la Calidad', image: '/assets/img/team/julio-calcina.jpeg' },
-    { name: 'Lic. Giannina Jennifer Vásquez Quispe', role: 'Coord. Prácticas Básicas Enfermería', image: '/assets/img/team/giannina-vasquez.jpeg' },
+    { name: 'Mg. Raúl Herrera Flores', role: 'Gerente General', image: '/assets/img/team/GerenteGeneral-card.webp' },
+    { name: 'Mg. Máximo Vidal Falcón Bellido', role: 'Director', image: '/assets/img/team/maximo-falcon-card.webp' },
+    { name: 'Ing. Mario Ezequiel Chávez Cáceres', role: 'Coordinador Agropecuaria', image: '/assets/img/team/mario-chavez-card.webp' },
+    { name: 'Ing. Jaime Santiago Pino Mansilla', role: 'Coordinador Prácticas Agropecuaria', image: '/assets/img/team/jaime-pino-card.webp' },
+    { name: 'Lic. Deisy Huerta Huerta', role: 'Coordinador Prácticas Avanzadas', image: '/assets/img/team/deisy-huerta-card.webp' },
+    { name: 'Ing. Julio Calcina', role: 'Coordinador de Gestión de la Calidad', image: '/assets/img/team/julio-calcina-card.webp' },
+    { name: 'Lic. Giannina Jennifer Vásquez Quispe', role: 'Coord. Prácticas Básicas Enfermería', image: '/assets/img/team/giannina-vasquez-card.webp' },
   ]
 
   const teamMembers = [
-    { name: 'Equipo Administración', role: 'Gestión administrativa', image: '/assets/img/team/administracion.png' },
-    { name: 'Equipo Marketing y Publicidad', role: 'Estrategia y comunicación', image: '/assets/img/team/marketing-nuevo.png' },
-    { name: 'Equipo Pre-venta', role: 'Captación y orientación', image: '/assets/img/team/preventaa.jpg' },
-    { name: 'Equipo Recursos Humanos', role: 'Talento y bienestar', image: '/assets/img/team/rh.jpeg' },
-    { name: 'Equipo Ingeniería y Datos', role: 'Desarrollo y tecnología', image: '/assets/img/team/sistemas.jpg', naturalHeight: true },
-    { name: 'Equipo Post-venta', role: 'Atención y seguimiento', image: '/assets/img/team/ventas-postventa.png' },
+    { name: 'Equipo Administración', role: 'Gestión administrativa', image: '/assets/img/team/administracion-card.webp' },
+    { name: 'Equipo Marketing y Publicidad', role: 'Estrategia y comunicación', image: '/assets/img/team/marketing-nuevo-card.webp' },
+    { name: 'Equipo Pre-venta', role: 'Captación y orientación', image: '/assets/img/team/preventaa-card.webp' },
+    { name: 'Equipo Recursos Humanos', role: 'Talento y bienestar', image: '/assets/img/team/rh-card.webp' },
+    { name: 'Equipo Ingeniería y Datos', role: 'Desarrollo y tecnología', image: '/assets/img/team/sistemas-card.webp', naturalHeight: true },
+    { name: 'Equipo Post-venta', role: 'Atención y seguimiento', image: '/assets/img/team/ventas-postventa-card.webp' },
   ]
 
   const locations = [
@@ -238,7 +239,7 @@ export default function NosotrosPage() {
               {[...staff, ...teamMembers].map((member, index) => (
                 <motion.div key={index} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: index * 0.1 }} whileHover={{ translateY: -10 }} className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden border border-deep/10 hover:border-primary/30 hover:shadow-xl transition-all duration-300">
                   <div className={`${'naturalHeight' in member ? '' : ('imageHeight' in member ? member.imageHeight : 'h-64')} overflow-hidden`}>
-                    <img src={member.image} alt={member.name} className={`w-full ${'naturalHeight' in member ? 'h-auto' : 'h-full object-cover'} ${'imagePosition' in member ? member.imagePosition : 'object-top'}`} />
+                    <img src={member.image} alt={member.name} className={`w-full ${'naturalHeight' in member ? 'h-auto' : 'h-full object-cover'} ${'imagePosition' in member ? member.imagePosition : 'object-top'}`} loading="lazy" decoding="async" />
                   </div>
                   <div className="p-6 text-center">
                     <h3 className="text-lg font-bold text-deep mb-2">{member.name}</h3>
