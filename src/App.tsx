@@ -3,8 +3,6 @@ import { lazy, Suspense } from 'react'
 import type { ReactNode } from 'react'
 import { Helmet } from 'react-helmet-async'
 import Layout from './components/Layout'
-import AdminLayout from './components/layout/AdminLayout'
-import PortalLayout from './components/layout/PortalLayout'
 import LoadingSpinner from './components/ui/LoadingSpinner'
 import ProtectedRoute from './components/admin/ProtectedRoute'
 import AdminLayout from './components/admin/AdminLayout'
@@ -83,31 +81,6 @@ const RecuperarPasswordPage = lazy(() => import('./pages/auth/RecuperarPasswordP
 const RestablecerPasswordPage = lazy(() => import('./pages/auth/RestablecerPasswordPage'))
 const VerificarCorreoPage = lazy(() => import('./pages/auth/VerificarCorreoPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
-const LoginPage = lazy(() => import('./pages/LoginPage'))
-const RegistroPage = lazy(() => import('./pages/RegistroPage'))
-const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'))
-const DashboardPage = lazy(() => import('./pages/portal/DashboardPage'))
-const MatriculasPage = lazy(() => import('./pages/portal/MatriculasPage'))
-const CheckoutPage = lazy(() => import('./pages/portal/CheckoutPage'))
-const ElectivosPage = lazy(() => import('./pages/portal/ElectivosPage'))
-const PagosPage = lazy(() => import('./pages/portal/PagosPage'))
-const ComprobantesPage = lazy(() => import('./pages/portal/ComprobantesPage'))
-const MiCuentaPage = lazy(() => import('./pages/portal/MiCuentaPage'))
-const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'))
-const ProgramasAdminPage = lazy(() => import('./pages/admin/ProgramasAdminPage'))
-const ProgramaNuevoPage = lazy(() => import('./pages/admin/ProgramaNuevoPage'))
-const ProgramaEditarPage = lazy(() => import('./pages/admin/ProgramaEditarPage'))
-const PopupsAdminPage = lazy(() => import('./pages/admin/PopupsAdminPage'))
-const PopupNuevoPage = lazy(() => import('./pages/admin/PopupNuevoPage'))
-const PopupEditarPage = lazy(() => import('./pages/admin/PopupEditarPage'))
-const AdminResourcePage = lazy(() => import('./pages/admin/AdminResourcePage'))
-const UsuariosAdminPage = lazy(() => import('./pages/admin/UsuariosAdminPage'))
-const LeadsAdminPage = lazy(() => import('./pages/admin/LeadsAdminPage'))
-const OrdenesAdminPage = lazy(() => import('./pages/admin/OrdenesAdminPage'))
-const ComprobantesAdminPage = lazy(() => import('./pages/admin/ComprobantesAdminPage'))
-const ConciliacionesAdminPage = lazy(() => import('./pages/admin/ConciliacionesAdminPage'))
-const CuentasAlumnosAdminPage = lazy(() => import('./pages/admin/CuentasAlumnosAdminPage'))
-const AdminReportsPage = lazy(() => import('./pages/admin/AdminReportsPage'))
 
 function App() {
   return (
@@ -145,11 +118,6 @@ function App() {
           <Route path="terminos-y-condiciones" element={<LegalPage />} />
           <Route path="libro-reclamaciones" element={<LibroReclamacionesPage />} />
           <Route path="eliminar-cuenta" element={<EliminarCuentaPage />} />
-          {/* Auth */}
-          <Route path="login" element={<LoginPage />} />
-          <Route path="registro" element={<RegistroPage />} />
-          <Route path="portal/login" element={<LoginPage />} />
-          <Route path="unauthorized" element={<UnauthorizedPage />} />
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
         </Route>

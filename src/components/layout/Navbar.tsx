@@ -18,6 +18,7 @@ import {
   FaUserCircle,
   FaCertificate,
   FaRobot,
+  FaShoppingCart,
 } from 'react-icons/fa'
 import { mainNavLinks, accederDropdown, countryCodes } from '../../data/navigation'
 import { useCart } from '../../hooks/useCart'
@@ -65,6 +66,7 @@ export default function Navbar() {
   })
   const navRef = useRef<HTMLDivElement>(null)
   const contactBtnRef = useRef<HTMLButtonElement>(null)
+  const { totalItems, toggleCart } = useCart()
   const location = useLocation()
 
   // Check if we're on the home page (hero has dark bg, so transparent works)
@@ -357,6 +359,20 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
 
+            {/* Cart Button */}
+            <button
+              onClick={toggleCart}
+              className="relative text-white/90 hover:text-primary transition-colors p-2 ml-1"
+              aria-label="Carrito de compras"
+            >
+              <FaShoppingCart className="w-5 h-5" />
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-cta text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                  {totalItems}
+                </span>
+              )}
+            </button>
+
             {/* Contact Button */}
             <div className="relative ml-2">
               <button
@@ -377,8 +393,20 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Cart + Menu Buttons */}
           <div className="flex items-center gap-2 lg:hidden">
+            <button
+              onClick={toggleCart}
+              className="relative text-white/90 hover:text-primary transition-colors p-2"
+              aria-label="Carrito de compras"
+            >
+              <FaShoppingCart className="w-5 h-5" />
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-cta text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                  {totalItems}
+                </span>
+              )}
+            </button>
             <button
               onClick={() => setIsMobileOpen(!isMobileOpen)}
               className="text-white p-2"

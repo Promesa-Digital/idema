@@ -253,6 +253,12 @@ export default function CursoDetailPage() {
                       </>
                     )}
 
+                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                      onClick={() => addItem(curso, priceNumber)}
+                      className="w-full py-3 border-2 border-primary/50 text-primary font-bold rounded-xl flex items-center justify-center gap-3 hover:bg-primary/10 transition-all duration-300">
+                      <FaShoppingCart className="text-lg" /> Agregar al Carrito
+                    </motion.button>
+
                     <a href={`https://wa.me/?text=${encodeURIComponent(curso.whatsappMessage || 'Hola, me interesa este curso')}`}
                       target="_blank" rel="noopener noreferrer" className="block">
                       <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}

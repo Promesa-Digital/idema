@@ -97,7 +97,6 @@ export default function ProgramasSection() {
     cursos: 'curso',
   }
   const { ref, inView } = useInView({ triggerOnce: true })
-  const cursos = cursosEstaticos
 
   return (
     <section

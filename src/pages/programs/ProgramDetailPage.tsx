@@ -1,4 +1,4 @@
-import { useParams, useLocation, useNavigate, Link } from 'react-router-dom'
+import { useParams, useLocation, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { FaCheck, FaClock, FaBook, FaCertificate, FaCalendar, FaWhatsapp, FaEnvelope, FaBriefcase, FaShoppingCart, FaMoneyBillWave } from 'react-icons/fa'
@@ -156,8 +156,13 @@ export default function ProgramDetailPage() {
   const matriculaNum = parsePrice(program.matricula)
   const virtualNum = parsePrice(program.priceVirtual)
 
-  // Sin carrito: el CTA lleva directo al flujo de matrícula del portal del alumno.
-  const goToMatricula = () => navigate('/portal/matriculas')
+  const handleStartMatricula = () => {
+    if (!program.matricula) return
+    addItem(program, matriculaNum, 'Matrícula')
+    if (program.priceVirtual) {
+      addItem(program, virtualNum, 'Virtual')
+    }
+  }
 
   const assignedRep = getWhatsAppRepForProgram(category, program.slug)
   const isCarrera = category === 'programas-de-estudio'
@@ -232,7 +237,7 @@ export default function ProgramDetailPage() {
             </motion.div>
           )}
 
-          {/* Prices & CTA de matrícula */}
+          {/* Prices & Add to Cart */}
           {prices.length > 0 && (
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mb-16">
               <h2 className="text-3xl font-bold mb-8 gradient-text">
@@ -270,9 +275,9 @@ export default function ProgramDetailPage() {
                     )}
                   </div>
                   <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                    onClick={goToMatricula}
+                    onClick={handleStartMatricula}
                     className="w-full py-5 bg-white text-primary font-bold text-lg rounded-full flex items-center justify-center gap-3 hover:shadow-xl transition-all duration-300">
-                    Iniciar Matrícula <FaArrowRight className="text-xl" />
+                    <FaShoppingCart className="text-2xl" /> Iniciar Matrícula
                   </motion.button>
                 </motion.div>
               )}
@@ -289,9 +294,9 @@ export default function ProgramDetailPage() {
                         {config.showPriceSuffix && <span className="text-base text-deep/70 font-normal">/mes</span>}
                       </p>
                       <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                        onClick={goToMatricula}
+                        onClick={() => handleAddToCart(p.label, p.price)}
                         className="w-full py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-full flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300">
-                        Matricularme <FaArrowRight />
+                        <FaShoppingCart /> Agregar al Carrito
                       </motion.button>
                     </motion.div>
                   ))}
