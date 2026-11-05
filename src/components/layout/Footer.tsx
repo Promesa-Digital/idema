@@ -267,7 +267,7 @@ export default function Footer() {
             className="inline-flex items-center gap-2 text-white/70 hover:text-white text-xs transition-colors"
           >
             <span>Powered by</span>
-            <img src="/assets/img/promesa-tech.webp" alt="Promesa.tech" className="h-8 w-auto" loading="lazy" decoding="async" />
+            <img src="/assets/img/promesa-tech.webp" alt="Promesa.tech" className="h-12 w-auto" loading="lazy" decoding="async" />
           </a>
         </motion.div>
       </div>
